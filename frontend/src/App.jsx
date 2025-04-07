@@ -1,8 +1,15 @@
 import React from 'react'
+import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import LandingPage from './Pages/LandingPage'
+
+
+const router = createBrowserRouter([
+  { path:'/', element:<LandingPage /> },
+])
 
 const App = () => {
   return (
-    <div className='bg-red-400 h-screen text-white'>App</div>
+    <RouterProvider router={router} />
   )
 }
 
