@@ -4,6 +4,9 @@ import { FaPlus } from "react-icons/fa6";
 import { IoNotifications } from "react-icons/io5";
 import { RxDashboard } from "react-icons/rx";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
+import CreateWorkspace from "./CreateWorkspace";
+import CreateBoard from "./CreateBoard";
+import axios from "axios";
 
 const Header = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -97,23 +100,49 @@ const Header = () => {
 };
 
 const WorkspaceDropDown = () => {
+    const [workspaces,setWorkspaces] = useState([]);
+    const [loading,setLoading] = useState(true);
+
+    const fetchWorkspaces = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/workspace/`,
+                {withCredentials: true}
+            );
+            
+            setWorkspaces(response.data.workspaces);
+            setLoading(false)
+            // console.log(response.data.message);
+        } catch (error) {
+            console.log("Error while fetching workspaces - ",error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchWorkspaces()
+    },[])
+
+
   return (
-    <div className=" max-w-[300px] w-full h-auto px-3 py-3 rounded-md bg-white
-    shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
-      {
-        [...Array(4)].map((_,index)=>(
-            <div key={index} className="w-full px-2 py-1 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
-                <div className="w-auto h-auto inline-block mr-4">
-                <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                    W
-                </span>
+    <div className=" max-w-[300px] w-full h-auto  px-3 py-3 rounded-md shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 bg-white">
+        <div className="w-full h-full max-h-[50vh] overflow-y-auto  ">
+        {
+            (loading)?
+            <div>Loading</div>:
+            workspaces.map((workspace)=>(
+                <div key={workspace._id} className="w-full px-2 py-2 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
+                    <div className="w-auto h-auto inline-block mr-4">
+                    <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                        {workspace.name[0].toUpperCase()}
+                    </span>
+                    </div>
+                    <div className="w-full font-semibold text-gray-500 line-clamp-1 ">
+                        {workspace.name}
+                    </div>
                 </div>
-                <div className="w-full font-semibold text-gray-500 ">
-                Workspace 1
-                </div>
-            </div>
-        ))
-      }
+            ))
+        }
+        </div>
     </div>
   );
 };
@@ -144,21 +173,31 @@ const StarredDropDown = ()=>{
 }
 
 const CreateDropDown = ()=>{
+    const [creatingWorkspace,setCreatingworkspace] = useState(false);
+    const [creatingBoard,setCreatingBoard] = useState(false);
+
     return(
     <div className=" max-w-[300px] w-full h-auto px-3 py-3 rounded-md bg-white
         shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
-        <div className="w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
+        <div onClick={()=>{setCreatingBoard(true)}} className="w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
             <h1 className="text-gray-500 font-semibold text-[14px] flex items-center "> 
                 <TbLayoutDashboardFilled className="mr-2 text-base " />Create Board
             </h1>
             <h3 className="text-gray-500 text-[12px] ">A board is made up of cards ordered on lists. Use it to manage and organize projects.</h3>
         </div>
-        <div className="w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
+        <div onClick={()=>{setCreatingworkspace(true)}} className="w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
             <h1 className="text-gray-500 font-semibold text-[14px] flex items-center ">
                 <RxDashboard className="mr-2 text-base " />Create Workspace
             </h1>
             <h3 className="text-gray-500 text-[12px] ">A workspace contains multiple boards and brings your team or projects together in one place.</h3>
         </div>
+
+        {
+        (creatingWorkspace)&& <CreateWorkspace setCreatingworkspace={setCreatingworkspace} />
+        }
+        {
+        (creatingBoard)&& <CreateBoard setCreatingBoard={setCreatingBoard} />
+        }
     </div>
     )
 }

@@ -1,7 +1,7 @@
-import { verifyToken } from "../services/authentication";
+import { verifyToken } from "../services/authentication.js";
 
 
-export const checkAuthentication = (req,res,next)=>{
+const checkAuthentication = (req,res,next)=>{
     try {
         const token = req.cookies['token'];
 
@@ -17,5 +17,6 @@ export const checkAuthentication = (req,res,next)=>{
     }
 }
 
+export default checkAuthentication
 
 
