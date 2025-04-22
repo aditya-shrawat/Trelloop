@@ -6,8 +6,8 @@ const LandingPage = () => {
     <div className='w-full'>
         <div className='w-full h-auto '>
             <header className='w-full h-20 bg-white shadow-[0px_4px_12px_rgba(12,12,13,0.2)] flex items-center justify-between px-6 lg:px-20 '>
-                <div className='bg-red-200'>
-                    Logo image 
+                <div className=" inline-block font-bold text-[#49C5C5] text-2xl mr-6">
+                    Trelloop
                 </div>
                 <div className='flex border-[1px] border-[#49C5C5] rounded-4xl shadow-lg'>
                     <button className='px-4 py-1 rounded-4xl font-semibold text-[#49C5C5] md:text-lg 
