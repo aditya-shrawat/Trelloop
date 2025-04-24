@@ -1,14 +1,40 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { TbStar } from "react-icons/tb";
 import { IoMdAdd } from "react-icons/io";
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const Board = () => {
+const Board = ({setWorkspace}) => {
+    const { id, name } = useParams();
+    const [board,setBoard] = useState()
+
+    const fetchBoard = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/board/${name}/${id}`,
+                {withCredentials: true}
+            );
+
+            setBoard(response.data.board)
+            setWorkspace(response.data.workspace)
+        } catch (error) {
+            console.log("Error while fetching board - ",error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchBoard()
+    },[])
+
+
   return (
     <div className='w-full h-full flex flex-col '>
         <div className="w-full h-14 px-4 p-1 border-b-[1px] border-gray-300 ">
             <div className="w-full px-2 py-2 flex justify-between items-center ">
                 <div className='w-auto flex items-center'>
-                    <h3 className='inline-block font-bold text-gray-600 text-xl'>borad name</h3>
+                    {
+                    (board) && <h3 className='inline-block font-bold text-gray-600 text-xl'>{board.name}</h3>
+                    }
                     <div className="ml-5 inline-block text-lg text-gray-600 hover:scale-110 hover:text-[#ffc300] cursor-pointer">
                         <TbStar />
                     </div>

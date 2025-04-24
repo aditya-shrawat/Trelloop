@@ -17,9 +17,9 @@ const router = createBrowserRouter([
       <Layout />
     ),
     children:[
-      // {path:'/home', element: <HomePage /> },
       {path:'/workspace/:name/:id', element: <WorkspaceBoardLayout /> },
       {path:'/workspace/:name/:id/:contentType', element: <WorkspaceBoardLayout /> },
+      {path:'/board/:name/:id', element: <WorkspaceBoardLayout /> }, 
     ]
   },
   {path:'/home', element: <HomePage /> },

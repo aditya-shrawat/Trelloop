@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { TbStar } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { IoPersonAdd } from "react-icons/io5";
@@ -8,7 +8,7 @@ import CreateBoard from "./CreateBoard";
 
 const Workspace = ({contentType}) => {
     const { id, name } = useParams();
-    const [workspace,setWorkspace] = useState({});
+    const [workspace,setWorkspace] = useState();
 
     const fetchWorkspace = async ()=>{
         try {
@@ -35,13 +35,13 @@ const Workspace = ({contentType}) => {
             <div className="w-full max-w-[85%] flex justify-between items-center ">
                 <div className="w-auto px-2 py-2 flex items-center ">
                     <div className="w-auto h-auto inline-block mr-6">
-                    {workspace.name && 
+                    {workspace && 
                         <span className="w-14 h-14 font-bold text-3xl text-white bg-blue-300 rounded-md flex items-center justify-center ">
                         {workspace.name[0].toUpperCase()}
                         </span>
                     }
                     </div>
-                    {workspace.name && 
+                    {workspace && 
                     <div className="w-full text-xl ">
                         <div className="font-semibold line-clamp-1">
                         {workspace.name}
@@ -67,7 +67,7 @@ const Workspace = ({contentType}) => {
             ) : contentType === "settings" ? (
             <SettingsSlide />
             ) : (
-            <BoardSlide workspace={workspace} />
+             (workspace && workspace._id) && <BoardSlide workspace={workspace} workspaceId={workspace._id} />
             )}
         </div>
     </div>
@@ -76,8 +76,32 @@ const Workspace = ({contentType}) => {
 
 export default Workspace;
 
-const BoardSlide = ({workspace}) => {
+const BoardSlide = ({workspace, workspaceId}) => {
     const [creatingBoard,setCreatingBoard] = useState(false);
+    const [boards,setBoards] = useState();
+    const [loading,setLoading] = useState(true);
+
+    const fetchBoards =async ()=>{
+      try {
+        const BackendURL = import.meta.env.VITE_BackendURL;
+        const response = await axios.get(`${BackendURL}/board/${workspace._id}/boards`,
+          {withCredentials: true}
+        );
+
+        setBoards(response.data.boards)
+      } catch (error) {
+        console.log("Error while fetching blogs - ",error)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
+
+    useEffect(()=>{
+      if(workspaceId){
+        fetchBoards()
+      }
+    },[workspaceId])
 
 
   return (
@@ -89,15 +113,19 @@ const BoardSlide = ({workspace}) => {
                 cursor-pointer relative bg-gray-100 hover:bg-gray-200 flex justify-center items-center ">
           <h3 className="font-semibold text-gray-500">Create board</h3>
         </div>
-        {[...Array(10)].map((_, index) => (
-          <div key={index}
+        {(loading)?
+        <div>Loading...</div>
+        :
+        boards.map((board) => (
+          <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id}
             className="min-w-44 max-w-56 h-24 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative bg-green-400 ">
-            <h3 className="font-bold text-white">Board name</h3>
+            <h3 className="font-bold text-white">{board.name}</h3>
             <div className="inline-block text-xl text-white absolute bottom-3 right-3 hover:scale-115 hover:text-[#ffc300]">
               <TbStar />
             </div>
-          </div>
-        ))}
+          </Link>
+        ))
+        }
       </div>
       {
         (creatingBoard)&& <CreateBoard setCreatingBoard={setCreatingBoard} workspaceName={workspace.name} 
