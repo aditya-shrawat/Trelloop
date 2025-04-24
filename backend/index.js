@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import UserRouter from './routes/user.js'
 import cookieParser from 'cookie-parser';
 import WorkspaceRouter from './routes/workspace.js';
+import BoardRouter  from './routes/board.js'
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -27,6 +28,7 @@ app.use(express.json())
 
 app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
+app.use('/board',BoardRouter);
 
 app.listen(PORT,()=>console.log(`Server is running on port ${PORT}`))
 

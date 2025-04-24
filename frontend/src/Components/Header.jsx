@@ -7,6 +7,7 @@ import { TbLayoutDashboardFilled } from "react-icons/tb";
 import CreateWorkspace from "./CreateWorkspace";
 import CreateBoard from "./CreateBoard";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Header = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -130,7 +131,8 @@ const WorkspaceDropDown = () => {
             (loading)?
             <div>Loading</div>:
             workspaces.map((workspace)=>(
-                <div key={workspace._id} className="w-full px-2 py-2 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
+                <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} key={workspace._id} 
+                    className="w-full px-2 py-2 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
                     <div className="w-auto h-auto inline-block mr-4">
                     <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
                         {workspace.name[0].toUpperCase()}
@@ -139,7 +141,7 @@ const WorkspaceDropDown = () => {
                     <div className="w-full font-semibold text-gray-500 line-clamp-1 ">
                         {workspace.name}
                     </div>
-                </div>
+                </Link>
             ))
         }
         </div>
