@@ -3,6 +3,7 @@ import { TbStar } from "react-icons/tb";
 import { IoMdAdd } from "react-icons/io";
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import List from './List';
 
 const Board = ({setWorkspace}) => {
     const { id, name } = useParams();
@@ -75,14 +76,7 @@ const Board = ({setWorkspace}) => {
                 <div className='w-auto flex'>
                     {
                     lists.map((list)=>(
-                        <div key={list._id} className='w-60 p-2 mr-4 border-[1px] border-gray-300 rounded-xl '>
-                            <div className='w-full p-1 mb-2 break-words font-semibold'>
-                                {list.name}
-                            </div>
-                            <div className='w-full px-1 py-2 hover:bg-gray-200 cursor-pointer rounded-xl flex items-center font-semibold text-gray-600'>
-                                <IoMdAdd className='mr-3 text-xl' /> Add card
-                            </div>
-                        </div>
+                        <List key={list._id} list={list} />
                     ))
                     }
                 </div>
@@ -145,6 +139,8 @@ const AddNewList = ({boardId,setLists})=>{
         }
         finally{
             setCreatingNewList(false);
+            setListName("")
+            setErrMsg("")
         }
     }
 
@@ -167,10 +163,12 @@ const AddNewList = ({boardId,setLists})=>{
                 <div className='text-red-500 text-[14px] mt-1'>{errMsg}</div>
                 }
                 <div className='w-full flex justify-evenly mt-3'>
-                    <div onClick={createList} className='font-semibold text-white bg-[#49C5C5] px-2 py-1 cursor-pointer rounded-lg '>
+                    <div onClick={createList} className='font-semibold text-white text-[14px] bg-[#49C5C5] px-2 py-1 cursor-pointer rounded-lg '>
                         Add List
                     </div>
-                    <div onClick={()=>{setCreatingNewList(false)}} className='border-[1px] border-gray-300 px-2 py-1 cursor-pointer rounded-lg '>
+                    <div onClick={()=>{setCreatingNewList(false)}} 
+                        className='border-[1px] border-gray-300 px-2 py-1 cursor-pointer text-[14px]
+                         text-gray-600 font-semibold rounded-lg '>
                         Cancel
                     </div>
                 </div>
