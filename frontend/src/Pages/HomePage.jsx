@@ -63,7 +63,7 @@ const HomePage = () => {
                           </span>
                         </div>
                         <div className="w-full font-semibold text-gray-500 flex items-center justify-between">
-                          <div className=" line-clamp-1">{workspace.name}</div> <IoMdArrowDropright className="ml-1 text-2xl"/>
+                          <div className=" line-clamp-1">{workspace.name}</div> <div><IoMdArrowDropright className="ml-1 text-2xl"/></div>
                         </div>
                       </Link>
                     ))
