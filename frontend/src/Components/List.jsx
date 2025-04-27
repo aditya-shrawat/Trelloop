@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
+import Card from "./Card";
 
 const List = ({list}) => {
     const [cards,setCards] = useState([]);
@@ -29,9 +30,8 @@ const List = ({list}) => {
 
 
   return (
-    <div key={list._id}
-      className="w-60 p-2 mr-4 border-[1px] border-gray-300 rounded-xl ">
-      <div className="w-full p-1 mb-2 break-words font-semibold">
+    <div key={list._id} className="w-64 py-3 px-3 mr-4 border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
+      <div className="w-full px-2 py-2  break-words font-semibold">
         {list.name}
       </div>
       <div className="w-full h-auto">
@@ -39,12 +39,10 @@ const List = ({list}) => {
             (loading)?
             <div>Loading cards ...</div>
             :
-            <div className="w-full h-auto mb-2">
+            <div className="w-full h-auto ">
                 {
                 cards.map((card)=>(
-                    <div key={card._id} className='w-full px-2 py-1 mb-1 hover:bg-gray-200 cursor-pointer rounded-lg'>
-                        {card.name}
-                    </div>
+                    <Card key={card._id} card={card} />
                 ))
                 }
             </div>
@@ -110,17 +108,17 @@ const AddNewCard = ({listId,setCards})=>{
 
 
     return (
-    <div ref={divRef} className={`w-full h-fit ${creatingNewCard &&`border-[2px] border-[#49C5C5]`} rounded-xl 
+    <div ref={divRef} className={`w-full h-fit ${creatingNewCard &&`border-[2px] border-[#49C5C5]`} rounded-lg 
         cursor-pointer`}>
         <div className='w-full h-auto '>
             { (!creatingNewCard)?
             <div onClick={()=>setCreatingNewCard(true)} 
                 className='w-full px-1 py-2 hover:bg-gray-200 cursor-pointer rounded-xl flex items-center 
                 font-semibold text-gray-600'>
-                <IoMdAdd className='mr-3 text-xl' /> Add new Card
+                <IoMdAdd className='mr-2 text-xl' /> Add new Card
             </div>
             :
-            <div className='w-full h-auto p-2'>
+            <div className='w-full h-auto px-2 py-3'>
                 <input type="text" placeholder='Enter a title' onChange={handleInput} value={cardName}
                     className='w-full px-2 py-1 rounded-lg border-[1px] border-gray-300 outline-none ' 
                 />

@@ -109,8 +109,8 @@ const BoardSlide = ({workspace, workspaceId}) => {
       <h2 className="text-xl font-semibold ">Boards</h2>
       <div className="w-full h-auto mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 ">
         <div onClick={()=>{setCreatingBoard(true)}}
-          className="min-w-44 max-w-56 h-24 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] 
-                cursor-pointer relative bg-gray-100 hover:bg-gray-200 flex justify-center items-center ">
+          className="min-w-44 max-w-56 h-24 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] 
+                cursor-pointer relative bg-gray-50 hover:bg-gray-100 flex justify-center items-center border-[1px] border-gray-300 ">
           <h3 className="font-semibold text-gray-500">Create board</h3>
         </div>
         {(loading)?
