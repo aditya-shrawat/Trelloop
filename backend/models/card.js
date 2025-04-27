@@ -5,11 +5,26 @@ const cardSchema = mongoose.Schema({
     name:{
         type:String,required:true,unique:false,
     },
+    description:{
+        type:String, required:false,unique:false,
+        default:""
+    },
     list:{
         type:mongoose.Schema.Types.ObjectId ,
         ref:'List',
         required:true,
-    }
+    },
+    createdBy:{
+        type:mongoose.Schema.Types.ObjectId ,
+        ref:'User',
+    },
+    activities:[
+        {
+          user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+          message: { type: String },
+          createdAt: { type: Date, default: Date.now }
+        }
+    ],
 },{timestamps:true,})
 
 
