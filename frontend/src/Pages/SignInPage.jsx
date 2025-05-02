@@ -50,13 +50,13 @@ const SignInPage = () => {
                 Your personal task space, just a sign in away.
             </div>
             <form className='flex flex-col w-full' onSubmit={handleSubmit}>
-                <label className='mb-1 ' >Email</label>
+                <label className='mb-1 text-gray-700' >Email</label>
                 <input type="email" name='email' onChange={(e)=>{inputChange(e)}}
-                className='mb-4 h-10 p-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
+                className='mb-4 h-10 p-1 px-2 text-lg text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none' />
                 
-                <label className='mb-1 ' >Password</label>
+                <label className='mb-1 text-gray-700' >Password</label>
                 <input type="password" name='password' onChange={(e)=>{inputChange(e)}}
-                className='mb-4 h-10 p-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
+                className='mb-4 h-10 p-1 px-2 text-lg text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none' />
 
                 {errMsg!=='' && <div className='text-red-500 px-2 my-2' >{errMsg}</div> }
                 
@@ -65,7 +65,7 @@ const SignInPage = () => {
                     Sign in
                 </button>
                 
-                <div className='w-full text-center text-base'>
+                <div className='w-full text-center text-gray-700 text-base'>
                     <p className='mb-5'>OR</p>
                     <p>No account?
                         <span onClick={()=>{navigate('/user/signup')}} className='hover:underline font-bold text-blue-800 cursor-pointer'>

@@ -77,7 +77,7 @@ const WorkspaceBoardLayout = () => {
                             </span>
                             }
                         </div>
-                        <div className="w-full font-semibold text-lg text-gray-500 flex items-center justify-between">
+                        <div className="w-full font-semibold text-lg text-gray-700 flex items-center justify-between">
                             {(workspace) &&<div className=" line-clamp-1">{workspace.name}</div>}
                         </div>
                     </div>
@@ -86,22 +86,22 @@ const WorkspaceBoardLayout = () => {
                     {workspace &&
                     <> 
                     <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} 
-                        className={`my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-600
+                        className={`my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-700
                         hover:bg-gray-100 rounded-md cursor-pointer 
-                        ${(contentType!=='members'&&contentType!=='settings')?"bg-gray-200 text-gray-600 font-semibold":""} `}>
+                        ${(contentType!=='members'&&contentType!=='settings')?"bg-gray-200 text-gray-700 font-semibold":""} `}>
                         <TbLayoutDashboardFilled className="mr-3 text-xl"/> Boards
                     </Link>
                     <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/members`}
-                        className={`my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-600
-                        hover:bg-gray-100 rounded-md cursor-pointer ${isActive("members")?"bg-gray-200 text-gray-600 font-semibold":""} `}>
+                        className={`my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-700
+                        hover:bg-gray-100 rounded-md cursor-pointer ${isActive("members")?"bg-gray-200 text-gray-700 font-semibold":""} `}>
                         <IoPerson className="mr-3 text-xl"/> Members
                     </Link>
-                    <div className="my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer ">
+                    <div className="my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
                         <IoPersonAdd className="mr-3 text-xl"/> Add member
                     </div>
                     <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/settings`} 
-                        className={`my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-600
-                        hover:bg-gray-100 rounded-md cursor-pointer ${isActive("settings")?"bg-gray-200 text-gray-600 font-semibold":""} `}>
+                        className={`my-2 px-2 py-1 flex items-center text-gray-500 hover:font-semibold hover:text-gray-700
+                        hover:bg-gray-100 rounded-md cursor-pointer ${isActive("settings")?"bg-gray-200 text-gray-700 font-semibold":""} `}>
                         <IoMdSettings className="mr-3 text-xl"/> Settings
                     </Link>
                     </>

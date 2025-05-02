@@ -25,6 +25,13 @@ const cardSchema = mongoose.Schema({
           createdAt: { type: Date, default: Date.now }
         }
     ],
+    isCompleted:{
+        type:Boolean,required:false,
+        default:false
+    },
+    attachments:[
+        String
+    ]
 },{timestamps:true,})
 
 

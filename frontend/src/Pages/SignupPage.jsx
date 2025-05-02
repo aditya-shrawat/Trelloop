@@ -49,17 +49,17 @@ const SignupPage = () => {
                 Sign up now and start managing your tasks effortlessly.
             </div>
             <form className='flex flex-col w-full' onSubmit={handleSubmit} >
-            <label className='mb-1 ' >Full name</label>
+            <label className='mb-1 text-gray-700' >Full name</label>
                 <input type="text" name='name' onChange={(e)=>{inputChange(e)}}
-                className='mb-4 h-10 p-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
+                className='mb-4 h-10 p-1 px-2 text-gray-700 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
                 
-                <label className='mb-1 ' >Email</label>
+                <label className='mb-1 text-gray-700' >Email</label>
                 <input type="email" name='email' onChange={(e)=>{inputChange(e)}}
-                className='mb-4 h-10 p-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
+                className='mb-4 h-10 p-1 px-2 text-gray-700 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
                 
-                <label className='mb-1 ' >Password</label>
+                <label className='mb-1 text-gray-700' >Password</label>
                 <input type="password" name='password' onChange={(e)=>{inputChange(e)}} 
-                className='mb-4 h-10 p-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
+                className='mb-4 h-10 p-1 px-2 text-gray-700 text-lg rounded-lg border-[1px] border-gray-300 outline-none' />
 
                 {errMsg!=='' && <div className='text-red-500 px-2 my-2' >{errMsg}</div> }
                 
@@ -68,7 +68,7 @@ const SignupPage = () => {
                     Sign up
                 </button>
                 
-                <div className='w-full text-center text-base'>
+                <div className='w-full text-center text-gray-700 text-base'>
                         <p className='mb-3'>OR</p>
                         <p>Already have an account?
                             <span onClick={()=>{navigate('/user/signin')}} className='hover:underline font-bold text-blue-800 cursor-pointer' >

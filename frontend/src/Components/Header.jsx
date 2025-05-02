@@ -138,7 +138,7 @@ const WorkspaceDropDown = () => {
                         {workspace.name[0].toUpperCase()}
                     </span>
                     </div>
-                    <div className="w-full font-semibold text-gray-500 line-clamp-1 ">
+                    <div className="w-full font-semibold text-gray-700 line-clamp-1 ">
                         {workspace.name}
                     </div>
                 </Link>
@@ -162,8 +162,8 @@ const StarredDropDown = ()=>{
                             W
                         </span>
                         </div>
-                        <div className="w-full text-gray-500 ">
-                        <h1 className="font-semibold text-[14px]">Board name</h1>
+                        <div className="w-full text-gray-700 ">
+                            <h1 className="font-semibold text-[14px]">Board name</h1>
                             <h3 className="text-[12px]  ">Workspace 1</h3>
                         </div>
                     </div>
@@ -181,17 +181,17 @@ const CreateDropDown = ()=>{
     return(
     <div className=" max-w-[300px] w-full h-auto px-3 py-3 rounded-md bg-white
         shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
-        <div onClick={()=>{setCreatingBoard(true)}} className="w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
-            <h1 className="text-gray-500 font-semibold text-[14px] flex items-center "> 
+        <div onClick={()=>{setCreatingBoard(true)}} className="text-gray-500 hover:text-gray-700 w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
+            <h1 className=" font-semibold text-[14px] flex items-center "> 
                 <TbLayoutDashboardFilled className="mr-2 text-base " />Create Board
             </h1>
-            <h3 className="text-gray-500 text-[12px] ">A board is made up of cards ordered on lists. Use it to manage and organize projects.</h3>
+            <h3 className=" text-[12px] ">A board is made up of cards ordered on lists. Use it to manage and organize projects.</h3>
         </div>
-        <div onClick={()=>{setCreatingworkspace(true)}} className="w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
-            <h1 className="text-gray-500 font-semibold text-[14px] flex items-center ">
+        <div onClick={()=>{setCreatingworkspace(true)}} className="text-gray-500 hover:text-gray-700 w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
+            <h1 className=" font-semibold text-[14px] flex items-center ">
                 <RxDashboard className="mr-2 text-base " />Create Workspace
             </h1>
-            <h3 className="text-gray-500 text-[12px] ">A workspace contains multiple boards and brings your team or projects together in one place.</h3>
+            <h3 className="text-[12px] ">A workspace contains multiple boards and brings your team or projects together in one place.</h3>
         </div>
 
         {
@@ -221,7 +221,7 @@ const ProfilePicNavBar = ({setOpenProfileNav})=>{
     <div ref={navRef} className="w-[350px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg z-40 absolute top-12 right-0  ">
         <div className=" w-full h-full px-3 py-4 ">
             <div className="w-full h-auto pb-6 border-b-[1px] border-gray-300 px-2">
-                <h2 className="font-semibold text-gray-500 ">Account</h2>
+                <h2 className="font-semibold text-gray-700 ">Account</h2>
                 <div className="w-full flex items-start mt-3">
                     <div className="w-auto h-auto mr-4">
                         <div className="h-9 w-9 flex items-center justify-center bg-blue-500 text-white font-semibold text-lg rounded-full ">
@@ -229,26 +229,26 @@ const ProfilePicNavBar = ({setOpenProfileNav})=>{
                         </div>
                     </div>
                     <div>
-                        <h1 className="text-gray-500 font-semibold break-words">Name</h1>
+                        <h1 className="text-gray-700 font-semibold break-words">Name</h1>
                         <h2 className="text-gray-500 break-words text-[14px]">email@gmail.com</h2>
                     </div>
                 </div>
             </div>
             <div className="w-full h-full mt-6 ">
-                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer ">
+                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
                     Manage account
                 </div>
-                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer ">
+                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
                     Create Workspace
                 </div>
-                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer ">
+                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
                     Settings
                 </div>
-                <div className="mt-2 mb-4 px-2 py-2 font-semibold text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer ">
+                <div className="mt-2 mb-4 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
                     Theme
                 </div>
                 <div className="pt-2 border-t-[1px] border-gray-300">
-                    <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer ">
+                    <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
                         Logout
                     </div>
                 </div>

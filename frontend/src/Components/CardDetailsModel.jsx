@@ -22,6 +22,8 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
     const [updatingCard,setUpdatingCard] = useState(false)
     const [newCardInfo,setNewCardInfo] = useState({name:"",description:""});
     const [errorMsg,setErrorMsg] = useState("")
+    const [isCompleted,setIsCompleted] = useState(null)
+    const [cardFunctionality,setCardFunctionality] = useState(null);
 
 
     useEffect(() => {
@@ -46,6 +48,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
             setCard(response.data.card)
             setList(response.data.list)
             setNewCardInfo({name:response.data.card.name , description:response.data.card.description});
+            setIsCompleted(response.data.card.isCompleted);
         } catch (error) {
             console.log("Error while fetching card details - ",error)
         }
@@ -117,34 +120,55 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
     }
 
 
+    const toggleCardStatus = async (e)=>{
+        e.preventDefault();
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.patch(`${BackendURL}/card/${cardId}/isCompleted`,
+                {},
+            {withCredentials: true}
+            );
+
+            setIsCompleted(response.data.isCompleted)
+        } catch (error) {
+            console.log("Error while toggling card status - ",error)
+        }
+    }
+
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
         <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full py-6
                 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] sm:flex bg-white rounded-xl border-[1px] border-gray-300 ">
             
-            <div onClick={()=>{setShowCardDetails(false)}} className=' rounded-full absolute text-gray-600 top-2 right-2 cursor-pointer'>
+            <div onClick={()=>{setShowCardDetails(false)}} className=' rounded-full absolute text-gray-700 top-2 right-2 cursor-pointer'>
                 <AiTwotoneCloseCircle className='text-2xl ' />
             </div>
             {/* Main content */}
             <div className="flex-1 p-6 ">
                 {/* Header */}
                 <div className="flex items-start ">
-                    <GoCheckCircleFill className="w-5 h-5 mt-1 text-green-500" />
+                    <div onClick={toggleCardStatus} className='h-auto w-auto mt-1 cursor-pointer'>
+                        {
+                        (isCompleted)?
+                            <GoCheckCircleFill className="text-2xl text-green-500" />:
+                            <MdOutlineRadioButtonUnchecked className="text-2xl text-gray-700 " />
+                        }
+                    </div>
                     <div className="ml-3 w-full flex justify-between">
                         <div className='flex-1'>
                             { (!loadingCardInfo ) &&
                                 ((!updatingCard)?
-                                <h2 className="text-xl font-semibold text-gray-600">
+                                <h2 className="text-xl font-semibold text-gray-700">
                                     {card.name}
                                 </h2>
                                 :
                                 <input type="text" name="name" value={newCardInfo.name} onChange={handleInput}
                                 placeholder='Enter card name ...'
-                                className='w-full px-2 py-1 text-lg font-semibold text-gray-600 rounded-lg outline-none border-2 border-[#49C5C5]'
+                                className='w-full px-2 py-1 text-lg font-semibold text-gray-700 rounded-lg outline-none border-2 border-[#49C5C5]'
                                 />
                                 )
                             }
-                            <div className="text-sm text-gray-500 mt-1">
+                            <div className="text-sm text-gray-600 mt-1">
                                 in list{" "}
                                 { (!loadingCardInfo) &&
                                 <span className="bg-gray-100 px-2 py-0.5 rounded">
@@ -162,7 +186,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                         <div className='w-auto ml-4 '>
                             { (!updatingCard) ?
                             <div onClick={()=>{setUpdatingCard(true)}}
-                                className=' text-gray-600 font-semibold px-2 py-0.5 cursor-pointer rounded-lg 
+                                className=' text-gray-700 font-semibold px-2 py-0.5 cursor-pointer rounded-lg 
                                     hover:bg-gray-100 flex items-center '>
                                 <BiEdit className='mr-2 text-lg' />
                                 Edit card
@@ -171,7 +195,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                             <div className='flex items-center'>
                                 {/* <div><IoCloseSharp className='text-gray-600 cursor-pointer text-2xl mr-2' /></div> */}
                                 <div onClick={(e)=>{cancelUpdatingCard(e)}}
-                                    className='mr-4 bg-gray-50 text-gray-600 border-[1px] border-gray-300 font-semibold px-2 py-0.5 cursor-pointer rounded-lg flex items-center '>
+                                    className='mr-4 bg-gray-50 text-gray-700 border-[1px] border-gray-300 px-2 py-0.5 cursor-pointer rounded-lg flex items-center '>
                                     Cancel
                                 </div>
                                 <div onClick={updateCardInfo}
@@ -185,10 +209,10 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                 </div>
 
                 {/* Description */}
-                <div className="flex my-4 ">
-                    <CgDetailsMore className="text-lg mr-3 text-gray-600 mt-1" />
+                <div className="flex my-6 ">
+                    <CgDetailsMore className="text-2xl mr-3 text-gray-700 mt-0" />
                     <div className="w-full ">
-                        <h3 className="text-base font-medium text-gray-600 mb-2">Description</h3>
+                        <h3 className="text-base font-medium text-gray-700 mb-2">Description</h3>
                         {(card && !updatingCard) ? 
                         (
                             (card.description !== "") ? (
@@ -198,7 +222,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                             ) : (
                                 <p onClick={()=>setUpdatingCard(true)} 
                                     className="min-h-24 w-full p-2 border-[1px] border-gray-300 outline-none rounded-lg
-                                    text-gray-600 bg-gray-50 hover:bg-gray-100">
+                                    text-gray-700 bg-gray-50 hover:bg-gray-100">
                                     Add a detailed description...
                                 </p>
                             )
@@ -206,7 +230,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                         :(
                             <textarea name='description' value={newCardInfo.description} onChange={handleInput}
                                 placeholder="Add description..."
-                                className="min-h-24 w-full p-2 border-2 border-[#49C5C5] outline-none rounded-lg text-gray-600 bg-gray-50 hover:bg-gray-100 "
+                                className="min-h-24 w-full p-2 border-2 border-[#49C5C5] outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
                             />
                         )
                         }
@@ -217,8 +241,8 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                 <div className="">
                     <div className="flex items-center justify-between mb-4 ">
                         <div className="flex items-center gap-2">
-                            <TbListDetails className="text-lg mr-2 text-gray-600" />
-                            <h3 className="text-base font-medium text-gray-600">Activity</h3>
+                            <TbListDetails className="text-xl mr-2 text-gray-700" />
+                            <h3 className="text-base font-medium text-gray-700">Activity</h3>
                         </div>
                     </div>
 
@@ -231,7 +255,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                                 </div>
                             </div>
                             <input placeholder="Write a comment..." 
-                                className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-lg text-gray-600 bg-gray-50 hover:bg-gray-100 "
+                                className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
                             />
                         </div>
 
@@ -248,8 +272,8 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                                     </div>
                                     <div className="w-full">
                                         <div className='w-full flex items-baseline mb-1'>
-                                            <h3 className="font-semibold text-gray-600">{activity.user.name}</h3>
-                                            <p className="text-sm text-gray-600 ml-1 ">
+                                            <h3 className="font-semibold text-gray-700">{activity.user.name}</h3>
+                                            <p className="text-sm text-gray-700 ml-1 ">
                                                 {activity.message}
                                             </p>
                                         </div>
@@ -269,31 +293,37 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
             <div className="sm:w-52 mt-4 sm:mt-none p-6 sm:pr-6 sm:p-2
                     space-y-4 grid grid-cols-2 gap-x-4 sm:flex sm:flex-col ">
                 <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-600">
+                     flex items-center text-gray-700">
                     <IoPersonAdd className="text-lg mr-3" />
                     Add member
                 </button>
 
                 <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-600">
+                     flex items-center text-gray-700">
                     <IoPerson className="text-lg mr-3" />
                     Members
                 </button>
 
                 <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-600">
+                     flex items-center text-gray-700">
                     <FaRegCalendarAlt className="text-lg mr-3" />
                     Dates
                 </button>
 
-                <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-600">
-                    <GrAttachment className="text-lg mr-3" />
-                    Attachment
-                </button>
+                <div className='h-auto w-auto relative'>
+                    <button onClick={()=>{setCardFunctionality("attachment")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                        flex items-center text-gray-700">
+                        <div className='w-auto h-auto'><GrAttachment className="text-lg mr-3" /></div>
+                        Attachment
+                    </button>
+                    {
+                     (cardFunctionality==='attachment') &&
+                     <AddAttachments setCardFunctionality={setCardFunctionality} />
+                    }
+                </div>
 
                 <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-600">
+                     flex items-center text-gray-700">
                     <BsLayersFill className="text-lg mr-3" />
                     Cover
                 </button>
@@ -304,3 +334,34 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
 }
 
 export default CardDetailsModel
+
+
+
+const AddAttachments = ({setCardFunctionality})=>{
+    return (
+    <div className='bg-white h-fit w-60 lg:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
+            absolute bottom-[130%] sm:top-[130%] right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] '>
+        <div className='w-full h-full  '>
+            <div className='w-full text-start'>
+                <h1 className='text-lg font-semibold text-gray-700'>Add Attachment</h1>
+                <p className='text-sm mt-1 text-gray-600'>Add a link to any file, image, or document you want to attach to this card.</p>
+            </div>
+            <div className='w-full text-start mt-6'>
+                <label className='text-base font-semibold text-gray-700' >Paste link</label>
+                <input type="link" 
+                    className='w-full px-2 py-1 mt-1 border-[1px] border-gray-300 outline-none rounded-lg ' />
+            </div>
+            <div className='w-full flex items-center mt-6'>
+                <div onClick={()=>{setCardFunctionality(null)}} className='px-4 py-0.5 rounded-lg text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
+                    Cancel
+                </div>
+                <div className='px-4 py-0.5 ml-6 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer '>
+                    Add
+                </div>
+            </div>
+        </div>
+    </div>
+    )
+}
+
+

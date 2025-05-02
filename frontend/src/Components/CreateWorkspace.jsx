@@ -54,20 +54,20 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
         <div ref={divref} className=" max-w-[95%] sm:max-w-md md:max-w-lg w-full 
             absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-8 py-12 bg-white rounded-xl border-[1px] border-gray-300 ">
             <div className='w-full h-auto'>
-                <h1 className='text-xl font-semibold  '>Create Your Workspace</h1>
+                <h1 className='text-xl font-semibold text-gray-700 '>Create Your Workspace</h1>
                 <h3 className=' text-gray-500 mt-2 '>Centralize your tasks, teams, and tools — everything you need to stay organized and efficient in one smart space.</h3>
             </div>
             <form onSubmit={createWorkspace}
               className='w-full h-auto'>
               <div className='flex flex-col mt-8 mb-8'>
-                <label className='mb-1 font-semibold ' >Workspace name</label>
+                <label className='mb-1 font-semibold text-gray-700' >Workspace name</label>
                 <input type="text" name='name' value={workspaceData.name} onChange={handleInputChange}
-                className=' h-10 py-2 px-2 text-base rounded-lg border-[1px] border-gray-300 outline-none' />
+                className=' h-10 py-2 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none' />
               </div>
               <div className='flex flex-col'>
-                <label className='mb-1 font-semibold ' >Workspace description</label>
+                <label className='mb-1 font-semibold text-gray-700' >Workspace description</label>
                 <input type="text" name='description' value={workspaceData.description} onChange={handleInputChange}
-                className=' h-10 py-2 px-2 text-base rounded-lg border-[1px] border-gray-300 outline-none' />
+                className=' h-10 py-2 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none' />
               </div>
               { (errorMsg.trim()!=='') &&
                 <div className='flex flex-col mt-2 text-red-500'>

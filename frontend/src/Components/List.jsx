@@ -31,7 +31,7 @@ const List = ({list}) => {
 
   return (
     <div key={list._id} className="w-64 py-3 px-3 mr-4 border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
-      <div className="w-full px-2 py-2  break-words font-semibold">
+      <div className="w-full px-2 py-2  break-words font-semibold text-gray-700">
         {list.name}
       </div>
       <div className="w-full h-auto">
@@ -113,14 +113,14 @@ const AddNewCard = ({listId,setCards})=>{
         <div className='w-full h-auto '>
             { (!creatingNewCard)?
             <div onClick={()=>setCreatingNewCard(true)} 
-                className='w-full px-1 py-2 hover:bg-gray-200 cursor-pointer rounded-xl flex items-center 
-                font-semibold text-gray-600'>
+                className='w-full px-1 py-2 hover:bg-gray-100 cursor-pointer rounded-xl flex items-center 
+                font-semibold text-gray-600 hover:text-gray-700'>
                 <IoMdAdd className='mr-2 text-xl' /> Add new Card
             </div>
             :
             <div className='w-full h-auto px-2 py-3'>
                 <input type="text" placeholder='Enter a title' onChange={handleInput} value={cardName}
-                    className='w-full px-2 py-1 rounded-lg border-[1px] border-gray-300 outline-none ' 
+                    className='w-full px-2 py-1 rounded-lg border-[1px] text-gray-700 border-gray-300 outline-none ' 
                 />
                 {
                 (errMsg.trim()!=="") &&
@@ -132,7 +132,7 @@ const AddNewCard = ({listId,setCards})=>{
                     </div>
                     <div onClick={()=>{setCreatingNewCard(false)}} 
                         className='border-[1px] border-gray-300 px-2 py-1 cursor-pointer  text-[14px]
-                         text-gray-600 font-semibold rounded-lg '>
+                         text-gray-700 font-semibold rounded-lg '>
                         Cancel
                     </div>
                 </div>

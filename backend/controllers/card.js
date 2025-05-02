@@ -38,7 +38,7 @@ export const fetchListCards = async (req,res)=>{
     try {
         const {listId} = req.params ;
 
-        const cards = await Card.find({list:listId});
+        const cards = await Card.find({list:listId}).select("name isCompleted");
 
         return res.status(200).json({message:"Cards fetched successfully.",cards})
     } catch (error) {
@@ -52,7 +52,7 @@ export const fetchCardData = async (req,res)=>{
     try {
         const {cardId} = req.params;
         
-        const card = await Card.findById(cardId).select("name description list createdBy ");
+        const card = await Card.findById(cardId).select("name description list createdBy isCompleted");
 
         const list = await List.findById(card.list).select("name ");
 
@@ -126,4 +126,43 @@ export const updateCard = async (req,res)=>{
 
 
 
+export const updateCardStatus = async (req,res)=>{
+    try {
+        const {cardId} = req.params;
+
+        const card = await Card.findById(cardId);
+        if(!card){
+            return res.status(400).json({message:"Card is not available."})
+        }
+
+        if(card.isCompleted){
+            card.isCompleted = false;
+            
+            const activity = {
+                user: req.user.id,
+                message: `unmarked the card.`,
+                createdAt: new Date(),
+            };
+            card.activities.push(activity);
+    
+            await card.save();
+            return res.status(200).json({message:"Card is unmarked.",isCompleted:false})
+        }
+        else{
+            card.isCompleted = true ;
+            
+            const activity = {
+                user: req.user.id,
+                message: `marked the card as completed.`,
+                createdAt: new Date(),
+            };
+            card.activities.push(activity);
+    
+            await card.save();
+            return res.status(200).json({message:"Card is marked as completed.",isCompleted:true})
+        }
+    } catch (error) {
+        return res.status(500).json({message:"Internal server error."})
+    }
+}
 

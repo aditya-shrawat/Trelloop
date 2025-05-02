@@ -53,9 +53,9 @@ const Board = ({setWorkspace}) => {
             <div className="w-full px-2 py-2 flex justify-between items-center ">
                 <div className='w-auto flex items-center'>
                     {
-                    (board) && <h3 className='inline-block font-bold text-gray-600 text-xl'>{board.name}</h3>
+                    (board) && <h3 className='inline-block font-bold text-gray-700 text-xl'>{board.name}</h3>
                     }
-                    <div className="ml-5 inline-block text-lg text-gray-600 hover:scale-110 hover:text-[#ffc300] cursor-pointer">
+                    <div className="ml-5 inline-block text-lg text-gray-700 hover:scale-110 hover:text-[#ffc300] cursor-pointer">
                         <TbStar />
                     </div>
                 </div>
@@ -150,13 +150,13 @@ const AddNewList = ({boardId,setLists})=>{
         cursor-pointer shadow-[0px_4px_8px_rgba(12,12,13,0.2)]`}>
         <div className='w-full h-auto '>
             { (!creatingNewList)?
-            <div onClick={()=>setCreatingNewList(true)} className='w-full flex items-center font-semibold text-gray-600'>
+            <div onClick={()=>setCreatingNewList(true)} className='w-full flex items-center font-semibold text-gray-700'>
                 <IoMdAdd className='mr-3 text-xl' /> Add new list
             </div>
             :
             <div className='w-full h-auto'>
                 <input type="text" placeholder='List name' onChange={handleInput} value={listName}
-                    className='w-full px-2 py-1 rounded-lg border-[1px] border-gray-300 outline-none ' 
+                    className='w-full px-2 py-1 rounded-lg text-gray-700 border-[1px] border-gray-300 outline-none ' 
                 />
                 {
                 (errMsg.trim()!=="") &&
@@ -168,7 +168,7 @@ const AddNewList = ({boardId,setLists})=>{
                     </div>
                     <div onClick={()=>{setCreatingNewList(false)}} 
                         className='border-[1px] border-gray-300 px-2 py-1 cursor-pointer text-[14px]
-                         text-gray-600 font-semibold rounded-lg '>
+                         text-gray-700 font-semibold rounded-lg '>
                         Cancel
                     </div>
                 </div>
