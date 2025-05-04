@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { GoCheckCircleFill } from "react-icons/go";
 import { MdModeEdit } from "react-icons/md";
-import CardDetailsModel from "./CardDetailsModel";
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Card = ({card})=>{
-    const [showCardDetails,setShowCardDetails] = useState(false)
     const [isCompleted,setIsCompleted] = useState(null)
 
     useEffect(()=>{
@@ -42,14 +41,11 @@ const Card = ({card})=>{
                 </div>
                 {card.name}
             </div>
-            <div onClick={()=>{setShowCardDetails(true)}} className="h-auto w-auto absolute top-3 right-2 opacity-0 group-hover:opacity-100 
+            <Link to={`/card/${card.name}/${card._id}`} className="h-auto w-auto absolute top-3 right-2 opacity-0 group-hover:opacity-100 
                 transition-opacity duration-300 bg-gray-50 ">
                 <MdModeEdit className="text-lg text-gray-700 hover:text-[#49C5C5]"/>
-            </div>
+            </Link>
         </div>
-    { showCardDetails &&
-        <CardDetailsModel cardId={card._id} setShowCardDetails={setShowCardDetails} />
-    }
     </div>
     )
 }

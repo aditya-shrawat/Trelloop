@@ -7,6 +7,7 @@ import HomePage from './Pages/HomePage'
 import ErrorPage from './Pages/ErrorPage'
 import Layout from './Components/Layout'
 import WorkspaceBoardLayout from './Pages/WorkspaceBoardLayout'
+import CardDetailsModel from './Components/CardDetailsModel'
 
 
 const router = createBrowserRouter([
@@ -19,7 +20,8 @@ const router = createBrowserRouter([
     children:[
       {path:'/workspace/:name/:id', element: <WorkspaceBoardLayout /> },
       {path:'/workspace/:name/:id/:contentType', element: <WorkspaceBoardLayout /> },
-      {path:'/board/:name/:id', element: <WorkspaceBoardLayout /> }, 
+      {path:'/board/:name/:id', element: <WorkspaceBoardLayout /> },
+      {path:'/card/:name/:id', element: <CardDetailsModel /> }, 
     ]
   },
   {path:'/home', element: <HomePage /> },

@@ -52,7 +52,7 @@ export const fetchCardData = async (req,res)=>{
     try {
         const {cardId} = req.params;
         
-        const card = await Card.findById(cardId).select("name description list createdBy isCompleted");
+        const card = await Card.findById(cardId).select("name description list createdBy isCompleted attachments");
 
         const list = await List.findById(card.list).select("name ");
 
@@ -166,3 +166,102 @@ export const updateCardStatus = async (req,res)=>{
     }
 }
 
+
+export const addAttachment = async (req,res)=>{
+    try {
+       const {cardId} = req.params ;
+       const {link} = req.body ;
+
+       if(link.trim()===""){
+        return res.status(400).json({error:"Link is required."})
+       }
+       
+       const card = await Card.findById(cardId);
+
+       card.attachments.push(link);
+       
+       const activity = {
+            user: req.user.id,
+            message: `added a new attachment.`,
+            createdAt: new Date(),
+        };
+        card.activities.push(activity);
+        
+       await card.save();
+
+       return res.status(200).json({message:"Link added to attachments."})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const updateAttachment = async (req,res)=>{
+    try {
+        const {cardId} = req.params ;
+        const {newLink,index} = req.body ;
+
+        if(newLink.trim()===""){
+            return res.status(400).json({error:"Enter a link."})
+        }
+
+        const card = await Card.findById(cardId);
+        if (!card) {
+            console.log("card not foung")
+            return res.status(404).json({ error: "Card not found." });
+        }
+
+        if (index < 0 || index >= card.attachments.length) {
+            return res.status(400).json({ error: "Such attachment doesn't exist." });
+        }  
+
+        const cardAttachments = card.attachments;
+        cardAttachments[index] = newLink ;
+
+        const activity = {
+            user: req.user.id,
+            message: `updated an attachment.`,
+            createdAt: new Date(),
+        };
+        card.activities.push(activity);
+
+        await card.save();
+
+        return res.status(200).json({message:"Attachment updated successfully.",cardAttachments})
+    } catch (error) {
+        return res.status(500).json({message:"Internal server error."})
+    }
+}
+
+
+export const deleteAttachment = async (req, res) => {
+    try {
+      const { cardId } = req.params;
+      const { index } = req.body;
+  
+      const card = await Card.findById(cardId);
+      if (!card) {
+        return res.status(404).json({ error: "Card not found." });
+      }
+  
+      if (index < 0 || index >= card.attachments.length) {
+        return res.status(400).json({ error: "Such attachment doesn't exist." });
+      }
+  
+      const removedAttachment = card.attachments[index];
+      card.attachments.splice(index, 1);
+
+      const activity = {
+        user: req.user.id,
+        message: `deleted the attachment: ${removedAttachment}`,
+        createdAt: new Date(),
+      };
+      card.activities.push(activity);
+  
+      await card.save();
+  
+      return res.status(200).json({ message: "Attachment deleted successfully.", attachments: card.attachments });
+    } catch (error) {
+      return res.status(500).json({ message: "Internal server error." });
+    }
+  }

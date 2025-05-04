@@ -11,8 +11,12 @@ import { TbListDetails } from "react-icons/tb";
 import { BiEdit } from "react-icons/bi";
 import { AiTwotoneCloseCircle } from "react-icons/ai";
 import axios from 'axios';
+import AddAttachments from './CardFunctionalities/AddAttachments';
+import AttachmentContainer from './CardFunctionalities/AttachmentContainer';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const CardDetailsModel = ({cardId,setShowCardDetails}) => {
+const CardDetailsModel = () => {
+    const {id} = useParams()
     const divref = useRef(null);
     const [card,setCard] = useState()
     const [list,setList] = useState()
@@ -24,12 +28,14 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
     const [errorMsg,setErrorMsg] = useState("")
     const [isCompleted,setIsCompleted] = useState(null)
     const [cardFunctionality,setCardFunctionality] = useState(null);
+    const [attachments,setAttachments] = useState([])
+    const navigate = useNavigate();
 
 
     useEffect(() => {
         const handleClickOutside = (e) => {
           if (divref.current && !divref.current.contains(e.target)) {
-            setShowCardDetails(false);
+            navigate(-1)
           }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -41,7 +47,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
     const fetchCardDetails = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/card/${cardId}`,
+            const response = await axios.get(`${BackendURL}/card/${id}`,
             {withCredentials: true}
             );
 
@@ -49,6 +55,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
             setList(response.data.list)
             setNewCardInfo({name:response.data.card.name , description:response.data.card.description});
             setIsCompleted(response.data.card.isCompleted);
+            setAttachments(response.data.card.attachments);
         } catch (error) {
             console.log("Error while fetching card details - ",error)
         }
@@ -61,7 +68,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
     const fetchCardActivities = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/card/activities/${cardId}`,
+            const response = await axios.get(`${BackendURL}/card/activities/${id}`,
             {withCredentials: true}
             );
 
@@ -99,7 +106,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
 
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}`,
+            const response = await axios.patch(`${BackendURL}/card/${id}`,
                 {name:newCardInfo.name,description:newCardInfo.description},
             {withCredentials: true}
             );
@@ -124,7 +131,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
         e.preventDefault();
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/isCompleted`,
+            const response = await axios.patch(`${BackendURL}/card/${id}/isCompleted`,
                 {},
             {withCredentials: true}
             );
@@ -138,9 +145,9 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
         <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full py-6
-                absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] sm:flex bg-white rounded-xl border-[1px] border-gray-300 ">
+                mx-auto my-10 md:my-20 sm:flex bg-white rounded-xl border-[1px] border-gray-300 relative">
             
-            <div onClick={()=>{setShowCardDetails(false)}} className=' rounded-full absolute text-gray-700 top-2 right-2 cursor-pointer'>
+            <div onClick={()=>{navigate(-1)}} className=' rounded-full absolute text-gray-700 top-2 right-2 cursor-pointer'>
                 <AiTwotoneCloseCircle className='text-2xl ' />
             </div>
             {/* Main content */}
@@ -176,7 +183,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                                 </span>
                                 }
                             </div>
-                            {
+                            { (errorMsg.trim()!=='') &&
                             <div className='text-red-600'>
                                 {errorMsg}
                             </div>
@@ -237,6 +244,24 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                     </div>
                 </div>
 
+                {/* Attachments */}
+                {
+                    (card && card.attachments.length > 0) &&
+                    <div className="flex my-6 ">
+                        <GrAttachment className="text-xl mr-3 text-gray-700 mt-0" />
+                        <div className="w-full ">
+                            <h3 className="text-base font-medium text-gray-700 ">Attachment</h3>
+                            <div className='w-full '>
+                                {
+                                  attachments.map((link,index)=>(
+                                    <AttachmentContainer key={index} link={link} setAttachments={setAttachments} index={index} />
+                                  ))
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 {/* Activity */}
                 <div className="">
                     <div className="flex items-center justify-between mb-4 ">
@@ -267,7 +292,9 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                                 <div key={index} className='w-full flex mt-4'>
                                     <div className='h-auto w-auto mr-3'>
                                         <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                                            <span className=" font-semibold text-white">PS</span>
+                                            <span className="font-semibold text-white text-lg ">
+                                                {activity.user.name[0].toUpperCase()}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="w-full">
@@ -318,7 +345,7 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
                     </button>
                     {
                      (cardFunctionality==='attachment') &&
-                     <AddAttachments setCardFunctionality={setCardFunctionality} />
+                     <AddAttachments setCardFunctionality={setCardFunctionality} setAttachments={setAttachments} cardId={id} />
                     }
                 </div>
 
@@ -334,34 +361,4 @@ const CardDetailsModel = ({cardId,setShowCardDetails}) => {
 }
 
 export default CardDetailsModel
-
-
-
-const AddAttachments = ({setCardFunctionality})=>{
-    return (
-    <div className='bg-white h-fit w-60 lg:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
-            absolute bottom-[130%] sm:top-[130%] right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] '>
-        <div className='w-full h-full  '>
-            <div className='w-full text-start'>
-                <h1 className='text-lg font-semibold text-gray-700'>Add Attachment</h1>
-                <p className='text-sm mt-1 text-gray-600'>Add a link to any file, image, or document you want to attach to this card.</p>
-            </div>
-            <div className='w-full text-start mt-6'>
-                <label className='text-base font-semibold text-gray-700' >Paste link</label>
-                <input type="link" 
-                    className='w-full px-2 py-1 mt-1 border-[1px] border-gray-300 outline-none rounded-lg ' />
-            </div>
-            <div className='w-full flex items-center mt-6'>
-                <div onClick={()=>{setCardFunctionality(null)}} className='px-4 py-0.5 rounded-lg text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
-                    Cancel
-                </div>
-                <div className='px-4 py-0.5 ml-6 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer '>
-                    Add
-                </div>
-            </div>
-        </div>
-    </div>
-    )
-}
-
 
