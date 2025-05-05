@@ -30,8 +30,8 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
 
   const createWorkspace = async (e)=>{
     e.preventDefault()
-    if(workspaceData.name.trim()===''){
-      setErrorMsg("Workspace name is required.");
+    if(workspaceData.name.trim()==='' || workspaceData.description.trim()===''){
+      setErrorMsg("All feilds are required.");
       return ;
     }
 

@@ -1,6 +1,8 @@
 
 import Workspace from '../models/workspace.js';
-
+import Board from '../models/board.js';
+import List from '../models/list.js';
+import Card from '../models/card.js';
 
 export const createWorkspace = async (req,res)=>{
     try {
@@ -51,4 +53,62 @@ export const getWorkspaceData = async (req,res)=>{
     }
 }
 
+
+export const updateWorkspace = async (req,res)=>{
+    try {
+        const {id} = req.params ;
+        const {newName,newDescription} = req.body ;
+
+        if(newName.trim()===""){
+            return res.status(400).json({error:"Workspace name is required."})
+        }
+
+        const workspace = await Workspace.findById(id) ;
+
+        if(!workspace){
+            return res.status(404).json({error:"Workspace doesn't exist."})
+        }
+
+        workspace.name = newName
+        workspace.description = newDescription ;
+
+        await workspace.save() ;
+
+        return res.status(200).json({message:"Workspace updated successfully.",workspace})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const deleteWorkspace = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const workspace = await Workspace.findById(id);
+      if (!workspace) {
+        return res.status(404).json({ error: "Workspace doesn't exist." });
+      }
+  
+      const boards = await Board.find({ workspace: id });
+  
+      for (const board of boards) {
+        const lists = await List.find({ board: board._id });
+  
+        for (const list of lists) {
+          await Card.deleteMany({ list: list._id });
+        }
+  
+        await List.deleteMany({ board: board._id });
+      }
+  
+      await Board.deleteMany({ workspace: id });
+  
+      await workspace.deleteOne();
+  
+      return res.status(200).json({ message: "Workspace deleted successfully." });
+    } catch (error) {
+      return res.status(500).json({ error: "Internal server error." });
+    }
+}
 
