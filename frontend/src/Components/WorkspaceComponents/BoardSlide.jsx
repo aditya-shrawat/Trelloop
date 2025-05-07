@@ -3,6 +3,7 @@ import CreateBoard from '../CreateBoard';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { TbStar } from "react-icons/tb";
+import { TbStarFilled } from "react-icons/tb";
 
 const BoardSlide = ({workspace}) => {
     const [creatingBoard,setCreatingBoard] = useState(false);
@@ -12,7 +13,7 @@ const BoardSlide = ({workspace}) => {
     const fetchBoards =async ()=>{
       try {
         const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/board/${workspace._id}/boards`,
+        const response = await axios.get(`${BackendURL}/workspace/${workspace._id}/boards`,
           {withCredentials: true}
         );
 
@@ -45,13 +46,7 @@ const BoardSlide = ({workspace}) => {
         <div>Loading...</div>
         :
         boards.map((board) => (
-          <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id}
-            className="min-w-44 max-w-56 h-24 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative bg-green-400 ">
-            <h3 className="font-bold text-white">{board.name}</h3>
-            <div className="inline-block text-xl text-white absolute bottom-3 right-3 hover:scale-115 hover:text-[#ffc300]">
-              <TbStar />
-            </div>
-          </Link>
+          <BoardCard key={board._id} board={board} />
         ))
         }
       </div>
@@ -62,5 +57,64 @@ const BoardSlide = ({workspace}) => {
     </div>
   );
 };
+
+const BoardCard = ({board})=>{
+  const [starStatus,setStarStatus] = useState(false)
+
+
+  const fetchStarStatus = async (e)=>{
+    try {
+      const BackendURL = import.meta.env.VITE_BackendURL;
+      const response = await axios.get(`${BackendURL}/board/${board._id}/starred`,
+        {withCredentials: true}
+      );
+
+      setStarStatus(response.data.starStatus)
+    } catch (error) {
+      console.log("Error while fetching star status - ",error)
+    }
+  }
+
+  useEffect(()=>{
+    fetchStarStatus()
+  },[])
+
+  const toggleStarStatus = async (e)=>{
+    e.preventDefault();
+
+    try {
+      const BackendURL = import.meta.env.VITE_BackendURL;
+      const response = await axios.post(`${BackendURL}/board/${board._id}/starred`,
+        {},
+        {withCredentials: true}
+      );
+
+      setStarStatus(response.data.starStatus)
+    } catch (error) {
+      console.log("Error while toggling star status - ",error)
+    }
+  }
+
+
+  return (
+    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id}
+        className="min-w-44 max-w-56 h-24 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative bg-green-400 ">
+      <h3 className="font-bold text-white">{board.name}</h3>
+      <div onClick={toggleStarStatus} 
+          className="inline-block text-xl absolute bottom-3 right-3 ">
+        {
+        (!starStatus)?
+        <div className='text-white hover:scale-115 hover:text-[#ffc300]'>
+          <TbStar />
+        </div>
+        :
+        <div className='hover:scale-115 text-[#ffc300]'>
+          <TbStarFilled />
+        </div>
+        }
+      </div>
+    </Link>
+  )
+}
 
 export default BoardSlide

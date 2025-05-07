@@ -4,12 +4,14 @@ import { IoMdAdd } from "react-icons/io";
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import List from './List';
+import { TbStarFilled } from "react-icons/tb";
 
 const Board = ({setWorkspace}) => {
     const { id, name } = useParams();
     const [board,setBoard] = useState()
     const [loadingLists,setLoadingLists] = useState(true) ;
     const [lists,setLists] = useState([]);
+    const [starStatus,setStarStatus] = useState(false)
 
     const fetchBoard = async ()=>{
         try {
@@ -47,6 +49,39 @@ const Board = ({setWorkspace}) => {
     }
 
 
+    const fetchStarStatus = async (e)=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/board/${id}/starred`,
+                {withCredentials: true}
+            );
+
+            setStarStatus(response.data.starStatus)
+        } catch (error) {
+            console.log("Error while fetching star status - ",error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchStarStatus()
+    },[])
+
+    const toggleStarStatus = async (e)=>{
+        e.preventDefault();
+
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.post(`${BackendURL}/board/${id}/starred`,
+                {},
+                {withCredentials: true}
+            );
+
+            setStarStatus(response.data.starStatus)
+        } catch (error) {
+            console.log("Error while toggling star status - ",error)
+        }
+    }
+
   return (
     <div className='w-full h-full flex flex-col '>
         <div className="w-full h-14 px-4 p-1 border-b-[1px] border-gray-300 ">
@@ -55,8 +90,18 @@ const Board = ({setWorkspace}) => {
                     {
                     (board) && <h3 className='inline-block font-bold text-gray-700 text-xl'>{board.name}</h3>
                     }
-                    <div className="ml-5 inline-block text-lg text-gray-700 hover:scale-110 hover:text-[#ffc300] cursor-pointer">
-                        <TbStar />
+                    <div onClick={toggleStarStatus} 
+                          className="inline-block ml-3 cursor-pointer text-xl ">
+                        {
+                        (!starStatus)?
+                        <div className='text-gray-700 hover:scale-115 hover:text-[#ffc300]'>
+                          <TbStar />
+                        </div>
+                        :
+                        <div className='hover:scale-115 text-[#ffc300]'>
+                          <TbStarFilled />
+                        </div>
+                        }
                     </div>
                 </div>
                 <div className='w-auto' >
