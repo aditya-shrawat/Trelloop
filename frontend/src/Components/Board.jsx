@@ -30,7 +30,7 @@ const Board = ({setWorkspace}) => {
     useEffect(()=>{
         fetchBoard()
         fetchLists()
-    },[])
+    },[id,name])
 
     const fetchLists = async ()=>{
         try {

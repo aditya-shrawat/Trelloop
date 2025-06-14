@@ -150,23 +150,50 @@ const WorkspaceDropDown = () => {
 };
 
 const StarredDropDown = ()=>{
+    const [starredBoards,setStarredBoards] = useState([]);
+    const [loadingStarredBoards,setLoadingStarredBoards] = useState(true);
+
+    const fetchStarredBoards = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/board/starred`,
+                {withCredentials: true}
+            );
+
+            setStarredBoards(response.data.starredBoards)
+        } catch (error) {
+            console.log("Error while fetching starred boards - ",error)
+        }
+        finally{
+            setLoadingStarredBoards(false)
+        }
+    }
+
+    useEffect(()=>{
+        fetchStarredBoards()
+    },[])
+
     return(
     <div className=" max-w-[300px] w-full h-auto px-3 py-3 rounded-md bg-white 
         shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
         <div className="w-full h-full ">
             {
-                [...Array(4)].map((_,index)=>(
-                    <div key={index} className="w-full px-2 py-1 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
+                (loadingStarredBoards)
+                ?
+                <div>loading starred boards</div>
+                :
+                starredBoards.map((board)=>(
+                    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id} className="w-full px-2 py-1 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
                         <div className="w-auto h-auto inline-block mr-4">
                         <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                            W
+                            {board.name[0].toUpperCase()}
                         </span>
                         </div>
                         <div className="w-full text-gray-700 ">
-                            <h1 className="font-semibold text-[14px]">Board name</h1>
-                            <h3 className="text-[12px]  ">Workspace 1</h3>
+                            <h1 className="font-semibold text-[14px]">{board.name}</h1>
+                            <h3 className="text-[12px]  ">{board.workspace.name}</h3>
                         </div>
-                    </div>
+                    </Link>
                 ))
             }
         </div>

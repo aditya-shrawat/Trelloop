@@ -11,7 +11,7 @@ const StarredBoardSchema = mongoose.Schema({
         ref: "Board",
         required: true,
     }
-});
+},{timestamps:true,});
 
 
 const StarredBoard = mongoose.model("StarredBoard", StarredBoardSchema);

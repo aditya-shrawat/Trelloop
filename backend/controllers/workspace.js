@@ -3,6 +3,7 @@ import Workspace from '../models/workspace.js';
 import Board from '../models/board.js';
 import List from '../models/list.js';
 import Card from '../models/card.js';
+import StarredBoard from '../models/starredBoard.js';
 
 export const createWorkspace = async (req,res)=>{
     try {
@@ -100,6 +101,7 @@ export const deleteWorkspace = async (req, res) => {
         }
   
         await List.deleteMany({ board: board._id });
+        await StarredBoard.deleteMany({ board: board._id });
       }
   
       await Board.deleteMany({ workspace: id });

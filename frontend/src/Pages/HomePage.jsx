@@ -9,7 +9,9 @@ import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
-  const [loading,setLoading] = useState(true);
+  const [starredBoards,setStarredBoards] = useState([]);
+  const [loadingWorkspaces,setLoadingWorkspaces] = useState(true);
+  const [loadingStarredBoards,setLoadingStarredBoards] = useState(true);
 
   const fetchWorkspaces = async ()=>{
     try {
@@ -19,15 +21,33 @@ const HomePage = () => {
       );
           
       setWorkspaces(response.data.workspaces);
-      setLoading(false)
-      // console.log(response.data.message);
     } catch (error) {
       console.log("Error while fetching workspaces - ",error)
+    }
+    finally{
+      setLoadingWorkspaces(false)
+    }
+  }
+
+  const fetchStarredBoards = async ()=>{
+    try {
+      const BackendURL = import.meta.env.VITE_BackendURL;
+      const response = await axios.get(`${BackendURL}/board/starred`,
+        {withCredentials: true}
+      );
+
+      setStarredBoards(response.data.starredBoards)
+    } catch (error) {
+      console.log("Error while fetching starred boards - ",error)
+    }
+    finally{
+      setLoadingStarredBoards(false)
     }
   }
 
   useEffect(()=>{
     fetchWorkspaces()
+    fetchStarredBoards()
   },[])
 
 
@@ -52,8 +72,8 @@ const HomePage = () => {
                 <h3 className="text-gray-500 font-semibold text-[14px] px-2">Workspaces</h3>
                 <div className="w-full h-auto mt-4">
                   {
-                    (loading)?
-                    <div>Loading</div>:
+                    (loadingWorkspaces)?
+                    <div>loadingWorkspaces</div>:
                     workspaces.map((workspace)=>(
                       <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} key={workspace._id} 
                         className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
@@ -80,18 +100,22 @@ const HomePage = () => {
                 <h3 className="text-gray-500 font-semibold text-[14px] px-2">Starred</h3>
                 <div className="w-full h-full mt-4 ">
                   {
-                  [...Array(3)].map((_,index)=>(
-                    <div key={index} className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
+                    (loadingStarredBoards)
+                    ?
+                    <div>loading starred boards</div>
+                    :
+                    starredBoards.map((board)=>(
+                    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id} className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
                       <div className="w-auto h-auto inline-block mr-4">
                         <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                          W
+                          {board.name[0].toUpperCase()}
                         </span>
                       </div>
                       <div className="w-full ">
-                        <h1 className="font-semibold text-[14px]">Board name</h1>
-                        <h3 className="text-[12px] text-gray-500 ">Workspace 1</h3>
+                        <h1 className="font-semibold text-[14px]">{board.name}</h1>
+                        <h3 className="text-[12px] text-gray-500 ">{board.workspace.name}</h3>
                       </div>
-                    </div>
+                    </Link>
                   ))
                   }
                 </div>

@@ -1,15 +1,16 @@
 
 import express from 'express';
 import checkAuthentication from '../middlewares/authentication.js';
-import { createBoard, getBoardData, getBoardStarStatus, toggleBoardStarStatus } from '../controllers/board.js';
+import { createBoard, getBoardData, getBoardStarStatus, getStarredBoards, toggleBoardStarStatus } from '../controllers/board.js';
 import { creatingNewList } from '../controllers/list.js';
-import StarredBoard from '../models/starredBoard.js';
 
 const router = express.Router();
 
 router.post("/new",checkAuthentication,createBoard);
 
 router.get("/:id/starred",checkAuthentication,getBoardStarStatus)
+
+router.get("/starred",checkAuthentication,getStarredBoards)
 
 router.get("/:name/:id",checkAuthentication,getBoardData)
 
