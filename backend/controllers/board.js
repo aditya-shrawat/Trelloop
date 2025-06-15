@@ -92,6 +92,9 @@ export const toggleBoardStarStatus = async (req,res)=>{
 
 export const getStarredBoards = async (req,res)=>{
     try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ error: "User is not authenticated." });
+        }
         const userId = req.user.id ;
 
         const starredBoardsIds = await StarredBoard.find({user:userId}).select("board").sort({createdAt:-1});
