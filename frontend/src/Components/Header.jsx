@@ -8,11 +8,23 @@ import CreateWorkspace from "./CreateWorkspace";
 import CreateBoard from "./CreateBoard";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import WorkspaceSocket from "../Socket/WorkspaceSocket.js";
+import { useUser } from "../Contexts/UserContext.jsx";
 
 const Header = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const [openProfileNav,setOpenProfileNav] = useState(false)
+    const [unreadCount,setUnreadCount]= useState(0); 
+
+    const {user} = useUser();
+
+    useEffect(()=>{
+        if(user){
+            const currentUser = user
+            WorkspaceSocket(currentUser,setUnreadCount);
+        }    
+    },[user])
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -81,12 +93,12 @@ const Header = () => {
 
             <div className="w-auto h-full flex items-center">
                 <div className="w-auto h-auto text-2xl cursor-pointer text-gray-500 hover:text-gray-700">
-                    <IoNotifications />
+                    <IoNotifications /><div className="text-red-500 text-sm">{unreadCount}</div>
                 </div>
                 <div className="w-auto h-auto ml-4 relative">
                     <div onClick={()=>setOpenProfileNav(true)} className="h-8 w-8 flex items-center justify-center 
                     bg-blue-500 text-white font-semibold text-lg rounded-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)]  ">
-                    P
+                    {(user)&&user.name[0].toUpperCase()}
                     </div>
 
                     {

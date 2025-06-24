@@ -114,3 +114,22 @@ export const deleteWorkspace = async (req, res) => {
     }
 }
 
+export const fetchWorkspaceMembers = async (req,res)=>{
+    try {
+        const {name,id} = req.params 
+
+        const workspace = await Workspace.findById(id);
+        if(!workspace){
+            return res.status(400).json({error:"Workspace not found."})
+        }
+
+        await workspace.populate("createdBy members","name");
+
+        return res.status(200).json({message:"Workspace members fetched successfully.",
+            members:workspace.members,admin:workspace.createdBy
+        })
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."});
+    }
+}
+

@@ -10,6 +10,12 @@ import WorkspaceRouter from './routes/workspace.js';
 import BoardRouter  from './routes/board.js'
 import ListRouter from './routes/list.js'
 import CardRouter from './routes/card.js'
+import http from "http"
+import {Server} from "socket.io"
+import { workspaceSocketHandler } from './socket/workspaceSocket.js';
+import { searchUsers } from './controllers/search.js';
+import checkAuthentication from './middlewares/authentication.js';
+import { fetchUserInfo } from './controllers/userInfo.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -18,23 +24,41 @@ mongoose.connect(mongoDB)
 .catch((error)=>console.log(`Error while connecting mongoDB - ${error}`))
 
 const app = express()
+const frontend = process.env.Frontend_URL;
+
+const server = http.createServer(app)
+const io = new Server(server, {
+  cors: { origin: frontend, credentials: true }
+});
 const PORT = 4000
 
 app.use(cookieParser());
-const frontend = process.env.Frontend_URL;
+
 app.use(cors({
     origin: frontend,
     credentials: true
 }));
 app.use(express.json())
 
+io.on('connection', (socket) => {
+  console.log(`Socket connected: ${socket.id}`);
+
+  workspaceSocketHandler(io, socket);
+
+  socket.on('disconnect', ()=>{
+    console.log(`Socket disconnected: ${socket.id}`);
+  });
+});
+
+app.get("/user-info",checkAuthentication,fetchUserInfo);
 app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
 app.use('/board',BoardRouter);
 app.use('/list',ListRouter);
 app.use('/card',CardRouter)
+app.get('/search',checkAuthentication,searchUsers)
 
-app.listen(PORT,()=>console.log(`Server is running on port ${PORT}`))
+server.listen(PORT,()=>console.log(`Server is running on port ${PORT}...`))
 
 
 

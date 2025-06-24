@@ -5,10 +5,12 @@ import { IoPersonAdd } from "react-icons/io5";
 import BoardSlide from "./WorkspaceComponents/BoardSlide";
 import MembersSlide from "./WorkspaceComponents/MembersSlide";
 import SettingsSlide from "./WorkspaceComponents/SettingsSlide";
+import AddNewMembers from "./WorkspaceComponents/AddNewMembers";
 
 const Workspace = ({contentType}) => {
     const { id, name } = useParams();
     const [workspace,setWorkspace] = useState();
+    const [isAddingNewMembers,setIsAddingNewMembers] = useState(false)
 
     const fetchWorkspace = async ()=>{
         try {
@@ -17,7 +19,6 @@ const Workspace = ({contentType}) => {
                 {withCredentials: true}
             );
 
-            // console.log(response.data.workspace)
             setWorkspace(response.data.workspace);
         } catch (error) {
             console.log("Error while fetching workspace - ",error)
@@ -53,10 +54,10 @@ const Workspace = ({contentType}) => {
                     }
                 </div>
                 <div>
-                    <button
-                    className="px-4 py-1 bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] rounded-lg cursor-pointer
-                    text-white font-semibold flex items-center">
-                    <IoPersonAdd className="mr-3 text-lg" /> Invite workspace members
+                    <button onClick={()=>{setIsAddingNewMembers(true)}}
+                        className="px-4 py-1 bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] rounded-lg cursor-pointer
+                        text-white font-semibold flex items-center">
+                        <IoPersonAdd className="mr-3 text-lg" /> Invite workspace members
                     </button>
                 </div>
             </div>
@@ -71,6 +72,9 @@ const Workspace = ({contentType}) => {
              <BoardSlide workspace={workspace} />
             )}
         </div>}
+        {
+          (isAddingNewMembers)&& <AddNewMembers setIsAddingNewMembers={setIsAddingNewMembers} workspace={{id,name}} />
+        }
     </div>
   );
 };
