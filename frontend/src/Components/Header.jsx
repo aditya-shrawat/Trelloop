@@ -10,12 +10,14 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import WorkspaceSocket from "../Socket/WorkspaceSocket.js";
 import { useUser } from "../Contexts/UserContext.jsx";
+import Notification from "./Notification.jsx";
 
 const Header = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const [openProfileNav,setOpenProfileNav] = useState(false)
     const [unreadCount,setUnreadCount]= useState(0); 
+    const [showNotifications,setShowNotifications] = useState(false);
 
     const {user} = useUser();
 
@@ -35,6 +37,23 @@ const Header = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const fetchUnreadNotificationCount = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/notification/count`,
+                {withCredentials: true}
+            );
+
+            setUnreadCount(response.data.notifCount);
+        } catch (error) {
+            console.log("Error while counting unread notif. ",error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchUnreadNotificationCount()
+    },[])
 
   return (
     <header className="w-full h-auto ">
@@ -92,8 +111,18 @@ const Header = () => {
             </div>
 
             <div className="w-auto h-full flex items-center">
-                <div className="w-auto h-auto text-2xl cursor-pointer text-gray-500 hover:text-gray-700">
-                    <IoNotifications /><div className="text-red-500 text-sm">{unreadCount}</div>
+                <div className="relative">
+                    <div onClick={()=>{setShowNotifications(true)}} className="w-auto h-auto text-2xl cursor-pointer text-gray-500 hover:text-gray-700">
+                        <IoNotifications />
+                        {unreadCount>0  && (
+                            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-sm font-semibold h-[18px] w-[18px] flex justify-center items-center rounded-full">
+                            {unreadCount}
+                            </div>
+                        )}
+                    </div>
+                    {
+                        (showNotifications) && <Notification setShowNotifications={setShowNotifications} />
+                    }
                 </div>
                 <div className="w-auto h-auto ml-4 relative">
                     <div onClick={()=>setOpenProfileNav(true)} className="h-8 w-8 flex items-center justify-center 
@@ -124,10 +153,11 @@ const WorkspaceDropDown = () => {
             );
             
             setWorkspaces(response.data.workspaces);
-            setLoading(false)
-            // console.log(response.data.message);
         } catch (error) {
             console.log("Error while fetching workspaces - ",error)
+        }
+        finally{
+            setLoading(false)
         }
     }
 

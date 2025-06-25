@@ -16,6 +16,7 @@ import { workspaceSocketHandler } from './socket/workspaceSocket.js';
 import { searchUsers } from './controllers/search.js';
 import checkAuthentication from './middlewares/authentication.js';
 import { fetchUserInfo } from './controllers/userInfo.js';
+import NotificationRouter from './routes/notification.js'
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -57,6 +58,7 @@ app.use('/board',BoardRouter);
 app.use('/list',ListRouter);
 app.use('/card',CardRouter)
 app.get('/search',checkAuthentication,searchUsers)
+app.use('/notification',NotificationRouter)
 
 server.listen(PORT,()=>console.log(`Server is running on port ${PORT}...`))
 

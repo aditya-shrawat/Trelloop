@@ -20,7 +20,7 @@ export const UserProvider = ({children}) => {
 
                 setUser(response.data.user)
             } catch (error) {
-                console.error("User fetch error", err);
+                console.error("User fetch error", error);
             }
         }
 
