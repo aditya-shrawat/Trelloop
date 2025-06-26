@@ -34,6 +34,7 @@ const HomeMainContainer = () => {
       </div>
 
       <div className="hidden lg:block min-w-[280px] h-full px-4">
+        { (starredBoards.length !==0) &&
         <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
           <h3 className="text-gray-500 font-semibold text-[14px] px-2">
             Starred
@@ -42,7 +43,7 @@ const HomeMainContainer = () => {
             {loadingStarredBoards ? (
               <div>loading starred boards</div>
             ) : (
-              starredBoards.map((board) => (
+              (starredBoards.length !==0) && starredBoards.map((board) => (
                 <Link to={`/board/${board.name.replaceAll(" ", "")}/${board._id}`} key={board._id}
                   className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
                 >
@@ -62,6 +63,7 @@ const HomeMainContainer = () => {
             )}
           </div>
         </div>
+        }
 
         <div className="w-full h-auto py-4 ">
           <h3 className="text-gray-500 font-semibold text-[14px] px-2">

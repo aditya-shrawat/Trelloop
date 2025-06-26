@@ -126,7 +126,7 @@ export const fetchWorkspaceMembers = async (req,res)=>{
         await workspace.populate("createdBy members","name");
 
         return res.status(200).json({message:"Workspace members fetched successfully.",
-            members:workspace.members,admin:workspace.createdBy
+            members:workspace.members,admin:workspace.createdBy,currentUser:req.user
         })
     } catch (error) {
         return res.status(500).json({error:"Internal server error."});

@@ -117,14 +117,11 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
     e.preventDefault()
     if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
 
-    console.log("selected users id - ",selectedUsersIds)
-    console.log("selected users info - ",selectedUsersInfo)
-
     try {
         socket.emit("send_workspace_invite", {
         workspaceId,
         userIds:selectedUsersIds,
-        senderId: admin._id, // only admin *** ???
+        senderId: admin._id,
     });
     } catch (error) {
         console.log("Error while sending invitation - ",error)
@@ -133,11 +130,9 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
         setSelectedUsersIds([])
         setSelectedUsersIds([])
         setIsAddingNewMembers(false)
-        console.log("Invitation sent successfully")
     }
   }
 
-  //????
   useEffect(() => {
     socket.on("workspace_invite_sent", (data) => {
         console.log("invitation data : ", data);

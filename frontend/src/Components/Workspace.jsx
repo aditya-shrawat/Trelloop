@@ -6,11 +6,13 @@ import BoardSlide from "./WorkspaceComponents/BoardSlide";
 import MembersSlide from "./WorkspaceComponents/MembersSlide";
 import SettingsSlide from "./WorkspaceComponents/SettingsSlide";
 import AddNewMembers from "./WorkspaceComponents/AddNewMembers";
+import { useUser } from "../Contexts/UserContext";
 
 const Workspace = ({contentType}) => {
     const { id, name } = useParams();
     const [workspace,setWorkspace] = useState();
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false)
+    const {user} = useUser();
 
     const fetchWorkspace = async ()=>{
         try {
@@ -53,6 +55,9 @@ const Workspace = ({contentType}) => {
                     </div>
                     }
                 </div>
+                {
+                    //only admin
+                (workspace && user && (user._id === workspace.createdBy?.toString())) &&
                 <div>
                     <button onClick={()=>{setIsAddingNewMembers(true)}}
                         className="px-4 py-1 bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] rounded-lg cursor-pointer
@@ -60,6 +65,7 @@ const Workspace = ({contentType}) => {
                         <IoPersonAdd className="mr-3 text-lg" /> Invite workspace members
                     </button>
                 </div>
+                }
             </div>
         </div>
         {(workspace && workspace._id) && 

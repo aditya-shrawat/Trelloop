@@ -1,4 +1,5 @@
 import Notification from "../models/notification.js";
+import User from "../models/user.js";
 import Workspace from "../models/workspace.js"
 
 
@@ -21,6 +22,9 @@ export const workspaceSocketHandler = (io, socket)=>{
                 return socket.emit('error',{message:'Workspace not found'});
             }
 
+            if(senderId.toString() !== workspace.createdBy?.toString()) 
+                return socket.emit('error',{message:'You are not admin.Not allowed'});
+
             const invitedNow = [];
 
             userIds.forEach((userId) => {
@@ -37,7 +41,7 @@ export const workspaceSocketHandler = (io, socket)=>{
                     senderId,
                     type: "invite",
                     workspaceId,
-                    message: `You have been invited to the workspace: ${workspace.name}`,
+                    message: `sent you an invite to the "${workspace.name}" workspace.`,
                 });
 
                 // notify invited users
@@ -71,35 +75,47 @@ export const workspaceSocketHandler = (io, socket)=>{
 
             if (!workspace) return socket.emit('error', { message:'Workspace not found.' });
 
-            const isInvited = workspace.pendingInvites.includes(userId);
+            const isInvited = workspace.pendingInvites.some(id => id.toString() === userId.toString());
             if (!isInvited) return socket.emit('error', { message:'No invite found' });
 
-            workspace.pendingInvites = workspace.pendingInvites.filter(id => id.toString() !== userId);
+            const alreadyMember = workspace.members.some(id => id.toString() === userId.toString());
+            if (alreadyMember) return socket.emit('error', { message:'User is already a member.' });
+
+            workspace.pendingInvites = workspace.pendingInvites.filter(id => id.toString() !== userId.toString());
             workspace.members.push(userId);
             await workspace.save();
 
             socket.join(`workspace_${workspaceId}`);
 
+            const sendNotification = async (memberId,senderId,senderName)=>{
+                // skip notifying the joining user
+                if (memberId.toString() === senderId) return;
+
+                await Notification.create({
+                    userId:memberId,
+                    senderId: senderId,
+                    type:"member_joined",
+                    workspaceId,
+                    message:`has joined "${workspace.name}" workspace.`,
+                });
+
+                // notify the members
+                io.to(`user_${memberId}`).emit("new_notification", {
+                    workspaceId,
+                    type: "member_joined",
+                    message: `${senderName} has joined workspace "${workspace.name}"`,
+                });
+            }
+
+            const user = await User.findById(userId);
+            if(!user) return socket.emit('error', {message:'User not found.' }); 
+            const userName = user.name;
+
+            await sendNotification(workspace.createdBy,userId.toString(),userName)
             await Promise.all(
-                workspace.members.map(async (memberId) => {
-                    // skip notifying the joining user
-                    if (memberId.toString() === userId) return;
-
-                    await Notification.create({
-                        userId:memberId,
-                        senderId: userId,
-                        type:"member_joined",
-                        workspaceId,
-                        message:`A new member has joined workspace: ${workspace.name}`,
-                    });
-
-                    // notify all the members
-                    io.to(`user_${memberId}`).emit("new_notification", {
-                        workspaceId,
-                        type: "member_joined",
-                        message: `A new member has joined workspace: ${workspace.name}`,
-                    });
-                })
+                workspace.members.map((memberId) => 
+                    sendNotification(memberId,userId,userName)
+                )
             );
 
             // optional
@@ -113,6 +129,48 @@ export const workspaceSocketHandler = (io, socket)=>{
         } catch (error) {
             console.error('Error in accepting invite- :', error);
             socket.emit('error', {message:'Failed to accept invite' });
+        }
+    });
+
+    socket.on('reject_workspace_invite', async ({ workspaceId, userId })=> {
+        try {
+            const workspace = await Workspace.findById(workspaceId);
+
+            if (!workspace) return socket.emit('error', { message:'Workspace not found.' });
+
+            const isInvited = workspace.pendingInvites.some(id => id.toString() === userId.toString());
+            if (!isInvited) return socket.emit('error', { message:'No invite found' });
+
+            const alreadyMember = workspace.members.some(id => id.toString() === userId.toString());
+            if (alreadyMember) return socket.emit('error', { message:'User is already a member.' });
+
+            workspace.pendingInvites = workspace.pendingInvites.filter(id => id.toString() !== userId.toString());
+            await workspace.save();
+
+            const user = await User.findById(userId);
+            if (!user) return socket.emit('error', {message:'User not found.' }); 
+            const userName = user.name;
+            const adminId = workspace.createdBy?.toString();
+
+            // send notification to admin
+            await Notification.create({
+                userId:adminId,
+                senderId: userId,
+                type:"invite_rejected",
+                workspaceId,
+                message:`has rejected your invite to "${workspace.name}" workspace.`,
+            });
+
+            io.to(`user_${adminId}`).emit("new_notification", {
+                workspaceId,
+                type: "invite_rejected",
+                message: `${userName} has rejected your invite to "${workspace.name}" workspace.`,
+            });
+
+            socket.emit('workspace_invite_rejected', {workspaceId, userId });
+        } catch (error) {
+            console.error('Error in rejecting invite- :', error);
+            socket.emit('error', {message:'Failed to reject invite' });
         }
     });
 }

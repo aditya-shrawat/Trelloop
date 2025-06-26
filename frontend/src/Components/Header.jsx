@@ -167,14 +167,14 @@ const WorkspaceDropDown = () => {
 
 
   return (
-    <div className=" max-w-[300px] w-full h-auto  px-3 py-3 rounded-md shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 bg-white">
-        <div className="w-full h-full max-h-[50vh] overflow-y-auto  ">
+    <div className=" max-w-[320px] w-full h-auto rounded-md shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 bg-gray-50">
+        <div className="w-full h-full p-4 space-y-3 max-h-[50vh] overflow-y-auto  ">
         {
             (loading)?
             <div>Loading</div>:
             workspaces.map((workspace)=>(
                 <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} key={workspace._id} 
-                    className="w-full px-2 py-2 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
+                    className="w-full px-2 py-2 bg-white hover:scale-105 shadow-[0px_0px_4px_rgba(12,12,13,0.2)] rounded-lg flex items-center cursor-pointer ">
                     <div className="w-auto h-auto inline-block mr-4">
                     <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
                         {workspace.name[0].toUpperCase()}
@@ -216,16 +216,16 @@ const StarredDropDown = ()=>{
     },[])
 
     return(
-    <div className=" max-w-[300px] w-full h-auto px-3 py-3 rounded-md bg-white 
+    <div className=" max-w-[300px] w-full h-auto rounded-md bg-gray-50 
         shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
-        <div className="w-full h-full ">
+        <div className="w-full h-full p-4 space-y-3">
             {
                 (loadingStarredBoards)
                 ?
                 <div>loading starred boards</div>
                 :
                 starredBoards.map((board)=>(
-                    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id} className="w-full px-2 py-1 my-2 hover:bg-gray-100 rounded-lg flex items-center cursor-pointer ">
+                    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg flex items-center cursor-pointer ">
                         <div className="w-auto h-auto inline-block mr-4">
                         <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
                             {board.name[0].toUpperCase()}
@@ -248,15 +248,15 @@ const CreateDropDown = ()=>{
     const [creatingBoard,setCreatingBoard] = useState(false);
 
     return(
-    <div className=" max-w-[300px] w-full h-auto px-3 py-3 rounded-md bg-white
-        shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
-        <div onClick={()=>{setCreatingBoard(true)}} className="text-gray-500 hover:text-gray-700 w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
+    <div className=" max-w-[300px] w-full h-auto px-4 py-4 rounded-md bg-gray-50
+        shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 space-y-4 ">
+        <div onClick={()=>{setCreatingBoard(true)}} className="text-gray-700 w-full px-2 py-2 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg cursor-pointer ">
             <h1 className=" font-semibold text-[14px] flex items-center "> 
                 <TbLayoutDashboardFilled className="mr-2 text-base " />Create Board
             </h1>
             <h3 className=" text-[12px] ">A board is made up of cards ordered on lists. Use it to manage and organize projects.</h3>
         </div>
-        <div onClick={()=>{setCreatingworkspace(true)}} className="text-gray-500 hover:text-gray-700 w-full px-2 py-2 my-1 hover:bg-gray-100 rounded-lg cursor-pointer ">
+        <div onClick={()=>{setCreatingworkspace(true)}} className="text-gray-700 w-full px-2 py-2 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg cursor-pointer ">
             <h1 className=" font-semibold text-[14px] flex items-center ">
                 <RxDashboard className="mr-2 text-base " />Create Workspace
             </h1>
