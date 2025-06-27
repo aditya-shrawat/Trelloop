@@ -8,18 +8,20 @@ import StarredBoard from '../models/starredBoard.js';
 export const createWorkspace = async (req,res)=>{
     try {
         const {name,description} = req.body ;
+        const Description = (description.trim()==="")?"":req.board.description
 
         if(name.trim()===''){
-            return res.status(400).json({error:"All fields are required to create a workspace."})
+            return res.status(400).json({error:"Workspace name is required."})
         }
 
         const workspace = await Workspace.create({
             name,
-            description,
-            createdBy:req.user.id
+            description:Description,
+            createdBy:req.user.id,
+            isPrivate:true,
         });
 
-        return res.status(200).json({message:"Workspace is created.",workspace})
+        return res.status(201).json({message:"Workspace is created.",workspace})
     } catch (error) {
         console.log("Error while creating workspace - ",error);
         return res.status(500).json({message:"Internal server error."})
@@ -31,9 +33,13 @@ export const fetchWorkspaces = async (req,res)=>{
     try {
         const userId = req.user.id ;
         
-        const workspaces = await Workspace.find({createdBy:userId}).sort({createdAt:-1});
+        const ownWorkspaces = await Workspace.find({createdBy:userId});
+        const memberedWorkspaces = await Workspace.find({members:userId,createdBy:{$ne:userId }});
 
-        return res.status(200).json({message:"Workspaces fetched successfully.",workspaces});
+        const allWorkspaces = [...ownWorkspaces, ...memberedWorkspaces]
+        .sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt));
+
+        return res.status(200).json({message:"Workspaces fetched successfully.",workspaces:allWorkspaces});
     } catch (error) {
         console.log("Error while fetching workspaces - ",error);
         return res.status(500).json({error:"Internal server error."});
@@ -45,7 +51,7 @@ export const getWorkspaceData = async (req,res)=>{
     try {
         const workspaceId = req.params.id;
 
-        const workspace = await Workspace.findById(workspaceId).select('name description');
+        const workspace = await Workspace.findById(workspaceId).select('name description createdBy isPrivate');
 
         return res.status(200).json({message:"Workspace fetched successfully.",workspace})
     } catch (error) {
@@ -70,6 +76,14 @@ export const updateWorkspace = async (req,res)=>{
             return res.status(404).json({error:"Workspace doesn't exist."})
         }
 
+        const userId = req.user.id;
+        const isCreator = workspace.createdBy?.toString() === userId;
+        const isMember = workspace.members.includes(userId);
+
+        if (!isCreator && !isMember){
+            return res.status(403).json({error:"You are not allowed to update this workspace."});
+        }
+
         workspace.name = newName
         workspace.description = newDescription ;
 
@@ -90,6 +104,9 @@ export const deleteWorkspace = async (req, res) => {
       if (!workspace) {
         return res.status(404).json({ error: "Workspace doesn't exist." });
       }
+
+      if(workspace.createdBy?.toString() !== req.user.id)
+        return res.status(403).json({error:"Not allowed to delete workspace.Only admin can."})
   
       const boards = await Board.find({ workspace: id });
   
@@ -133,3 +150,31 @@ export const fetchWorkspaceMembers = async (req,res)=>{
     }
 }
 
+
+export const updateWorkspaceVisibility = async (req,res)=>{
+    try {
+        const {id} = req.params ;
+        const {newVisibility} = req.body ;
+
+        const workspace = await Workspace.findById(id).select('name description createdBy members isPrivate') ;
+
+        if(!workspace){
+            return res.status(404).json({error:"Workspace doesn't exist."})
+        }
+
+        const userId = req.user.id;
+        const isCreator = workspace.createdBy?.toString() === userId;
+        const isMember = workspace.members.includes(userId);
+
+        if (!isCreator && !isMember){
+            return res.status(403).json({error:"You are not allowed to update this workspace."});
+        }
+
+        workspace.isPrivate = newVisibility
+        await workspace.save() ;
+
+        return res.status(200).json({message:"Workspace visibility updated successfully.",workspace})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}

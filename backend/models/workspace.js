@@ -6,7 +6,7 @@ const workspaceSchema = mongoose.Schema({
         type:String,required:true,unique:false,
     },
     description:{
-        type:String,required:true,unique:false,
+        type:String,required:false,unique:false,default:"" 
     },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId ,
@@ -18,7 +18,11 @@ const workspaceSchema = mongoose.Schema({
     ],
     pendingInvites: [
         {type:mongoose.Schema.Types.ObjectId, ref:'User' }
-    ]
+    ],
+    isPrivate:{ 
+        type:Boolean, 
+        default:true 
+    },
 },{timestamps:true,})
 
 

@@ -65,11 +65,11 @@ const WorkspaceBoardLayout = () => {
   return (
     <main className="w-full h-full ">
         <div className="w-full h-full  flex ">
-            <div className="min-w-[20%] h-full border-r-[1px] border-gray-300 ">
+            <div className="w-full hidden sm:block max-w-[280px] h-full border-r-[1px] border-gray-300 ">
                 
-                <div className="w-full h-14 px-2 py-1 border-b-[1px] border-gray-300 ">
+                <div className="w-full min-h-14 px-2 py-1 border-b-[1px] border-gray-300 ">
                     <div className="w-full px-2 py-2 flex items-center ">
-                        <div className="w-auto h-auto inline-block mr-4">
+                        <div className="w-auto h-auto inline-block mr-2">
                             {
                             (workspace) &&
                             <span className="w-8 h-8 font-bold text-lg text-white bg-blue-300 rounded-md flex items-center justify-center ">
@@ -78,7 +78,7 @@ const WorkspaceBoardLayout = () => {
                             }
                         </div>
                         <div className="w-full font-semibold text-lg text-gray-700 flex items-center justify-between">
-                            {(workspace) &&<div className=" line-clamp-1">{workspace.name}</div>}
+                            {(workspace) &&<div className=" line-clamp-2">{workspace.name}</div>}
                         </div>
                     </div>
                 </div>
@@ -109,7 +109,7 @@ const WorkspaceBoardLayout = () => {
                 </div>
 
             </div>
-            <div className="h-full w-[80%]  ">
+            <div className="h-full w-full  ">
                 {
                 (loading)?
                 <div className="h-full w-full bg-red-300">Loading....</div>

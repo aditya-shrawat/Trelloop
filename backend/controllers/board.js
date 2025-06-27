@@ -26,9 +26,9 @@ export const createBoard = async (req,res)=>{
 
 export const fetcheBoards = async (req,res)=>{
     try {
-        const {workspaceId} = req.params
+        const {id} = req.params
 
-        const boards = await Board.find({workspace:workspaceId}) ;
+        const boards = await Board.find({workspace:id}) ;
 
         return res.status(200).json({message:"Boards fetched successfully.",boards});
     } catch (error) {

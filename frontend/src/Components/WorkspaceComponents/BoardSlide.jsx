@@ -19,7 +19,7 @@ const BoardSlide = ({workspace}) => {
 
         setBoards(response.data.boards)
       } catch (error) {
-        console.log("Error while fetching blogs - ",error)
+        console.log("Error while fetching boards - ",error)
       }
       finally{
         setLoading(false)

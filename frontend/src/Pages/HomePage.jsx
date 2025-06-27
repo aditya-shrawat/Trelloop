@@ -47,7 +47,7 @@ const HomePage = () => {
         <div className="w-full h-full ">
           <div className="max-w-[1200px] w-full h-full m-auto flex flex-row ">
 
-            <div className="hidden sm:block sm:min-w-[220px] md:min-w-[280px] h-full px-4 mt-8 ">
+            <div className="hidden w-full sm:block max-w-[280px] h-full px-4 mt-8 ">
               <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
                 <Link to={`/home`} className={`w-full px-2 py-2 flex items-center 
                       ${(route==='/home')?`text-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-500 hover:bg-gray-100`} 

@@ -33,7 +33,7 @@ const HomeMainContainer = () => {
         <HomeContent />
       </div>
 
-      <div className="hidden lg:block min-w-[280px] h-full px-4">
+      <div className="hidden lg:block w-full max-w-[280px] h-full px-4">
         { (starredBoards.length !==0) &&
         <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
           <h3 className="text-gray-500 font-semibold text-[14px] px-2">

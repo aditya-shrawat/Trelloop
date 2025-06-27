@@ -30,8 +30,8 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
 
   const createWorkspace = async (e)=>{
     e.preventDefault()
-    if(workspaceData.name.trim()==='' || workspaceData.description.trim()===''){
-      setErrorMsg("All feilds are required.");
+    if(workspaceData.name.trim()===''){
+      setErrorMsg("Workspace name is required.");
       return ;
     }
 
@@ -41,7 +41,6 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
         {name:workspaceData.name,description:workspaceData.description},
         {withCredentials: true}
       );
-      // console.log(response.data.message);
       console.log("Workspace created!!")
       setCreatingworkspace(false)
     } catch (error) {
