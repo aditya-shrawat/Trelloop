@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { TbStar } from "react-icons/tb";
 import { IoMdAdd } from "react-icons/io";
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import List from './List';
 import { TbStarFilled } from "react-icons/tb";
@@ -12,18 +12,21 @@ const Board = ({setWorkspace}) => {
     const [loadingLists,setLoadingLists] = useState(true) ;
     const [lists,setLists] = useState([]);
     const [starStatus,setStarStatus] = useState(false)
+    const location = useLocation();
 
     const fetchBoard = async ()=>{
-        try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${name}/${id}`,
-                {withCredentials: true}
-            );
+        if(location.pathname.split("/")[1] === 'board'){
+            try {
+                const BackendURL = import.meta.env.VITE_BackendURL;
+                const response = await axios.get(`${BackendURL}/board/${name}/${id}`,
+                    {withCredentials: true}
+                );
 
-            setBoard(response.data.board)
-            setWorkspace(response.data.workspace)
-        } catch (error) {
-            console.log("Error while fetching board - ",error)
+                setBoard(response.data.board)
+                setWorkspace(response.data.workspace)
+            } catch (error) {
+                console.log("Error while fetching board - ",error)
+            }
         }
     }
 

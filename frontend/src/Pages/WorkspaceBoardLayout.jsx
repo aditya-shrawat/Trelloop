@@ -11,7 +11,7 @@ import Board from "../Components/Board";
 const WorkspaceBoardLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const contentType = location.pathname.split("/").pop() ;
+    const contentType = location.pathname.split("/").pop() ; //last segment of the URL path
     const { id, name } = useParams();
     const [showBoard,setShowBoard] = useState(null)
     const [loading,setLoading] = useState(true)
@@ -43,13 +43,29 @@ const WorkspaceBoardLayout = () => {
 
 
     const fetchWorkspace = async ()=>{
+        const BackendURL = import.meta.env.VITE_BackendURL;
+        let workspaceId = id;
+        let workspaceName = name;
+
+        if(location.pathname.split("/")[1] === 'board'){
+            try {
+                const response = await axios.get(`${BackendURL}/board/${id}/workspace-info`,
+                    {withCredentials: true}
+                );
+
+                workspaceName=response.data.workspace.name;
+                workspaceId=response.data.workspace._id;
+            } catch (error) {
+                console.log("Error while fetching workspace via board , -",error)
+                return;
+            }
+        }
+
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/workspace/${name}/${id}`,
+            const response = await axios.get(`${BackendURL}/workspace/${workspaceName}/${workspaceId}`,
                 {withCredentials: true}
             );
 
-            // console.log(response.data.workspace)
             setWorkspace(response.data.workspace);
         } catch (error) {
             console.log("Error while fetching workspace - ",error)

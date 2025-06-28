@@ -111,3 +111,48 @@ export const getStarredBoards = async (req,res)=>{
     }
 }
 
+export const allJoinedWorkspacesAndBoards = async(req,res)=>{
+    try {
+        const userId = req.user.id;
+
+        const workspaces = await Workspace.find({
+        $or:[
+            { createdBy:userId },
+            { members:userId }
+        ]
+        }).select('_id name').lean().sort({createdAt:-1})
+
+        const workspacesWithBoards = await Promise.all(
+            workspaces.map(async (workspace) => {
+                const boards = await Board.find({ workspace:workspace._id }).select('_id name').lean();
+
+                return {...workspace,boards,};
+            })
+        );
+
+        return res.status(200).json({message:'Workspaces with boards fetched successfully.',
+        workspaces: workspacesWithBoards,
+        });
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+export const getWorkspaceInfoByBoard = async (req,res)=>{
+    try {
+        const {id} = req.params;
+        console.log(id)
+
+        const board = await Board.findById(id);
+        if(!board){
+            return res.status(403).json({error:"Board does not exist."})
+        }
+
+        const workspace = await Workspace.findById(board.workspace).select('_id name');
+         
+        return res.status(200).json({message:"workspace info fetched.",workspace})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
