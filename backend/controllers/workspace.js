@@ -4,6 +4,8 @@ import Board from '../models/board.js';
 import List from '../models/list.js';
 import Card from '../models/card.js';
 import StarredBoard from '../models/starredBoard.js';
+import Notification from '../models/notification.js';
+import User from '../models/user.js';
 
 export const createWorkspace = async (req,res)=>{
     try {
@@ -174,6 +176,100 @@ export const updateWorkspaceVisibility = async (req,res)=>{
         await workspace.save() ;
 
         return res.status(200).json({message:"Workspace visibility updated successfully.",workspace})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const removeWorkspaceMember = async (req,res)=>{
+    try {
+        const {id} = req.params
+        const {userId} = req.body
+
+        const workspace = await Workspace.findById(id);
+
+        if(req.user.id !== workspace.createdBy?.toString()){
+            return res.status(403).json({error:"Only admin can remove members."})
+        }
+
+        const user = await User.findById(userId);
+
+        workspace.members = workspace.members.filter((user)=> user._id.toString() !== userId);
+        await workspace.save();
+
+        const notifyMembers = async (senderId,receiverId,receiverName)=>{
+            await Notification.create({
+                userId:receiverId,
+                senderId:senderId,
+                type:"member_removed",
+                workspaceId:workspace._id,
+                message:`removed ${receiverName} from the workspace "${workspace.name}".`,
+            });
+        }
+
+        const adminId = workspace.createdBy
+        await notifyMembers(adminId,userId,"you") // notify removed user
+
+        const userName = `"${user.name}"`
+        // notify other members
+        await Promise.all(
+            workspace.members.map((member) =>
+                notifyMembers(adminId, member._id, userName)
+            )
+        );
+
+        await workspace.populate("members", "name _id");
+
+        return res.status(200).json({message:"User removed successfully.",members:workspace.members})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const leaveWorkspace = async (req,res)=>{
+    try {
+        const {id} = req.params
+        const userId = req.user.id
+
+        const workspace = await Workspace.findById(id);
+
+        if (workspace.createdBy.toString() === userId) {
+            return res.status(403).json({error:"Admin cannot leave the workspace." });
+        }
+
+        const user = await User.findById(userId);
+
+        if(!user){
+            return res.status(404).json({error:"user doesn't exist."})
+        }
+
+        workspace.members = workspace.members.filter((user)=> user._id.toString() !== userId);
+        await workspace.save();
+
+        const notifyMembers = async (senderId,receiverId)=>{
+            await Notification.create({
+                userId:receiverId,
+                senderId:senderId,
+                type:"member_left",
+                workspaceId:workspace._id,
+                message:`left the workspace "${workspace.name}".`,
+            });
+        }
+
+        await notifyMembers(userId,workspace.createdBy) // notify admin
+
+        // notify other members
+        await Promise.all(
+            workspace.members.map((member) =>
+                notifyMembers(userId, member._id)
+            )
+        );
+
+        await workspace.populate("members", "name _id");
+
+        return res.status(200).json({message:"User left workspace successfully.",members:workspace.members})
     } catch (error) {
         return res.status(500).json({error:"Internal server error."})
     }

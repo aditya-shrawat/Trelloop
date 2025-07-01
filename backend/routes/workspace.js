@@ -1,7 +1,7 @@
 
 import express from 'express'
 import checkAuthentication from '../middlewares/authentication.js';
-import { createWorkspace, deleteWorkspace, fetchWorkspaceMembers, fetchWorkspaces, getWorkspaceData, updateWorkspace, updateWorkspaceVisibility } from '../controllers/workspace.js';
+import { createWorkspace, deleteWorkspace, fetchWorkspaceMembers, fetchWorkspaces, getWorkspaceData, leaveWorkspace, removeWorkspaceMember, updateWorkspace, updateWorkspaceVisibility } from '../controllers/workspace.js';
 import { fetcheBoards } from '../controllers/board.js';
 import checkWorkspaceAccess from '../middlewares/checkWorkspaceAccess.js';
 
@@ -19,5 +19,7 @@ route.patch('/update/:id',checkAuthentication,checkWorkspaceAccess,updateWorkspa
 
 route.delete('/delete/:id', checkAuthentication,checkWorkspaceAccess,deleteWorkspace);
 route.patch('/visibility/:id',checkAuthentication,checkWorkspaceAccess,updateWorkspaceVisibility)
+route.post("/:id/remove-member",checkAuthentication,checkWorkspaceAccess,removeWorkspaceMember)
+route.post("/:id/leave-workspace",checkAuthentication,checkWorkspaceAccess,leaveWorkspace)
 
 export default route 

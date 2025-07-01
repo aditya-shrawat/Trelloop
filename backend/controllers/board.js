@@ -141,7 +141,6 @@ export const allJoinedWorkspacesAndBoards = async(req,res)=>{
 export const getWorkspaceInfoByBoard = async (req,res)=>{
     try {
         const {id} = req.params;
-        console.log(id)
 
         const board = await Board.findById(id);
         if(!board){

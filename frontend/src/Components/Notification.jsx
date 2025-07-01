@@ -165,7 +165,7 @@ const NotificationItem = ({notif,setNotifications})=>{
         </div>
         )
         :
-        (notif.type === 'member_joined' || notif.type === 'invite_rejected') ?
+        (notif.type === 'member_joined' || notif.type === 'invite_rejected' || notif.type === 'member_removed'|| notif.type === 'member_left') ?
         (
         <div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)] '>
             <div className="w-full flex ">
