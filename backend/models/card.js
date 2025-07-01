@@ -18,13 +18,6 @@ const cardSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId ,
         ref:'User',
     },
-    activities:[
-        {
-          user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-          message: { type: String },
-          createdAt: { type: Date, default: Date.now }
-        }
-    ],
     isCompleted:{
         type:Boolean,required:false,
         default:false

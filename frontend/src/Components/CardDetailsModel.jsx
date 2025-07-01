@@ -269,10 +269,8 @@ const CardDetailsModel = () => {
                             <TbListDetails className="text-xl mr-2 text-gray-700" />
                             <h3 className="text-base font-medium text-gray-700">Activity</h3>
                         </div>
-                    </div>
-
-                    
-                    <div className="w-full h-full ">
+                    </div> 
+                    <div className="w-full h-full space-y-4 ">
                         <div className="flex ">
                             <div className='h-auto w-auto mr-3'>
                                 <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
@@ -283,35 +281,12 @@ const CardDetailsModel = () => {
                                 className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
                             />
                         </div>
-
                         { (loadingCardActivities) ?
                             <div>Loading activity</div> :
-                            (
-                            (
-                            cardActivities.map((activity,index)=>(
-                                <div key={index} className='w-full flex mt-4'>
-                                    <div className='h-auto w-auto mr-3'>
-                                        <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                                            <span className="font-semibold text-white text-lg ">
-                                                {activity.user.name[0].toUpperCase()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="w-full">
-                                        <div className='w-full flex items-baseline mb-1'>
-                                            <h3 className="font-semibold text-gray-700">{activity.user.name}</h3>
-                                            <p className="text-sm text-gray-700 ml-1 ">
-                                                {activity.message}
-                                            </p>
-                                        </div>
-                                        <p className="text-xs text-gray-500">{activity.createdAt}</p>
-                                    </div>
-                                </div>
-                            ))
-                            )
-                        )
+                            (cardActivities.map((activity)=>(
+                                <ActivityItem key={activity._id} activity={activity}  />
+                            )))
                         }
-
                     </div>
                 </div>
             </div>
@@ -361,4 +336,70 @@ const CardDetailsModel = () => {
 }
 
 export default CardDetailsModel
+
+
+const ActivityItem = ({activity})=>{
+    const getActivityMessage =(activity)=> {
+        const { type, data } = activity;
+
+        switch (type) {
+            case "card_created":
+            return `added this card to list "${data.listName}"`;
+
+            case "card_renamed":
+            return `renamed this card from "${data.card_oldName}" to "${data.card_newName}".`;
+
+            case "card_newInfo":
+            return `updated this card name "${data.card_oldName}" to "${data.card_newName}" and updated description.`;
+
+            case "card_newDesc":
+            return `updated this card description.`;
+
+            case "card_marked":
+            return `marked this card as ${(data.isCompleted)?`complete`:`incomplete`}.`
+
+            case "card_attachment":
+                if(data.actionType==='added'){
+                    return `added "${data.newAttachment}" to attachments.`; 
+                }
+                else if(data.actionType==='updated'){
+                    return `updated "${data.oldAttachment}" to "${data.newAttachment}".`; 
+                }
+                else if(data.actionType==='deleted'){
+                    return `deleted "${data.removedAttachment}" from attachments.`; 
+                }
+            break;
+
+            default:
+            return `performed an action.`;
+        }
+    }
+
+    return (
+        <div className='w-full flex '>
+            <div className='h-auto w-auto mr-2'>
+                <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
+                    <span className="font-semibold text-white text-lg ">
+                        {activity.user.name && activity.user.name[0].toUpperCase()}
+                    </span>
+                </div>
+            </div>
+            <div className="w-full">
+                <div className='w-full text-sm text-gray-700'>
+                    <span className="font-semibold mr-1">{activity.user.name}</span>{getActivityMessage(activity)}
+                </div>
+                <p className="text-xs text-gray-500">
+                    {new Date(activity.createdAt).toLocaleString('en-US', {
+                        month: 'short',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    })}
+                </p>
+            </div>
+        </div>
+    )
+}
 

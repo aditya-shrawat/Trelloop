@@ -1,6 +1,24 @@
+import Activity from "../models/Activity.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
 
+
+const populateWorkspaceInList = async (listId)=>{
+    const list = await List.findById(listId)
+    if(!list){
+        throw new Error("ListNotFound");
+    }
+
+    await list.populate({
+        path: 'board',
+        populate: {
+            path: 'workspace',
+            select: '_id name'
+        }
+    });
+
+    return list;
+}
 
 export const creatingNewCard = async (req,res)=>{
     try {
@@ -11,22 +29,37 @@ export const creatingNewCard = async (req,res)=>{
             return res.status(400).json({error:"Card name is required."})
         }
 
-        const list = await List.findById(listId).select("name")
-        const activity = {
-            user:req.user.id,
-            message:`created this card to ${list.name}`,
-            createdAt: new Date()
+        const list = await populateWorkspaceInList(listId); // list contains workspace info
+        if (!list?.board?.workspace?._id) {
+            return res.status(400).json({ error: "Workspace or board not found." });
         }
+        const workspaceId = list.board.workspace._id ;
 
         const card = await Card.create({
             name:cardName,
             list:listId,
             createdBy:req.user.id,
-            activities: [activity]
+        })
+
+        await Activity.create({
+            workspace:workspaceId,
+            board:list.board,
+            card:card._id,
+            user:req.user.id,
+            type:'card_created',
+            data:{
+                cardName:card.name,
+                listName:list.name,
+            },
+            createdAt: new Date()
         })
 
         return res.status(201).json({message:"Card is created successfully.",card})
     } catch (error) {
+        if (error.message === "ListNotFound") {
+            return res.status(404).json({ error: "List doesn't exist." });
+        }
+
         console.log("Error while creating card - ",error);
         return res.status(500).json({error:"Internal server error."})
     }
@@ -37,6 +70,11 @@ export const creatingNewCard = async (req,res)=>{
 export const fetchListCards = async (req,res)=>{
     try {
         const {listId} = req.params ;
+
+        const list = await List.findById(listId);
+        if(!list){
+            return res.status(404).json({error:"List doesn't exist."})
+        }
 
         const cards = await Card.find({list:listId}).select("name isCompleted");
 
@@ -52,9 +90,15 @@ export const fetchCardData = async (req,res)=>{
     try {
         const {cardId} = req.params;
         
-        const card = await Card.findById(cardId).select("name description list createdBy isCompleted attachments");
+        const card = await Card.findById(cardId);
+        if(!card){
+            return res.status(404).json({error:"Card doesn't exist."});
+        }
 
-        const list = await List.findById(card.list).select("name ");
+        const list = await List.findById(card.list).select("name")
+        if(!list){
+            return res.status(404).json({error:"List doesn't exist."})
+        }
 
         return res.status(200).json({message:"Card details fetched succssfully.",card,list})
     } catch (error) {
@@ -68,24 +112,15 @@ export const fetchCardActivity = async (req,res)=>{
     try {
         const {cardId} = req.params;
         
-        const card = await Card.findById(cardId)
-        .select("activities")
-        .populate("activities.user", "name ");
-
+        const card = await Card.findById(cardId);
         if (!card) {
         return res.status(404).json({ message: "Card not found." });
         }
 
-        const sortedActivities = card.activities.sort((a, b) => b.createdAt - a.createdAt);
+        const cardActivities = await Activity.find({card:cardId})
+        .select("user type data createdAt").populate("user",'_id name')
 
-        const activities = sortedActivities.map(activity => ({
-        user: {
-            _id: activity.user._id,
-            name: activity.user.name,
-        },
-        message: activity.message,
-        createdAt: activity.createdAt
-        }));
+        const activities = cardActivities.sort((a, b) => b.createdAt - a.createdAt);
 
         return res.status(200).json({message:"Card activities fetched succssfully.",activities})
     } catch (error) {
@@ -100,30 +135,78 @@ export const updateCard = async (req,res)=>{
         const {cardId} = req.params ;
         const {name,description} = req.body ;
 
+        if(name.trim()===''){
+            return res.status(400).json({error:"Card name is required."})
+        }
+
         const card = await Card.findById(cardId);
         if (!card) {
             return res.status(404).json({ error:"Card not found." });
         }
 
+        const previousName = card.name;
+        const previousDescription = card.description;
+
         if (name) card.name = name;
         if (description) card.description = description;
-
-        const activity = {
-            user: req.user.id,
-            message: "updated card information.",
-            createdAt: new Date(),
-        };
-        card.activities.push(activity);
-
         await card.save();
+
+        const nameUpdated = name && name !== previousName;
+        const descriptionUpdated = description && description !== previousDescription;
+
+        if (!nameUpdated && !descriptionUpdated) {
+            return res.status(200).json({ message: "No changes were made to the card.", card });
+        }
+
+        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const workspaceId = list.board.workspace._id ;
+        if (!workspaceId) {
+            return res.status(400).json({ error: "Workspace not found." });
+        }
+
+        let type = "";
+        let data = {};
+
+        if (nameUpdated && descriptionUpdated) {
+            type = "card_newInfo" //name and description changed
+            data= {
+                card_oldName : previousName,
+                card_newName : card.name,
+            }
+        } else if (nameUpdated) {
+            type = "card_renamed"
+            data = {
+                card_oldName : previousName,
+                card_newName : card.name,
+            }
+        } else if (descriptionUpdated) {
+            type = "card_newDesc" // description changed
+            data = {
+                card_name : card.name,
+                card_id : card._id
+            }
+        }
+
+        await Activity.create({
+            workspace:workspaceId,
+            board:list.board,
+            card:card._id,
+            user:req.user.id,
+            type,
+            data,
+            createdAt: new Date()
+        })
 
         return res.status(200).json({ message: "Card updated successfully.", card });
     } catch (error) {
+        if (error.message === "ListNotFound") {
+            return res.status(404).json({ error: "List doesn't exist." });
+        }
+
         console.log("Error while updating card info - ",error)
         return res.status(500).json({error:"Internal server error."})
     }
 }
-
 
 
 export const updateCardStatus = async (req,res)=>{
@@ -132,36 +215,41 @@ export const updateCardStatus = async (req,res)=>{
 
         const card = await Card.findById(cardId);
         if(!card){
-            return res.status(400).json({message:"Card is not available."})
+            return res.status(404).json({message:"Card doesn't exist."})
         }
 
-        if(card.isCompleted){
-            card.isCompleted = false;
-            
-            const activity = {
-                user: req.user.id,
-                message: `unmarked the card.`,
-                createdAt: new Date(),
-            };
-            card.activities.push(activity);
-    
-            await card.save();
-            return res.status(200).json({message:"Card is unmarked.",isCompleted:false})
+        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const workspaceId = list.board.workspace._id ;
+        if (!workspaceId) {
+            return res.status(400).json({ error: "Workspace not found." });
         }
-        else{
-            card.isCompleted = true ;
-            
-            const activity = {
-                user: req.user.id,
-                message: `marked the card as completed.`,
-                createdAt: new Date(),
-            };
-            card.activities.push(activity);
-    
-            await card.save();
-            return res.status(200).json({message:"Card is marked as completed.",isCompleted:true})
-        }
+
+        card.isCompleted = !card.isCompleted;
+        await card.save();
+
+        const activity = await Activity.create({
+            workspace: workspaceId,
+            board: list.board,
+            card: card._id,
+            user: req.user.id,
+            type: "card_marked",
+            data: {
+                cardName: card.name,
+                cardId: card._id,
+                isCompleted: card.isCompleted
+            },
+            createdAt: new Date()
+        });
+
+        return res.status(200).json({
+            message: `Card is marked as ${card.isCompleted ? "complete" : "incomplete"}.`,
+            isCompleted: card.isCompleted
+        });
     } catch (error) {
+        if (error.message === "ListNotFound") {
+            return res.status(404).json({ error: "List doesn't exist." });
+        }
+
         return res.status(500).json({message:"Internal server error."})
     }
 }
@@ -172,25 +260,46 @@ export const addAttachment = async (req,res)=>{
        const {cardId} = req.params ;
        const {link} = req.body ;
 
-       if(link.trim()===""){
-        return res.status(400).json({error:"Link is required."})
+       const newAttachment = link;
+       if(newAttachment.trim()===""){
+        return res.status(400).json({error:"Attachment is required."})
        }
        
        const card = await Card.findById(cardId);
+        if(!card){
+            return res.status(404).json({message:"Card doesn't exist."})
+        }
 
-       card.attachments.push(link);
-       
-       const activity = {
-            user: req.user.id,
-            message: `added a new attachment.`,
-            createdAt: new Date(),
-        };
-        card.activities.push(activity);
-        
+        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const workspaceId = list.board.workspace._id ;
+        if (!workspaceId) {
+            return res.status(400).json({ error: "Workspace not found." });
+        }
+
+       card.attachments.push(newAttachment);
        await card.save();
 
-       return res.status(200).json({message:"Link added to attachments."})
+        const activity = await Activity.create({
+            workspace: workspaceId,
+            board: list.board,
+            card: card._id,
+            user: req.user.id,
+            type: "card_attachment",
+            data: {
+                cardName: card.name,
+                cardId: card._id,
+                newAttachment,
+                actionType: 'added'
+            },
+            createdAt: new Date()
+        });
+
+       return res.status(200).json({message:"Attachment added successfully.",cardAttachments:card.attachments})
     } catch (error) {
+        if (error.message === "ListNotFound") {
+            return res.status(404).json({ error: "List doesn't exist." });
+        }
+
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -201,13 +310,13 @@ export const updateAttachment = async (req,res)=>{
         const {cardId} = req.params ;
         const {newLink,index} = req.body ;
 
-        if(newLink.trim()===""){
-            return res.status(400).json({error:"Enter a link."})
+        const newAttachment = newLink;
+        if(newAttachment.trim()===""){
+            return res.status(400).json({error:"Enter a attachment."})
         }
 
         const card = await Card.findById(cardId);
         if (!card) {
-            console.log("card not foung")
             return res.status(404).json({ error: "Card not found." });
         }
 
@@ -216,19 +325,38 @@ export const updateAttachment = async (req,res)=>{
         }  
 
         const cardAttachments = card.attachments;
-        cardAttachments[index] = newLink ;
-
-        const activity = {
-            user: req.user.id,
-            message: `updated an attachment.`,
-            createdAt: new Date(),
-        };
-        card.activities.push(activity);
-
+        const oldAttachment = cardAttachments[index];
+        cardAttachments[index] = newAttachment ;
         await card.save();
+
+        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const workspaceId = list.board.workspace._id ;
+        if (!workspaceId) {
+            return res.status(400).json({ error: "Workspace not found." });
+        }
+
+        const activity = await Activity.create({
+            workspace: workspaceId,
+            board: list.board,
+            card: card._id,
+            user: req.user.id,
+            type: "card_attachment",
+            data: {
+                cardName: card.name,
+                cardId: card._id,
+                oldAttachment,
+                newAttachment,
+                actionType: 'updated'
+            },
+            createdAt: new Date()
+        });
 
         return res.status(200).json({message:"Attachment updated successfully.",cardAttachments})
     } catch (error) {
+        if (error.message === "ListNotFound") {
+            return res.status(404).json({ error: "List doesn't exist." });
+        }
+
         return res.status(500).json({message:"Internal server error."})
     }
 }
@@ -250,18 +378,35 @@ export const deleteAttachment = async (req, res) => {
   
       const removedAttachment = card.attachments[index];
       card.attachments.splice(index, 1);
-
-      const activity = {
-        user: req.user.id,
-        message: `deleted the attachment: ${removedAttachment}`,
-        createdAt: new Date(),
-      };
-      card.activities.push(activity);
-  
       await card.save();
+
+        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const workspaceId = list.board.workspace._id ;
+        if (!workspaceId) {
+            return res.status(400).json({ error: "Workspace not found." });
+        }
+
+        const activity = await Activity.create({
+            workspace: workspaceId,
+            board: list.board,
+            card: card._id,
+            user: req.user.id,
+            type: "card_attachment",
+            data: {
+                cardName: card.name,
+                cardId: card._id,
+                removedAttachment,
+                actionType: 'deleted'
+            },
+            createdAt: new Date()
+        });
   
-      return res.status(200).json({ message: "Attachment deleted successfully.", attachments: card.attachments });
+      return res.status(200).json({ message: "Attachment deleted successfully.",cardAttachments:card.attachments });
     } catch (error) {
-      return res.status(500).json({ message: "Internal server error." });
+        if (error.message === "ListNotFound") {
+            return res.status(404).json({ error: "List doesn't exist." });
+        }
+
+        return res.status(500).json({ message: "Internal server error." });
     }
   }

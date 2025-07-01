@@ -65,7 +65,7 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
             {withCredentials: true}
             );
 
-            // setAttachments(response.data.cardAttachments);
+            setAttachments(response.data.cardAttachments);
             setEditAttachment(false)
         } catch (error) {
            console.log("Error while deleting attachment - ",error) 
@@ -74,7 +74,7 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
 
 
     return (
-    <div ref={divref} className='w-56 px-1 py-3 h-auto border-[1px] rounded-lg z-10 bg-white shadow-[0px_0px_12px_rgba(12,12,13,0.3)]
+    <div ref={divref} className='w-60 px-1 py-3 h-auto border-[1px] rounded-lg z-10 bg-white shadow-[0px_0px_12px_rgba(12,12,13,0.3)]
          border-gray-300 absolute top-[130%] right-0 '>
         {
           (editingAttachment && !deletingAttachment)?
@@ -92,13 +92,13 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
                         {errorMsg}
                         </div>
                     }
-                    <div className='w-full flex items-center mt-4'>
-                        <div onClick={()=>{setEditAttachment(false)}} className='px-4 py-0.5 rounded-lg text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
-                            Cancel
-                        </div>
-                        <div onClick={updateAttachment} className='px-4 py-0.5 ml-6 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer '>
+                    <div className='w-full flex justify-between items-center mt-4'>
+                        <button onClick={updateAttachment} className='w-[45%] py-0.5 bg-[#49C5C5] outline-none rounded-lg text-white font-semibold cursor-pointer '>
                             Update
-                        </div>
+                        </button>
+                        <button onClick={()=>{setEditAttachment(false)}} className='w-[45%] py-0.5 outline-none rounded-lg hover:bg-gray-100 text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
+                            Cancel
+                        </button>
                     </div>
                 </div> :
 
@@ -114,10 +114,10 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
                 </div>
             :
             <div className='w-full'>
-                <div onClick={()=>{setEditingAttachment(true)}} className='hover:bg-gray-100 rounded-lg px-2 py-1 cursor-pointer '>
+                <div onClick={()=>{setEditingAttachment(true)}} className='text-gray-500 hover:text-gray-700 font-semibold rounded-lg px-2 py-1 cursor-pointer '>
                     Edit
                 </div>
-                <div onClick={()=>{setDeletingAttachment(true)}} className='hover:bg-gray-100 rounded-lg px-2 py-1 mt-1 cursor-pointer'>
+                <div onClick={()=>{setDeletingAttachment(true)}} className='text-gray-500 hover:text-gray-700 font-semibold rounded-lg px-2 py-1 mt-1 cursor-pointer'>
                     Delete
                 </div>
             </div>

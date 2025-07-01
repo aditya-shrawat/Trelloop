@@ -30,7 +30,7 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
         e.preventDefault();
 
         if(inputLink.trim()===''){
-            setErrorMsg("Enter a link.")
+            setErrorMsg("Enter attachment link.")
             return ;
         }
 
@@ -41,7 +41,7 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
             {withCredentials: true}
             );
 
-            setAttachments(prev => [...prev, inputLink]);
+            setAttachments(response.data.cardAttachments);
             setCardFunctionality(null)
         } catch (error) {
             console.log("Error while attachment - ",error)
@@ -50,7 +50,7 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
 
 
     return (
-    <div ref={divref} className='bg-white h-fit w-60 lg:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
+    <div ref={divref} className='bg-white h-fit w-64 md:w-72 lg:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
             absolute bottom-[130%] sm:top-[130%] right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] '>
         <div className='w-full h-full  '>
             <div className='w-full text-start'>
@@ -60,20 +60,20 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
             <div className='w-full text-start mt-6'>
                 <label className='text-base font-semibold text-gray-700' >Paste link</label>
                 <input type="text"  onChange={handleInput} value={inputLink}
-                    className='w-full px-2 py-1 mt-1 text-gray-700 border-[1px] border-gray-300 outline-none rounded-lg ' />
+                    className='w-full px-2 py-1 mt-1 text-gray-700 border-[0.5px] border-gray-300 outline-none rounded-lg ' />
             </div>
             {   (errorMsg.trim()!=="") &&
                 <div className='text-red-600 text-sm mt-2'>
                 {errorMsg}
                 </div>
             }
-            <div className='w-full flex items-center mt-6'>
-                <div onClick={()=>{setCardFunctionality(null)}} className='px-4 py-0.5 rounded-lg text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
-                    Cancel
-                </div>
-                <div onClick={attachLink} className='px-4 py-0.5 ml-6 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer '>
+            <div className='w-full flex justify-between items-center mt-6'>
+                <button onClick={attachLink} className='w-[45%] py-0.5 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer outline-none border-none '>
                     Add
-                </div>
+                </button>
+                <button onClick={()=>{setCardFunctionality(null)}} className='w-[45%] py-0.5 rounded-lg text-gray-700 hover:bg-gray-100 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
