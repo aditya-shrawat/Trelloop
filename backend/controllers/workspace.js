@@ -6,6 +6,7 @@ import Card from '../models/card.js';
 import StarredBoard from '../models/starredBoard.js';
 import Notification from '../models/notification.js';
 import User from '../models/user.js';
+import Activity from '../models/Activity.js';
 
 export const createWorkspace = async (req,res)=>{
     try {
@@ -271,6 +272,28 @@ export const leaveWorkspace = async (req,res)=>{
 
         return res.status(200).json({message:"User left workspace successfully.",members:workspace.members})
     } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const getWorkspaceActivies= async (req,res)=>{
+    try {
+        const {id} = req.params;
+        
+        const workspace = await Workspace.findById(id);
+        if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found." });
+        }
+
+        const workspaceActivities = await Activity.find({workspace:workspace._id})
+        .select("workspace board card user type data createdAt").populate("user",'_id name')
+
+        const activities = workspaceActivities.sort((a, b) => b.createdAt - a.createdAt);
+
+        return res.status(200).json({message:"Workspace activities fetched succssfully.",activities})
+    } catch (error) {
+        console.log("Error in fetching workspace activities - ",error)
         return res.status(500).json({error:"Internal server error."})
     }
 }

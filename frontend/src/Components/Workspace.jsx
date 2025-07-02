@@ -9,6 +9,7 @@ import AddNewMembers from "./WorkspaceComponents/AddNewMembers";
 import { useUser } from "../Contexts/UserContext";
 import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
+import WorkspaceActivity from "./WorkspaceComponents/WorkspaceActivity";
 
 const Workspace = ({contentType}) => {
     const { id, name } = useParams();
@@ -98,8 +99,13 @@ const Workspace = ({contentType}) => {
             <MembersSlide />
             ) : contentType === "settings" ? (
             <SettingsSlide workspace={workspace} setWorkspace={setWorkspace}/>
-            ) : (
+            ) : contentType === "activity" ? (
+            <WorkspaceActivity workspace={workspace} />
+            ) : contentType === "home" ? (
              <BoardSlide workspace={workspace} />
+            ) : (
+                // navigate("*")  // ??????????
+                null
             )}
         </div>}
         {

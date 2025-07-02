@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+
+.common-a-tag-css {
+  @apply text-blue-700 font-semibold hover:underline cursor-pointer;
+}

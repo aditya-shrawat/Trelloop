@@ -41,7 +41,7 @@ const Card = ({card})=>{
                 </div>
                 {card.name}
             </div>
-            <Link to={`/card/${card.name}/${card._id}`} className="h-auto w-auto absolute top-3 right-2 opacity-0 group-hover:opacity-100 
+            <Link to={`/card/${(card.name).replace(/\s+/g, '')}/${card._id}`} className="h-auto w-auto absolute top-3 right-2 opacity-0 group-hover:opacity-100 
                 transition-opacity duration-300 bg-gray-50 ">
                 <MdModeEdit className="text-lg text-gray-700 hover:text-[#49C5C5]"/>
             </Link>

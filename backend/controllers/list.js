@@ -1,3 +1,5 @@
+import Activity from "../models/Activity.js";
+import Board from "../models/board.js";
 import List from "../models/list.js";
 
 
@@ -11,10 +13,29 @@ export const creatingNewList = async (req,res)=>{
             return res.status(400).json({error:"List name is required."})
         }
 
+        const board = await Board.findById(boardId);
+        if(!board){
+            return res.status(404).json({error:'Board not found.'})
+        }
+        await board.populate("workspace")
+
         const list = await List.create({
             name:listName,
-            board:boardId
+            board:board._id
         });
+
+        await Activity.create({
+            workspace:board.workspace._id,
+            board:board._id,
+            user:req.user.id,
+            type:'list_created',
+            data:{
+                board_name:board.name,
+                list_name:list.name,
+                boardId:board._id
+            },
+            createdAt: new Date()
+        })
 
         return res.status(200).json({message:"List created successfully.",list})
     } catch (error) {

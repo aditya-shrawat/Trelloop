@@ -118,7 +118,7 @@ const WorkspaceNavigators = ({workspace})=>{
     return (
         <div className='w-fit h-full '>
             <div className='w-full h-full hidden lg:flex items-center'>
-                <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} 
+                <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/home`} 
                     className='w-auto h-full px-2 py-1 ml-2 text-sm text-gray-700 font-semibold bg-gray-100 hover:bg-gray-200 
                         rounded-sm cursor-pointer flex items-center'>
                     <div className='mr-2'><TbLayoutDashboardFilled /></div>
@@ -146,7 +146,7 @@ const WorkspaceNavigators = ({workspace})=>{
                 { (show) &&
                 <div ref={divRef} className='w-56 h-auto bg-white shadow-[0px_0px_8px_rgba(12,12,13,0.3)] border-[1px] border-gray-300 
                     rounded-md space-y-1 py-4 px-2 flex flex-col absolute top-[130%] right-0 z-20 '>
-                    <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} 
+                    <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/home`} 
                         className='w-auto h-full px-2 py-1 text-gray-500 hover:text-gray-700 font-semibold rounded-sm cursor-pointer flex items-center'>
                         <div className='mr-3'><TbLayoutDashboardFilled /></div>
                         Bords

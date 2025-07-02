@@ -15,6 +15,11 @@ import AddAttachments from './CardFunctionalities/AddAttachments';
 import AttachmentContainer from './CardFunctionalities/AttachmentContainer';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
+
 const CardDetailsModel = () => {
     const {id} = useParams()
     const divref = useRef(null);
@@ -339,12 +344,18 @@ export default CardDetailsModel
 
 
 const ActivityItem = ({activity})=>{
+    const createdAt = dayjs(activity.createdAt);
+    const now = dayjs();
+    const diffInHours = now.diff(createdAt, 'hour');
+    const displayTime = diffInHours < 24 ? createdAt.fromNow() : createdAt.format('MMM DD, YYYY, hh:mm A');
+
+
     const getActivityMessage =(activity)=> {
         const { type, data } = activity;
 
         switch (type) {
             case "card_created":
-            return `added this card to list "${data.listName}"`;
+            return `added this card to list "${data.list_name}"`;
 
             case "card_renamed":
             return `renamed this card from "${data.card_oldName}" to "${data.card_newName}".`;
@@ -389,14 +400,7 @@ const ActivityItem = ({activity})=>{
                     <span className="font-semibold mr-1">{activity.user.name}</span>{getActivityMessage(activity)}
                 </div>
                 <p className="text-xs text-gray-500">
-                    {new Date(activity.createdAt).toLocaleString('en-US', {
-                        month: 'short',
-                        day: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                    })}
+                    {displayTime}
                 </p>
             </div>
         </div>

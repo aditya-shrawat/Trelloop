@@ -40,7 +40,7 @@ const MembersSlide = () => {
       <div className="w-full h-auto">
         <div className="pb-6 border-b-[1px] border-gray-300 ">
           <h2 className="text-xl font-semibold text-gray-700">{`Workspace members (${(members||admin)?`${members.length+1}`:`0`})`}</h2>
-          <h2 className="text-base text-gray-500 mt-2">
+          <h2 className="text-base text-gray-500 ">
             Workspace members can view and join all Workspace visible boards and
             create new boards in the Workspace.
           </h2>

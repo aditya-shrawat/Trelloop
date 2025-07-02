@@ -50,14 +50,14 @@ const HomePage = () => {
             <div className="hidden w-full sm:block max-w-[280px] h-full px-4 mt-8 ">
               <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
                 <Link to={`/home`} className={`w-full px-2 py-2 flex items-center 
-                      ${(route==='/home')?`text-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-500 hover:bg-gray-100`} 
+                      ${(route==='/home')?`text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-700 hover:bg-gray-100`} 
                       text-lg font-semibold rounded-lg cursor-pointer`}>
-                  <IoHome className="mr-4" /> Home
+                  <IoHome className="mr-3" /> Home
                 </Link>
                 <Link to={`/myBoards`} className={`w-full px-2 py-2 mt-3 flex items-center 
-                      ${(route==='/myBoards')?`text-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-500 hover:bg-gray-100`}
+                      ${(route==='/myBoards')?`text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-700 hover:bg-gray-100`}
                        text-lg font-semibold rounded-lg cursor-pointer`}>
-                  <TbLayoutDashboardFilled className="mr-4" /> Boards
+                  <TbLayoutDashboardFilled className="mr-3" /> Boards
                 </Link>
               </div>
 
@@ -68,7 +68,7 @@ const HomePage = () => {
                     (loadingWorkspaces)?
                     <div>loadingWorkspaces</div>:
                     workspaces.map((workspace)=>(
-                      <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}`} key={workspace._id} 
+                      <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/home`} key={workspace._id} 
                         className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
                         <div className="w-auto h-auto inline-block mr-3">
                           <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">

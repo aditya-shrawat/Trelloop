@@ -48,8 +48,8 @@ export const creatingNewCard = async (req,res)=>{
             user:req.user.id,
             type:'card_created',
             data:{
-                cardName:card.name,
-                listName:list.name,
+                card_name:card.name,
+                list_name:list.name,
             },
             createdAt: new Date()
         })
@@ -234,7 +234,7 @@ export const updateCardStatus = async (req,res)=>{
             user: req.user.id,
             type: "card_marked",
             data: {
-                cardName: card.name,
+                card_name: card.name,
                 cardId: card._id,
                 isCompleted: card.isCompleted
             },
@@ -286,7 +286,7 @@ export const addAttachment = async (req,res)=>{
             user: req.user.id,
             type: "card_attachment",
             data: {
-                cardName: card.name,
+                card_name: card.name,
                 cardId: card._id,
                 newAttachment,
                 actionType: 'added'
@@ -342,7 +342,7 @@ export const updateAttachment = async (req,res)=>{
             user: req.user.id,
             type: "card_attachment",
             data: {
-                cardName: card.name,
+                card_name: card.name,
                 cardId: card._id,
                 oldAttachment,
                 newAttachment,
@@ -393,7 +393,7 @@ export const deleteAttachment = async (req, res) => {
             user: req.user.id,
             type: "card_attachment",
             data: {
-                cardName: card.name,
+                card_name: card.name,
                 cardId: card._id,
                 removedAttachment,
                 actionType: 'deleted'

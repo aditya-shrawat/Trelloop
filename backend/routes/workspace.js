@@ -1,7 +1,7 @@
 
 import express from 'express'
 import checkAuthentication from '../middlewares/authentication.js';
-import { createWorkspace, deleteWorkspace, fetchWorkspaceMembers, fetchWorkspaces, getWorkspaceData, leaveWorkspace, removeWorkspaceMember, updateWorkspace, updateWorkspaceVisibility } from '../controllers/workspace.js';
+import { createWorkspace, deleteWorkspace, fetchWorkspaceMembers, fetchWorkspaces, getWorkspaceActivies, getWorkspaceData, leaveWorkspace, removeWorkspaceMember, updateWorkspace, updateWorkspaceVisibility } from '../controllers/workspace.js';
 import { fetcheBoards } from '../controllers/board.js';
 import checkWorkspaceAccess from '../middlewares/checkWorkspaceAccess.js';
 
@@ -10,6 +10,7 @@ const route = express.Router();
 
 route.get('/',checkAuthentication,fetchWorkspaces)
 route.post('/new',checkAuthentication,createWorkspace)
+route.get("/:id/activities",checkAuthentication,checkWorkspaceAccess,getWorkspaceActivies)
 route.get("/:id/boards",checkAuthentication,checkWorkspaceAccess,fetcheBoards) 
 
 route.get('/:name/:id',checkAuthentication,checkWorkspaceAccess,getWorkspaceData)

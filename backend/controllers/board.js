@@ -1,3 +1,4 @@
+import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
 import StarredBoard from "../models/starredBoard.js";
 import Workspace from "../models/workspace.js";
@@ -12,10 +13,28 @@ export const createBoard = async (req,res)=>{
             return res.status(400).json({error:"All fields are required!"})
         }
 
+        const workspace = await Workspace.findById(workspaceId);
+        if(!workspace){
+            return res.status(404).json({error:"Workspace not found."})
+        }
+
         const board = await Board.create({
             name:boardName,
-            workspace:workspaceId
+            workspace:workspace._id
         });
+
+        await Activity.create({
+            workspace:workspaceId,
+            board:board._id,
+            user:req.user.id,
+            type:'board_created',
+            data:{
+                board_name:board.name,
+                workspace_name:workspace.name,
+                boardId:board._id
+            },
+            createdAt: new Date()
+        })
 
         return res.status(200).json({message:"Board created successfully.",board})
     } catch (error) {
