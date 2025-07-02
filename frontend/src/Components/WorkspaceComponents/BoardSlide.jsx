@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import CreateBoard from '../CreateBoard';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { TbStar } from "react-icons/tb";
 import { TbStarFilled } from "react-icons/tb";
 
-const BoardSlide = ({workspace}) => {
+const BoardSlide = () => {
     const [creatingBoard,setCreatingBoard] = useState(false);
     const [boards,setBoards] = useState([]);
     const [loading,setLoading] = useState(true);
+    const { id, name } = useParams();
 
     const fetchBoards =async ()=>{
       try {
         const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/workspace/${workspace._id}/boards`,
+        const response = await axios.get(`${BackendURL}/workspace/${id}/boards`,
           {withCredentials: true}
         );
 
@@ -27,10 +28,10 @@ const BoardSlide = ({workspace}) => {
     }
 
     useEffect(()=>{
-      if(workspace._id){
+      if(id){
         fetchBoards()
       }
-    },[workspace._id])
+    },[id,name])
 
 
   return (
@@ -51,8 +52,8 @@ const BoardSlide = ({workspace}) => {
         }
       </div>
       {
-        (creatingBoard)&& <CreateBoard setCreatingBoard={setCreatingBoard} workspaceName={workspace.name} 
-                            workspaceID={workspace._id} />
+        (creatingBoard)&& <CreateBoard setCreatingBoard={setCreatingBoard} workspaceName={name} 
+                            workspaceID={id} />
       }
     </div>
   );

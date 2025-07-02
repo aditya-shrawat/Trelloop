@@ -30,7 +30,7 @@ const List = ({list}) => {
 
 
   return (
-    <div key={list._id} className="w-64 py-3 px-3 mr-4 border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
+    <div key={list._id} className="w-64 h-fit py-3 px-3 mr-4 border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
       <div className="w-full px-2 py-2  break-words font-semibold text-gray-700">
         {list.name}
       </div>
@@ -126,15 +126,15 @@ const AddNewCard = ({listId,setCards})=>{
                 (errMsg.trim()!=="") &&
                 <div className='text-red-500 text-[14px] mt-1'>{errMsg}</div>
                 }
-                <div className='w-full flex justify-evenly mt-3'>
-                    <div onClick={createCard} className='font-semibold text-white text-[14px] bg-[#49C5C5] px-2 py-1 cursor-pointer rounded-lg '>
+                <div className='w-full flex justify-between mt-3'>
+                    <button onClick={createCard} className='font-semibold text-white text-[14px] bg-[#49C5C5] w-[45%] py-1 outline-none cursor-pointer rounded-lg '>
                         Add card
-                    </div>
-                    <div onClick={()=>{setCreatingNewCard(false)}} 
-                        className='border-[1px] border-gray-300 px-2 py-1 cursor-pointer  text-[14px]
-                         text-gray-700 font-semibold rounded-lg '>
+                    </button>
+                    <button onClick={()=>{setCreatingNewCard(false)}} 
+                        className='border-[1px] border-gray-300 w-[45%] py-1 outline-none cursor-pointer  text-[14px]
+                         text-gray-700 font-semibold rounded-lg hover:bg-gray-100'>
                         Cancel
-                    </div>
+                    </button>
                 </div>
             </div>
             }

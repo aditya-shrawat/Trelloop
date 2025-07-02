@@ -6,8 +6,9 @@ import SignupPage from './Pages/SignupPage'
 import HomePage from './Pages/HomePage'
 import ErrorPage from './Pages/ErrorPage'
 import Layout from './Components/Layout'
-import WorkspaceBoardLayout from './Pages/WorkspaceBoardLayout'
+import Workspace from './Pages/Workspace'
 import CardDetailsModel from './Components/CardDetailsModel'
+import Board from './Pages/Board'
 
 
 const router = createBrowserRouter([
@@ -18,9 +19,8 @@ const router = createBrowserRouter([
       <Layout />
     ),
     children:[
-      {path:'/workspace/:name/:id', element: <WorkspaceBoardLayout /> },
-      {path:'/workspace/:name/:id/:contentType', element: <WorkspaceBoardLayout /> },
-      {path:'/board/:name/:id', element: <WorkspaceBoardLayout /> },
+      {path:'/workspace/:name/:id/:contentType', element: <Workspace /> },
+      {path:'/board/:name/:id', element: <Board /> },
       {path:'/card/:name/:id', element: <CardDetailsModel /> }, 
     ]
   },

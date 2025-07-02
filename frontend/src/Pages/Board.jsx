@@ -3,10 +3,10 @@ import { TbStar } from "react-icons/tb";
 import { IoMdAdd } from "react-icons/io";
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
-import List from './List';
+import List from '../Components/List';
 import { TbStarFilled } from "react-icons/tb";
 
-const Board = ({setWorkspace}) => {
+const Board = () => {
     const { id, name } = useParams();
     const [board,setBoard] = useState()
     const [loadingLists,setLoadingLists] = useState(true) ;
@@ -23,17 +23,12 @@ const Board = ({setWorkspace}) => {
                 );
 
                 setBoard(response.data.board)
-                setWorkspace(response.data.workspace)
+                // setWorkspace(response.data.workspace)
             } catch (error) {
                 console.log("Error while fetching board - ",error)
             }
         }
     }
-
-    useEffect(()=>{
-        fetchBoard()
-        fetchLists()
-    },[id,name])
 
     const fetchLists = async ()=>{
         try {
@@ -50,6 +45,11 @@ const Board = ({setWorkspace}) => {
             setLoadingLists(false)
         }
     }
+
+    useEffect(()=>{
+        fetchBoard()
+        fetchLists()
+    },[id,name])
 
 
     const fetchStarStatus = async (e)=>{
@@ -86,7 +86,7 @@ const Board = ({setWorkspace}) => {
     }
 
   return (
-    <div className='w-full h-full flex flex-col '>
+    <div className='w-full h-full flex flex-col'>
         <div className="w-full h-14 px-4 p-1 border-b-[1px] border-gray-300 ">
             <div className="w-full px-2 py-2 flex justify-between items-center ">
                 <div className='w-auto flex items-center'>
@@ -108,15 +108,12 @@ const Board = ({setWorkspace}) => {
                     </div>
                 </div>
                 <div className='w-auto' >
-                    <div className='w-auto h-auto'>
-                        <div className='h-8 w-8 rounded-full bg-blue-300 text-white font-semibold flex justify-center items-center'>
-                            AS
-                        </div>
+                    <div className='w-auto h-auto'>?
                     </div>
                 </div>
             </div>
         </div>
-        <div className='flex-1 h-full overflow-auto'>
+        <div className='flex-1 h-fit overflow-auto'>
             <div className=' p-4 flex'>
                 { (loadingLists)?
                 <div>Loading lists ...</div>
@@ -194,15 +191,15 @@ const AddNewList = ({boardId,setLists})=>{
 
 
     return (
-    <div ref={divRef} className={`min-w-60 h-fit hover:border-[3px] border-[2px] ${creatingNewList &&`border-[3px]`} border-[#49C5C5] rounded-xl p-3 
+    <div ref={divRef} className={`min-w-60 h-fit hover:border-[3px] border-[2px] ${creatingNewList &&`border-[3px]`} border-[#49C5C5] rounded-xl 
         cursor-pointer shadow-[0px_4px_8px_rgba(12,12,13,0.2)]`}>
         <div className='w-full h-auto '>
             { (!creatingNewList)?
-            <div onClick={()=>setCreatingNewList(true)} className='w-full flex items-center font-semibold text-gray-700'>
+            <div onClick={()=>setCreatingNewList(true)} className='w-full p-3 flex items-center font-semibold text-gray-700'>
                 <IoMdAdd className='mr-3 text-xl' /> Add new list
             </div>
             :
-            <div className='w-full h-auto'>
+            <div className='w-full h-auto p-3'>
                 <input type="text" placeholder='List name' onChange={handleInput} value={listName}
                     className='w-full px-2 py-1 rounded-lg text-gray-700 border-[1px] border-gray-300 outline-none ' 
                 />
@@ -210,15 +207,15 @@ const AddNewList = ({boardId,setLists})=>{
                 (errMsg.trim()!=="") &&
                 <div className='text-red-500 text-[14px] mt-1'>{errMsg}</div>
                 }
-                <div className='w-full flex justify-evenly mt-3'>
-                    <div onClick={createList} className='font-semibold text-white text-[14px] bg-[#49C5C5] px-2 py-1 cursor-pointer rounded-lg '>
+                <div className='w-full flex justify-between mt-3'>
+                    <button onClick={createList} className='w-[45%] font-semibold text-white text-[14px] bg-[#49C5C5] py-1 outline-none cursor-pointer rounded-lg '>
                         Add List
-                    </div>
-                    <div onClick={()=>{setCreatingNewList(false)}} 
-                        className='border-[1px] border-gray-300 px-2 py-1 cursor-pointer text-[14px]
-                         text-gray-700 font-semibold rounded-lg '>
+                    </button>
+                    <button onClick={()=>{setCreatingNewList(false)}} 
+                        className='border-[1px] border-gray-300 w-[45%] py-1 outline-none cursor-pointer text-[14px]
+                         text-gray-700 font-semibold rounded-lg hover:bg-gray-100 '>
                         Cancel
-                    </div>
+                    </button>
                 </div>
             </div>
             }

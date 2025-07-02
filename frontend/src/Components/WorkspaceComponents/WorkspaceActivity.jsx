@@ -5,17 +5,19 @@ import { useState } from 'react';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useParams } from 'react-router-dom';
 
 dayjs.extend(relativeTime);
 
-const WorkspaceActivity = ({workspace}) => {
+const WorkspaceActivity = () => {
     const [activities,setActivities] = useState([])
     const [loadingActivities,setLoadingActivities] = useState(true)
+    const { id, name } = useParams();
 
     const fetchWorkspaceActivities = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/workspace/${workspace._id}/activities`,
+            const response = await axios.get(`${BackendURL}/workspace/${id}/activities`,
             {withCredentials: true}
             );
 
@@ -27,10 +29,10 @@ const WorkspaceActivity = ({workspace}) => {
     }
 
     useEffect(()=>{
-        if(workspace && workspace.name && workspace._id){
+        if(id && name){
             fetchWorkspaceActivities()
         }
-    },[])
+    },[id,name])
 
   return (
     <div className="w-full h-auto ">

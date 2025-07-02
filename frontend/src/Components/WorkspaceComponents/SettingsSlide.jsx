@@ -66,11 +66,11 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                         <label className="text-gray-700 font-semibold ">Name</label>
                         {
                           (!editWorkspace)?
-                            <p className=' mt-2 text-gray-500 '>{workspace.name}</p>
+                            <p className='text-gray-500 '>{workspace.name}</p>
                           :
                             <input value={workspaceData.name} onChange={handleInput} name='name'
                                 type="text" placeholder="Enter workspace name"
-                                className="p-2 mt-2 w-[50%] border-2 text-gray-700 border-[#49C5C5] rounded-lg outline-none"
+                                className="p-2 mt-2 w-full lg:w-[70%] border-2 text-gray-700 border-[#49C5C5] rounded-lg outline-none"
                             />
                         }
                     </div>
@@ -78,11 +78,16 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                         <label className="text-gray-700 font-semibold">Description</label>
                         {
                           (!editWorkspace)?
-                            <p className=' mt-2 text-gray-500 '>{workspace.description}</p>
+                            ((workspace && workspace.description.trim()!=='')?
+                            <p className='text-gray-500 '>{workspace.description}</p>:
+                            <p onClick={()=>{setEditWorkspace(true)}} className='p-2 mt-2 w-full lg:w-[70%] outline-none border-2 border-[#49C5C5] rounded-md text-gray-400 cursor-text'>
+                                Enter workspace description
+                            </p>
+                          )
                           :
                             <textarea value={workspaceData.description} onChange={handleInput} name='description'
                                 placeholder="Enter workspace description"
-                                className="p-2 mt-2 w-[50%] border-2 text-gray-700 border-[#49C5C5] rounded-lg outline-none"
+                                className="p-2 mt-2 w-full lg:w-[70%] border-2 text-gray-700 border-[#49C5C5] rounded-lg outline-none"
                             />
                         }
                     </div>
