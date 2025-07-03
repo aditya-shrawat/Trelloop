@@ -20,7 +20,6 @@ const router = createBrowserRouter([
     ),
     children:[
       {path:'/workspace/:name/:id/:contentType', element: <Workspace /> },
-      {path:'/board/:name/:id', element: <Board /> },
       {path:'/card/:name/:id', element: <CardDetailsModel /> }, 
     ]
   },
@@ -28,6 +27,7 @@ const router = createBrowserRouter([
   {path:'/myBoards', element: <HomePage /> },
   { path:'/user/signin', element:<SignInPage /> },
   { path:'/user/signup', element:<SignupPage /> },
+  {path:'/board/:name/:id', element: <Board /> },
   {
     path:'*',
     element:<ErrorPage />

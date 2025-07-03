@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { TbStar } from "react-icons/tb";
 import { IoMdAdd } from "react-icons/io";
-import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import List from '../Components/List';
 import { TbStarFilled } from "react-icons/tb";
+import Header from '../Components/Header';
+import { FaBarsStaggered } from "react-icons/fa6";
+import BoardOptionMenu from '../Components/Board Components/BoardOptionMenu';
+import { useParams } from 'react-router-dom';
 
 const Board = () => {
     const { id, name } = useParams();
@@ -12,10 +15,9 @@ const Board = () => {
     const [loadingLists,setLoadingLists] = useState(true) ;
     const [lists,setLists] = useState([]);
     const [starStatus,setStarStatus] = useState(false)
-    const location = useLocation();
+    const [showBoardOptions,setShowBoardOptions] = useState(false)
 
     const fetchBoard = async ()=>{
-        if(location.pathname.split("/")[1] === 'board'){
             try {
                 const BackendURL = import.meta.env.VITE_BackendURL;
                 const response = await axios.get(`${BackendURL}/board/${name}/${id}`,
@@ -27,7 +29,6 @@ const Board = () => {
             } catch (error) {
                 console.log("Error while fetching board - ",error)
             }
-        }
     }
 
     const fetchLists = async ()=>{
@@ -86,9 +87,12 @@ const Board = () => {
     }
 
   return (
-    <div className='w-full h-full flex flex-col'>
-        <div className="w-full h-14 px-4 p-1 border-b-[1px] border-gray-300 ">
-            <div className="w-full px-2 py-2 flex justify-between items-center ">
+    <div className='w-full h-screen flex flex-col '>
+        <Header  />
+
+    <div className='w-full pb-2 flex flex-1 min-h-0 flex-col'>
+        <div className="z-10 w-full h-14 px-4 py-1 border-b-[1px] border-gray-300 sticky left-0 bg-white ">
+            <div className="w-full sm:px-2 py-2 flex justify-between items-center ">
                 <div className='w-auto flex items-center'>
                     {
                     (board) && <h3 className='inline-block font-bold text-gray-700 text-xl'>{board.name}</h3>
@@ -108,29 +112,33 @@ const Board = () => {
                     </div>
                 </div>
                 <div className='w-auto' >
-                    <div className='w-auto h-auto'>?
+                    <div onClick={()=>{setShowBoardOptions(true)}} className='w-auto h-auto p-2 text-xl cursor-pointer hover:bg-gray-100 rounded-lg'>
+                        <FaBarsStaggered  />
                     </div>
+                    {
+                        (showBoardOptions) && <BoardOptionMenu setShowBoardOptions={setShowBoardOptions} />
+                    }
                 </div>
             </div>
         </div>
-        <div className='flex-1 h-fit overflow-auto'>
-            <div className=' p-4 flex'>
+        <div className='p-4 pb-8 flex flex-1 min-h-0 overflow-y-hidden overflow-x-auto'>
                 { (loadingLists)?
                 <div>Loading lists ...</div>
                 :
-                <div className='w-auto flex'>
+                <>
                     {
                     lists.map((list)=>(
                         <List key={list._id} list={list} />
                     ))
                     }
-                </div>
+                </>
                 }
                 { board &&
                     <AddNewList boardId={board._id} setLists={setLists} />
                 }
-            </div>
         </div>
+    </div>
+
     </div>
   )
 }

@@ -28,8 +28,8 @@ const Card = ({card})=>{
     }
     
     return (
-    <div>
-        <div className='group relative w-full px-2 py-2 mb-3 hover:border-2 hover:border-[#49C5C5] 
+    <div className='py-0.5'>
+        <div className='group relative w-full px-2 py-2 hover:border-2 hover:border-[#49C5C5] 
             cursor-pointer rounded-lg shadow-[0px_0px_2px_rgba(12,12,13,0.4)] bg-gray-50 '>
             <div className="w-auto flex break-words overflow-auto text-gray-700 ">
                 <div onClick={toggleCardStatus} className="h-auto w-0 opacity-0 group-hover:w-auto group-hover:opacity-100 transition-all duration-300 mt-1 group-hover:mr-2 ">

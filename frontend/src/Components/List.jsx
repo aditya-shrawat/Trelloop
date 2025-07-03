@@ -30,25 +30,31 @@ const List = ({list}) => {
 
 
   return (
-    <div key={list._id} className="w-64 h-fit py-3 px-3 mr-4 border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
-      <div className="w-full px-2 py-2  break-words font-semibold text-gray-700">
+    <div className="w-[270px] shrink-0 h-full mr-4">
+
+    <div className="max-h-full h-auto py-1 flex flex-col border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
+      <div className="w-full px-3 pt-2 pb-1 break-words font-semibold text-gray-700">
         {list.name}
       </div>
-      <div className="w-full h-auto">
+      <div className="w-full flex-1 px-3 overflow-x-hidden overflow-y-auto space-y-2">
         {
             (loading)?
             <div>Loading cards ...</div>
             :
-            <div className="w-full h-auto ">
+            <>
                 {
                 cards.map((card)=>(
                     <Card key={card._id} card={card} />
                 ))
                 }
-            </div>
+            </>
         }
+      </div>
+      <div className="px-3 py-2">
         <AddNewCard listId={list._id} setCards={setCards} />
       </div>
+    </div>
+
     </div>
   );
 };
