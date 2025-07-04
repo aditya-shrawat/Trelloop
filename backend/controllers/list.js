@@ -47,9 +47,14 @@ export const creatingNewList = async (req,res)=>{
 
 export const fetchAllLists = async (req,res)=>{
     try {
-        const {id} = req.params ;
+        const {boardId} = req.params ;
 
-        const lists = await List.find({board:id}).select("name ")
+        const board = await Board.findById(boardId);
+        if(!board){
+            return res.status(404).json({error:"Board not found."})
+        }
+        
+        const lists = await List.find({board:boardId}).select("name ")
 
         return res.status(200).json({message:"Lists fetched successfully.",lists})
     } catch (error) {

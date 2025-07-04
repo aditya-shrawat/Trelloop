@@ -1,28 +1,26 @@
 
 import express from 'express';
 import checkAuthentication from '../middlewares/authentication.js';
-import { allJoinedWorkspacesAndBoards, createBoard, getBoardData, getBoardStarStatus, getStarredBoards, getWorkspaceInfoByBoard, toggleBoardStarStatus } from '../controllers/board.js';
+import { allJoinedWorkspacesAndBoards, deleteBoard, getBoardData, getBoardStarStatus, getStarredBoards, toggleBoardStarStatus } from '../controllers/board.js';
 import { creatingNewList } from '../controllers/list.js';
-import checkWorkspaceAccess from '../middlewares/checkWorkspaceAccess.js';
+import checkBoardAccess from '../middlewares/checkBoardAccess.js';
+import { fetchAllLists } from '../controllers/list.js';
+import { creatingNewCard, fetchListCards } from '../controllers/card.js';
 
 const router = express.Router();
 
-router.post("/new",checkAuthentication,createBoard);
-
-router.get("/:id/starred",checkAuthentication,getBoardStarStatus)
-
 router.get("/starred",checkAuthentication,getStarredBoards)
-
-router.get("/:id/workspace-info",checkAuthentication,getWorkspaceInfoByBoard)
-
-router.get("/:name/:id",checkAuthentication,getBoardData)
-
-router.post("/:boardId/newList",checkAuthentication,creatingNewList)
-
-router.post("/:id/starred",checkAuthentication,toggleBoardStarStatus)
-
 router.get("/myBoards",checkAuthentication,allJoinedWorkspacesAndBoards)
 
+router.get("/:boardId/starred",checkAuthentication,getBoardStarStatus)
+router.post("/:boardId/starred",checkAuthentication,toggleBoardStarStatus)
+router.delete("/:boardId/delete",checkAuthentication,checkBoardAccess,deleteBoard)
 
+router.post("/:boardId/newList",checkAuthentication,checkBoardAccess,creatingNewList)
+router.get("/:boardId/lists",checkAuthentication,checkBoardAccess,fetchAllLists)
+router.post("/:boardId/list/:listId/newCard",checkAuthentication,checkBoardAccess,creatingNewCard)
+router.get("/:boardId/list/:listId/cards",checkAuthentication,checkBoardAccess,fetchListCards)
+
+router.get("/:name/:boardId",checkAuthentication,checkBoardAccess,getBoardData)
 export default router;
 

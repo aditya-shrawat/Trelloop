@@ -1,5 +1,7 @@
 import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
+import Card from "../models/card.js";
+import List from "../models/list.js";
 import StarredBoard from "../models/starredBoard.js";
 import Workspace from "../models/workspace.js";
 
@@ -9,18 +11,20 @@ export const createBoard = async (req,res)=>{
     try {
         const {workspaceId,boardName} = req.body
 
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You are not allowed to create board." });
+        }
+
         if(!workspaceId || !boardName){
             return res.status(400).json({error:"All fields are required!"})
         }
 
-        const workspace = await Workspace.findById(workspaceId);
-        if(!workspace){
-            return res.status(404).json({error:"Workspace not found."})
-        }
+        const workspace = req.workspace;
 
         const board = await Board.create({
             name:boardName,
-            workspace:workspace._id
+            workspace:workspace._id,
+            admin:req.user.id
         });
 
         await Activity.create({
@@ -58,9 +62,13 @@ export const fetcheBoards = async (req,res)=>{
 
 export const getBoardData = async (req,res)=>{
     try {
-        const {id} = req.params ;
+        const {boardId} = req.params ;
 
-        const board = await Board.findById(id).select("name workspace");
+        const board = await Board.findById(boardId).select("name workspace admin").populate("admin",'name')
+        if(!board){
+            return res.status(404).json({error:"Board not found."})
+        }
+
         const workspace = await Workspace.findById(board.workspace).select("name description")
 
         return res.status(200).json({message:"Board data fetched successfully.",board,workspace})
@@ -73,10 +81,10 @@ export const getBoardData = async (req,res)=>{
 
 export const getBoardStarStatus = async (req,res)=>{
     try {
-        const {id} = req.params
+        const {boardId} = req.params
         const userId = req.user.id;
 
-        const existingStarredBoard = await StarredBoard.findOne({board:id,user:userId });
+        const existingStarredBoard = await StarredBoard.findOne({board:boardId,user:userId });
 
         if(existingStarredBoard){
             return res.status(200).json({message:"Board starred.",starStatus:true });
@@ -90,16 +98,21 @@ export const getBoardStarStatus = async (req,res)=>{
 
 export const toggleBoardStarStatus = async (req,res)=>{
     try {
-        const {id} = req.params
+        const {boardId} = req.params
         const userId = req.user.id;
 
-        const existingStarredBoard = await StarredBoard.findOne({board:id,user:userId });
+        const board = await Board.findById(boardId);
+        if(!board){
+            return res.status(404).json({error:"Board doesn't exist."})
+        }
+        
+        const existingStarredBoard = await StarredBoard.findOne({board:boardId,user:userId });
 
         if (existingStarredBoard) {
             await StarredBoard.findOneAndDelete({_id:existingStarredBoard._id });
             return res.status(200).json({message:"Board unstarred.",starStatus:false});
         } else {
-            const newStar = new StarredBoard({board:id,user:userId});
+            const newStar = new StarredBoard({board:boardId,user:userId});
             await newStar.save();
             return res.status(200).json({message:"Board starred.",starStatus:true });
         }
@@ -111,9 +124,6 @@ export const toggleBoardStarStatus = async (req,res)=>{
 
 export const getStarredBoards = async (req,res)=>{
     try {
-        if (!req.user || !req.user.id) {
-            return res.status(401).json({ error: "User is not authenticated." });
-        }
         const userId = req.user.id ;
 
         const starredBoardsIds = await StarredBoard.find({user:userId}).select("board").sort({createdAt:-1});
@@ -157,20 +167,51 @@ export const allJoinedWorkspacesAndBoards = async(req,res)=>{
     }
 }
 
-export const getWorkspaceInfoByBoard = async (req,res)=>{
+export const deleteBoard = async (req,res)=>{
     try {
-        const {id} = req.params;
+        const {boardId} = req.params;
 
-        const board = await Board.findById(id);
-        if(!board){
-            return res.status(403).json({error:"Board does not exist."})
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
         }
 
-        const workspace = await Workspace.findById(board.workspace).select('_id name');
-         
-        return res.status(200).json({message:"workspace info fetched.",workspace})
+        const board = await Board.findById(boardId);
+        if(!board){
+            return res.status(404).json({error:"Board doesn't exist."})
+        }
+        await board.populate("workspace");
+        const workspace = board.workspace;
+
+        const userId = req.user.id ;
+        const isBoardAdmin = userId === board.admin?.toString()
+        const isWorkspaceAdmin = workspace.createdBy?.toString() === userId
+        if(!isBoardAdmin && !isWorkspaceAdmin){
+            return res.status(403).json({error:"Only workspace and board admin's can delete board."})
+        }
+
+        await Activity.create({
+            workspace:workspace._id,
+            board:board._id,
+            user:userId,
+            type:'board_deleted',
+            data:{
+                board_name:board.name,
+                workspace_name:workspace.name,
+                boardId:board._id
+            },
+            createdAt: new Date()
+        })
+
+        const lists = await List.find({ board: boardId });
+        const listIds = lists.map(list => list._id);
+
+        await Card.deleteMany({ list: { $in: listIds } });
+        await List.deleteMany({ board: boardId });
+
+        await Board.findByIdAndDelete(boardId);
+
+        return res.status(200).json({message:`${board.name} is deleted successfully.`})
     } catch (error) {
-        console.log(error)
         return res.status(500).json({error:"Internal server error."})
     }
 }

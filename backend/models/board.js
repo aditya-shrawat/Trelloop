@@ -9,7 +9,22 @@ const boardSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId ,
         ref:'Workspace',
         required:true,
-    }
+    },
+    admin:{
+        type:mongoose.Schema.Types.ObjectId ,
+        ref:'User',
+        required:true,
+    },
+    members:[
+        {type:mongoose.Schema.Types.ObjectId, ref:'User' }
+    ],
+    pendingInvites: [
+        {type:mongoose.Schema.Types.ObjectId, ref:'User' }
+    ],
+    visibility:{ 
+        type:String, 
+        default:'workspace' 
+    },
 },{timestamps:true,})
 
 

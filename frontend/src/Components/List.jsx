@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import Card from "./Card";
 
-const List = ({list}) => {
+const List = ({list,boardId}) => {
     const [cards,setCards] = useState([]);
     const [loading,setLoading] = useState(true);
 
@@ -11,7 +11,7 @@ const List = ({list}) => {
     const fetchListCards = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/list/${list._id}/cards`,
+            const response = await axios.get(`${BackendURL}/board/${boardId}/list/${list._id}/cards`,
                 {withCredentials: true}
             );
 
@@ -51,7 +51,7 @@ const List = ({list}) => {
         }
       </div>
       <div className="px-3 py-2">
-        <AddNewCard listId={list._id} setCards={setCards} />
+        <AddNewCard listId={list._id} boardId={boardId} setCards={setCards} />
       </div>
     </div>
 
@@ -62,7 +62,7 @@ const List = ({list}) => {
 export default List;
 
 
-const AddNewCard = ({listId,setCards})=>{
+const AddNewCard = ({listId,boardId,setCards})=>{
     const [cardName,setCardName] = useState("");
     const [creatingNewCard,setCreatingNewCard] = useState(false)
     const divRef = useRef(null);
@@ -96,7 +96,7 @@ const AddNewCard = ({listId,setCards})=>{
 
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/list/${listId}/newCard`,
+            const response = await axios.post(`${BackendURL}/board/${boardId}/list/${listId}/newCard`,
                 {cardName},
                 {withCredentials: true}
             ); 

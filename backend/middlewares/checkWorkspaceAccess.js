@@ -15,9 +15,17 @@ const checkWorkspaceAccess = async (req,res,next)=> {
     const isMember = workspace.members.includes(userId);
     const isCreator = workspace.createdBy.toString() === userId;
 
-    if (workspace.isPrivate && !isMember && !isCreator){
+    if (workspace.isPrivate && !(isMember || isCreator)){
       return res.status(403).json({error:'Access denied to private workspace.' });
     }
+
+    let canEdit = false;
+    if (isCreator || isMember) {
+      canEdit = true;
+    }
+
+    req.canEdit = canEdit;
+    req.workspace = workspace;
 
     next();
   } catch (error) {

@@ -3,36 +3,31 @@ import Card from "../models/card.js";
 import List from "../models/list.js";
 
 
-const populateWorkspaceInList = async (listId)=>{
-    const list = await List.findById(listId)
-    if(!list){
-        throw new Error("ListNotFound");
-    }
-
-    await list.populate({
-        path: 'board',
-        populate: {
-            path: 'workspace',
-            select: '_id name'
-        }
-    });
-
-    return list;
-}
-
 export const creatingNewCard = async (req,res)=>{
     try {
         const {listId} = req.params ;
         const {cardName} = req.body ;
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
         
         if(cardName.trim()===''){
             return res.status(400).json({error:"Card name is required."})
         }
 
-        const list = await populateWorkspaceInList(listId); // list contains workspace info
-        if (!list?.board?.workspace?._id) {
-            return res.status(400).json({ error: "Workspace or board not found." });
+        const list = await List.findById(listId)
+        if(!list){
+            return res.status(404).json({error:"list doesn't exist."})
         }
+
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name'
+            }
+        });
         const workspaceId = list.board.workspace._id ;
 
         const card = await Card.create({
@@ -56,10 +51,6 @@ export const creatingNewCard = async (req,res)=>{
 
         return res.status(201).json({message:"Card is created successfully.",card})
     } catch (error) {
-        if (error.message === "ListNotFound") {
-            return res.status(404).json({ error: "List doesn't exist." });
-        }
-
         console.log("Error while creating card - ",error);
         return res.status(500).json({error:"Internal server error."})
     }
@@ -90,15 +81,9 @@ export const fetchCardData = async (req,res)=>{
     try {
         const {cardId} = req.params;
         
-        const card = await Card.findById(cardId);
-        if(!card){
-            return res.status(404).json({error:"Card doesn't exist."});
-        }
+        const card = req.card;
 
-        const list = await List.findById(card.list).select("name")
-        if(!list){
-            return res.status(404).json({error:"List doesn't exist."})
-        }
+        const list = await List.findById(card.list).select('name')
 
         return res.status(200).json({message:"Card details fetched succssfully.",card,list})
     } catch (error) {
@@ -111,11 +96,6 @@ export const fetchCardData = async (req,res)=>{
 export const fetchCardActivity = async (req,res)=>{
     try {
         const {cardId} = req.params;
-        
-        const card = await Card.findById(cardId);
-        if (!card) {
-        return res.status(404).json({ message: "Card not found." });
-        }
 
         const cardActivities = await Activity.find({card:cardId})
         .select("user type data createdAt").populate("user",'_id name')
@@ -135,14 +115,15 @@ export const updateCard = async (req,res)=>{
         const {cardId} = req.params ;
         const {name,description} = req.body ;
 
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
+
         if(name.trim()===''){
             return res.status(400).json({error:"Card name is required."})
         }
 
-        const card = await Card.findById(cardId);
-        if (!card) {
-            return res.status(404).json({ error:"Card not found." });
-        }
+        const card = req.card;
 
         const previousName = card.name;
         const previousDescription = card.description;
@@ -158,11 +139,15 @@ export const updateCard = async (req,res)=>{
             return res.status(200).json({ message: "No changes were made to the card.", card });
         }
 
-        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name'
+            }
+        });
         const workspaceId = list.board.workspace._id ;
-        if (!workspaceId) {
-            return res.status(400).json({ error: "Workspace not found." });
-        }
 
         let type = "";
         let data = {};
@@ -199,10 +184,6 @@ export const updateCard = async (req,res)=>{
 
         return res.status(200).json({ message: "Card updated successfully.", card });
     } catch (error) {
-        if (error.message === "ListNotFound") {
-            return res.status(404).json({ error: "List doesn't exist." });
-        }
-
         console.log("Error while updating card info - ",error)
         return res.status(500).json({error:"Internal server error."})
     }
@@ -213,16 +194,21 @@ export const updateCardStatus = async (req,res)=>{
     try {
         const {cardId} = req.params;
 
-        const card = await Card.findById(cardId);
-        if(!card){
-            return res.status(404).json({message:"Card doesn't exist."})
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
         }
 
-        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const card = req.card;
+
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name'
+            }
+        });
         const workspaceId = list.board.workspace._id ;
-        if (!workspaceId) {
-            return res.status(400).json({ error: "Workspace not found." });
-        }
 
         card.isCompleted = !card.isCompleted;
         await card.save();
@@ -246,10 +232,6 @@ export const updateCardStatus = async (req,res)=>{
             isCompleted: card.isCompleted
         });
     } catch (error) {
-        if (error.message === "ListNotFound") {
-            return res.status(404).json({ error: "List doesn't exist." });
-        }
-
         return res.status(500).json({message:"Internal server error."})
     }
 }
@@ -260,21 +242,26 @@ export const addAttachment = async (req,res)=>{
        const {cardId} = req.params ;
        const {link} = req.body ;
 
+       if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+       }
+
        const newAttachment = link;
        if(newAttachment.trim()===""){
         return res.status(400).json({error:"Attachment is required."})
        }
        
-       const card = await Card.findById(cardId);
-        if(!card){
-            return res.status(404).json({message:"Card doesn't exist."})
-        }
+       const card = req.card;
 
-        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name'
+            }
+        });
         const workspaceId = list.board.workspace._id ;
-        if (!workspaceId) {
-            return res.status(400).json({ error: "Workspace not found." });
-        }
 
        card.attachments.push(newAttachment);
        await card.save();
@@ -296,10 +283,6 @@ export const addAttachment = async (req,res)=>{
 
        return res.status(200).json({message:"Attachment added successfully.",cardAttachments:card.attachments})
     } catch (error) {
-        if (error.message === "ListNotFound") {
-            return res.status(404).json({ error: "List doesn't exist." });
-        }
-
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -310,15 +293,16 @@ export const updateAttachment = async (req,res)=>{
         const {cardId} = req.params ;
         const {newLink,index} = req.body ;
 
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
+
         const newAttachment = newLink;
         if(newAttachment.trim()===""){
             return res.status(400).json({error:"Enter a attachment."})
         }
 
-        const card = await Card.findById(cardId);
-        if (!card) {
-            return res.status(404).json({ error: "Card not found." });
-        }
+        const card = req.card;
 
         if (index < 0 || index >= card.attachments.length) {
             return res.status(400).json({ error: "Such attachment doesn't exist." });
@@ -329,11 +313,15 @@ export const updateAttachment = async (req,res)=>{
         cardAttachments[index] = newAttachment ;
         await card.save();
 
-        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name'
+            }
+        });
         const workspaceId = list.board.workspace._id ;
-        if (!workspaceId) {
-            return res.status(400).json({ error: "Workspace not found." });
-        }
 
         const activity = await Activity.create({
             workspace: workspaceId,
@@ -353,10 +341,6 @@ export const updateAttachment = async (req,res)=>{
 
         return res.status(200).json({message:"Attachment updated successfully.",cardAttachments})
     } catch (error) {
-        if (error.message === "ListNotFound") {
-            return res.status(404).json({ error: "List doesn't exist." });
-        }
-
         return res.status(500).json({message:"Internal server error."})
     }
 }
@@ -366,11 +350,12 @@ export const deleteAttachment = async (req, res) => {
     try {
       const { cardId } = req.params;
       const { index } = req.body;
-  
-      const card = await Card.findById(cardId);
-      if (!card) {
-        return res.status(404).json({ error: "Card not found." });
+
+      if (!req.canEdit) {
+        return res.status(403).json({ error: "You don't have permission to edit this card." });
       }
+  
+      const card = req.card ;
   
       if (index < 0 || index >= card.attachments.length) {
         return res.status(400).json({ error: "Such attachment doesn't exist." });
@@ -380,11 +365,15 @@ export const deleteAttachment = async (req, res) => {
       card.attachments.splice(index, 1);
       await card.save();
 
-        const list = await populateWorkspaceInList(card.list); // list contains workspace info
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name'
+            }
+        });
         const workspaceId = list.board.workspace._id ;
-        if (!workspaceId) {
-            return res.status(400).json({ error: "Workspace not found." });
-        }
 
         const activity = await Activity.create({
             workspace: workspaceId,
@@ -403,10 +392,6 @@ export const deleteAttachment = async (req, res) => {
   
       return res.status(200).json({ message: "Attachment deleted successfully.",cardAttachments:card.attachments });
     } catch (error) {
-        if (error.message === "ListNotFound") {
-            return res.status(404).json({ error: "List doesn't exist." });
-        }
-
         return res.status(500).json({ message: "Internal server error." });
     }
   }

@@ -16,6 +16,7 @@ const Board = () => {
     const [lists,setLists] = useState([]);
     const [starStatus,setStarStatus] = useState(false)
     const [showBoardOptions,setShowBoardOptions] = useState(false)
+    const [workspace,setWorkspace] = useState({});
 
     const fetchBoard = async ()=>{
             try {
@@ -25,7 +26,7 @@ const Board = () => {
                 );
 
                 setBoard(response.data.board)
-                // setWorkspace(response.data.workspace)
+                setWorkspace(response.data.workspace)
             } catch (error) {
                 console.log("Error while fetching board - ",error)
             }
@@ -34,7 +35,7 @@ const Board = () => {
     const fetchLists = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/list/board/${id}`,
+            const response = await axios.get(`${BackendURL}/board/${id}/lists`,
                 {withCredentials: true}
             );
 
@@ -116,7 +117,8 @@ const Board = () => {
                         <FaBarsStaggered  />
                     </div>
                     {
-                        (showBoardOptions) && <BoardOptionMenu setShowBoardOptions={setShowBoardOptions} />
+                        (showBoardOptions&&board&&workspace) && <BoardOptionMenu boardId={board._id} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
+                          workspace={workspace}  setShowBoardOptions={setShowBoardOptions} />
                     }
                 </div>
             </div>
@@ -126,9 +128,9 @@ const Board = () => {
                 <div>Loading lists ...</div>
                 :
                 <>
-                    {
+                    { (board && board._id)&&
                     lists.map((list)=>(
-                        <List key={list._id} list={list} />
+                        <List key={list._id} list={list} boardId={board._id} />
                     ))
                     }
                 </>

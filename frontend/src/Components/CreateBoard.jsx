@@ -57,7 +57,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
 
     try {
       const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/board/new`,
+      const response = await axios.post(`${BackendURL}/workspace/${workspaceId}/newBoard`,
         {boardName,workspaceId},
         {withCredentials: true}
       );

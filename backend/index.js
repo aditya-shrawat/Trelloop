@@ -8,7 +8,6 @@ import UserRouter from './routes/user.js'
 import cookieParser from 'cookie-parser';
 import WorkspaceRouter from './routes/workspace.js';
 import BoardRouter  from './routes/board.js'
-import ListRouter from './routes/list.js'
 import CardRouter from './routes/card.js'
 import http from "http"
 import {Server} from "socket.io"
@@ -55,7 +54,6 @@ app.get("/user-info",checkAuthentication,fetchUserInfo);
 app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
 app.use('/board',BoardRouter);
-app.use('/list',ListRouter);
 app.use('/card',CardRouter)
 app.get('/search',checkAuthentication,searchUsers)
 app.use('/notification',NotificationRouter)

@@ -11,7 +11,7 @@ import Activity from '../models/Activity.js';
 export const createWorkspace = async (req,res)=>{
     try {
         const {name,description} = req.body ;
-        const Description = (description.trim()==="")?"":req.board.description
+        const Description = (description.trim()==="")?"":description
 
         if(name.trim()===''){
             return res.status(400).json({error:"Workspace name is required."})
@@ -66,31 +66,64 @@ export const getWorkspaceData = async (req,res)=>{
 
 export const updateWorkspace = async (req,res)=>{
     try {
-        const {id} = req.params ;
         const {newName,newDescription} = req.body ;
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this workspace." });
+        }
 
         if(newName.trim()===""){
             return res.status(400).json({error:"Workspace name is required."})
         }
 
-        const workspace = await Workspace.findById(id) ;
+        const workspace = req.workspace;
 
-        if(!workspace){
-            return res.status(404).json({error:"Workspace doesn't exist."})
+        const userId = req.user.id; 
+
+        const previousName = workspace.name;
+        const previousDescription = workspace.description;
+
+        if (newName) workspace.name = newName;
+        if (newDescription) workspace.description = newDescription;
+        await workspace.save();
+
+        const nameUpdated = newName && newName !== previousName;
+        const descriptionUpdated = newDescription && newDescription !== previousDescription;
+
+        if (!nameUpdated && !descriptionUpdated) {
+            return res.status(200).json({ message: "No changes were made to the workspace.", workspace });
         }
 
-        const userId = req.user.id;
-        const isCreator = workspace.createdBy?.toString() === userId;
-        const isMember = workspace.members.includes(userId);
+        let type = "";
+        let data = {};
 
-        if (!isCreator && !isMember){
-            return res.status(403).json({error:"You are not allowed to update this workspace."});
+        if (nameUpdated && descriptionUpdated) {
+            type = "workspace_newInfo" //name and description changed
+            data= {
+                workspace_oldName : previousName,
+                workspace_newName : workspace.name,
+            }
+        } else if (nameUpdated) {
+            type = "workspace_renamed"
+            data = {
+                workspace_oldName : previousName,
+                workspace_newName : workspace.name,
+            }
+        } else if (descriptionUpdated) {
+            type = "workspace_newDesc" // description changed
+            data = {
+                workspace_name : workspace.name,
+                workspace_id : workspace._id
+            }
         }
 
-        workspace.name = newName
-        workspace.description = newDescription ;
-
-        await workspace.save() ;
+        await Activity.create({
+            workspace:workspace._id,
+            user:userId,
+            type,
+            data,
+            createdAt: new Date()
+        })
 
         return res.status(200).json({message:"Workspace updated successfully.",workspace})
     } catch (error) {
@@ -101,30 +134,42 @@ export const updateWorkspace = async (req,res)=>{
 
 export const deleteWorkspace = async (req, res) => {
     try {
-      const { id } = req.params;
-  
-      const workspace = await Workspace.findById(id);
-      if (!workspace) {
-        return res.status(404).json({ error: "Workspace doesn't exist." });
-      }
+      const workspace = req.workspace;
 
       if(workspace.createdBy?.toString() !== req.user.id)
-        return res.status(403).json({error:"Not allowed to delete workspace.Only admin can."})
+        return res.status(403).json({error:"Workspace admin can delete workspace."})
   
-      const boards = await Board.find({ workspace: id });
+      const boards = await Board.find({ workspace: workspace._id });
   
-      for (const board of boards) {
-        const lists = await List.find({ board: board._id });
-  
-        for (const list of lists) {
-          await Card.deleteMany({ list: list._id });
+      const boardIds = boards.map(board => board._id);
+
+      const listIds = await List.find({ board: { $in: boardIds } }).distinct('_id');
+
+      await Card.deleteMany({ list: { $in: listIds } });
+
+      await List.deleteMany({ board: { $in: boardIds } });
+
+      await StarredBoard.deleteMany({ board: { $in: boardIds } });
+
+      await Board.deleteMany({ workspace: workspace._id });
+
+        const userId = req.user.id;
+
+        const notifyMembers = async (senderId,receiverId)=>{
+            await Notification.create({
+                userId:receiverId,
+                senderId:senderId,
+                type:"workspace_deleted",
+                workspaceId:workspace._id,
+                message:`deleted the workspace "${workspace.name}".`,
+            });
         }
-  
-        await List.deleteMany({ board: board._id });
-        await StarredBoard.deleteMany({ board: board._id });
-      }
-  
-      await Board.deleteMany({ workspace: id });
+
+        await Promise.all(
+            workspace.members.map((member) =>
+                notifyMembers(userId, member._id)
+            )
+        );
   
       await workspace.deleteOne();
   
@@ -138,10 +183,7 @@ export const fetchWorkspaceMembers = async (req,res)=>{
     try {
         const {name,id} = req.params 
 
-        const workspace = await Workspace.findById(id);
-        if(!workspace){
-            return res.status(400).json({error:"Workspace not found."})
-        }
+        const workspace = req.workspace;
 
         await workspace.populate("createdBy members","name");
 
@@ -159,22 +201,31 @@ export const updateWorkspaceVisibility = async (req,res)=>{
         const {id} = req.params ;
         const {newVisibility} = req.body ;
 
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this workspace." });
+        }
+
         const workspace = await Workspace.findById(id).select('name description createdBy members isPrivate') ;
 
         if(!workspace){
             return res.status(404).json({error:"Workspace doesn't exist."})
         }
 
-        const userId = req.user.id;
-        const isCreator = workspace.createdBy?.toString() === userId;
-        const isMember = workspace.members.includes(userId);
-
-        if (!isCreator && !isMember){
-            return res.status(403).json({error:"You are not allowed to update this workspace."});
-        }
-
+        const prevVisibility = workspace.isPrivate;
         workspace.isPrivate = newVisibility
         await workspace.save() ;
+
+        await Activity.create({
+            workspace:workspace._id,
+            user:req.user.id,
+            type:'workspace_visibility_updated',
+            data:{
+                prevVisibility,
+                newVisibility:workspace.isPrivate,
+                workspace_name:workspace.name,
+            },
+            createdAt: new Date()
+        })
 
         return res.status(200).json({message:"Workspace visibility updated successfully.",workspace})
     } catch (error) {
@@ -188,7 +239,7 @@ export const removeWorkspaceMember = async (req,res)=>{
         const {id} = req.params
         const {userId} = req.body
 
-        const workspace = await Workspace.findById(id);
+        const workspace = req.workspace;
 
         if(req.user.id !== workspace.createdBy?.toString()){
             return res.status(403).json({error:"Only admin can remove members."})
@@ -196,7 +247,7 @@ export const removeWorkspaceMember = async (req,res)=>{
 
         const user = await User.findById(userId);
 
-        workspace.members = workspace.members.filter((user)=> user._id.toString() !== userId);
+        workspace.members = workspace.members.filter(memberId => memberId.toString() !== userId);
         await workspace.save();
 
         const notifyMembers = async (senderId,receiverId,receiverName)=>{
@@ -234,7 +285,7 @@ export const leaveWorkspace = async (req,res)=>{
         const {id} = req.params
         const userId = req.user.id
 
-        const workspace = await Workspace.findById(id);
+        const workspace = req.workspace;
 
         if (workspace.createdBy.toString() === userId) {
             return res.status(403).json({error:"Admin cannot leave the workspace." });
@@ -281,10 +332,7 @@ export const getWorkspaceActivies= async (req,res)=>{
     try {
         const {id} = req.params;
         
-        const workspace = await Workspace.findById(id);
-        if (!workspace) {
-        return res.status(404).json({ message: "Workspace not found." });
-        }
+        const workspace = req.workspace;
 
         const workspaceActivities = await Activity.find({workspace:workspace._id})
         .select("workspace board card user type data createdAt").populate("user",'_id name')
