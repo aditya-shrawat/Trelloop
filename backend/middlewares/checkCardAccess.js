@@ -25,20 +25,20 @@ const checkCardAccess = async (req, res, next) => {
     const isWorkspaceMember = workspace.members.some(id => id.toString() === userId);
     const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
 
-    if (board.visibility === 'workspace' && !isWorkspaceMember && !isWorkspaceAdmin) {
-        return res.status(403).json({ error: "Access denied to this card" });
+    if (board.visibility === 'Workspace' && !isWorkspaceMember && !isWorkspaceAdmin) {
+      return res.status(403).json({ error: "Access denied to this card" });
     }
 
-    if (board.visibility === 'private' && !isBoardMember && !isBoardAdmin) {
-        return res.status(403).json({ error: "Access denied to this card" });
+    if (board.visibility === 'Private' && !isBoardMember && !isBoardAdmin) {
+      return res.status(403).json({ error: "Access denied to this card" });
     }
 
     let canEdit = false;
-    if (board.visibility === "workspace" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
+    if (board.visibility === "Workspace" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
       canEdit = true;
-    } else if (board.visibility === "private" && (isBoardMember || isWorkspaceAdmin || isBoardAdmin)) {
+    } else if (board.visibility === "Private" && (isBoardMember || isWorkspaceAdmin || isBoardAdmin)) {
       canEdit = true;
-    } else if (board.visibility === "public" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
+    } else if (board.visibility === "Public" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
       canEdit = true;
     }
 

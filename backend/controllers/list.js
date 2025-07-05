@@ -9,6 +9,10 @@ export const creatingNewList = async (req,res)=>{
         const {boardId} = req.params;
         const {listName} = req.body;
 
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+
         if(listName.trim()===""){
             return res.status(400).json({error:"List name is required."})
         }

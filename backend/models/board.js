@@ -23,7 +23,7 @@ const boardSchema = mongoose.Schema({
     ],
     visibility:{ 
         type:String, 
-        default:'workspace' 
+        default:'Workspace' 
     },
 },{timestamps:true,})
 

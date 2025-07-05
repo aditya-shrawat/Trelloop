@@ -64,14 +64,12 @@ export const getBoardData = async (req,res)=>{
     try {
         const {boardId} = req.params ;
 
-        const board = await Board.findById(boardId).select("name workspace admin").populate("admin",'name')
+        const board = await Board.findById(boardId).select("name workspace admin visibility").populate("admin workspace",'name')
         if(!board){
             return res.status(404).json({error:"Board not found."})
         }
 
-        const workspace = await Workspace.findById(board.workspace).select("name description")
-
-        return res.status(200).json({message:"Board data fetched successfully.",board,workspace})
+        return res.status(200).json({message:"Board data fetched successfully.",board})
     } catch (error) {
         console.log("Error in fetching board data - ",error);
         return res.status(500).json({error:"Internal server error."})
@@ -211,6 +209,49 @@ export const deleteBoard = async (req,res)=>{
         await Board.findByIdAndDelete(boardId);
 
         return res.status(200).json({message:`${board.name} is deleted successfully.`})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const changeVisibility = async (req,res)=>{
+    try {
+        const {boardId} = req.params;
+        let {newVisibility} = req.body
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+
+        newVisibility = newVisibility.trim();
+        if(newVisibility!=='Private' && newVisibility!=='Public' && newVisibility!=='Workspace'){
+            return res.status(403).json({error:`${newVisibility} visibility doesn't exist`});
+        }
+
+        const board = await Board.findById(boardId).select("name workspace admin visibility").populate("admin workspace",'name')
+        if(!board){
+            return res.status(404).json({error:"Board doesn't exist."})
+        }
+
+        const prevVisibility = board.visibility;
+        board.visibility = newVisibility
+        await board.save() ;
+
+        await Activity.create({
+            workspace:board.workspace._id,
+            board:board._id,
+            user:req.user.id,
+            type:'board_visibility_updated',
+            data:{
+                prevVisibility,
+                newVisibility:board.visibility,
+                board_name:board.name,
+            },
+            createdAt: new Date()
+        })
+
+        return res.status(200).json({message:"Board visibility updated successfully.",board})
     } catch (error) {
         return res.status(500).json({error:"Internal server error."})
     }

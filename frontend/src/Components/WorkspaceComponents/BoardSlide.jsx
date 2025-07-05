@@ -98,7 +98,7 @@ const BoardCard = ({board})=>{
 
 
   return (
-    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id}
+    <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
         className="min-w-44 max-w-56 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative bg-green-400 ">
       <h3 className="font-bold text-white">{board.name}</h3>
       <div onClick={toggleStarStatus} 

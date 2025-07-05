@@ -205,6 +205,10 @@ export const updateWorkspaceVisibility = async (req,res)=>{
             return res.status(403).json({ error: "You don't have permission to edit this workspace." });
         }
 
+        if(typeof newVisibility === "boolean"){
+            return res.status(403).json({error:`${newVisibility} visibility doesn't exist`});
+        }
+        
         const workspace = await Workspace.findById(id).select('name description createdBy members isPrivate') ;
 
         if(!workspace){

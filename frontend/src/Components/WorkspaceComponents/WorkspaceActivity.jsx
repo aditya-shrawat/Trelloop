@@ -72,8 +72,26 @@ const WorkspaceActivityItem = ({activity})=>{
         const { type, data,card,board } = activity;
 
         switch (type) {
-            case "board_created":
+            case "workspace_renamed":
+            return <>renamed the workspace from "{data.workspace_oldName}" to "{data.workspace_newName}".</>;
+
+            case "workspace_newInfo":
+            return <>updated the workspace name "{data.workspace_oldName}" to "{data.workspace_newName}" and updated description.</>;
+
+            case "workspace_newDesc":
+            return <>updated workspace description.</>;
+
+            case "workspace_visibility_updated":
+            return <>changed workspace visibility from "{(data.prevVisibility)?"Private":"Public"}" to "{(data.newVisibility)?"Private":"Public"}".</>;
+
+            case "board_created": 
             return <>created <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a> board to this workspace.</>;
+
+            case "board_deleted": 
+            return <>deleted <a className="common-a-tag-css">{data.board_name}</a> board on this workspace.</>;
+
+            case "board_visibility_updated":
+            return <>changed visibility of the <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${board?.toString()}`} className="common-a-tag-css">{data.board_name}</a> board from "{data.prevVisibility}" to "{data.newVisibility}".</>;
 
             case "list_created":
             return <>added "{data.list_name}" list to <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a> board.</>;
@@ -108,7 +126,7 @@ const WorkspaceActivityItem = ({activity})=>{
                 }
 
             default:
-            return `performed an action.`;
+            return `performed an action. ${type}`;
         }
     }
 

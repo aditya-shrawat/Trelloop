@@ -20,20 +20,20 @@ const checkBoardAccess = async (req,res,next)=> {
     const isBoardAdmin = board.admin?.toString() === userId;
     const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
 
-    if(board.visibility === 'workspace' && (!isWorkspaceAdmin && !isWorkspaceMember)){
-        return res.status(403).json({error:"Access denied to this board."})
+    if(board.visibility === 'Workspace' && (!isWorkspaceAdmin && !isWorkspaceMember)){
+      return res.status(403).json({error:"Access denied to this board."})
     }
 
-    if(board.visibility === 'private' && (!isBoardAdmin && !isBoardMember && !isWorkspaceAdmin)){
-        return res.status(403).json({error:"Access denied to this board."})
+    if(board.visibility === 'Private' && (!isBoardAdmin && !isBoardMember && !isWorkspaceAdmin)){
+      return res.status(403).json({error:"Access denied to this board."})
     }
 
     let canEdit = false;
-    if (board.visibility === "workspace" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
+    if (board.visibility === "Workspace" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
       canEdit = true;
-    } else if (board.visibility === "private" && (isBoardMember || isWorkspaceAdmin || isBoardAdmin)) {
+    } else if (board.visibility === "Private" && (isBoardMember || isWorkspaceAdmin || isBoardAdmin)) {
       canEdit = true;
-    } else if (board.visibility === "public" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
+    } else if (board.visibility === "Public" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
       canEdit = true;
     }
 

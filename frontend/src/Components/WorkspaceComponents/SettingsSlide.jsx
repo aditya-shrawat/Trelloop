@@ -130,7 +130,7 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                                     <RiLock2Line className='mr-2' />Private
                                 </div>
                                 <p className='text-gray-500 text-sm mt-1'>
-                                    This workspace is private workspace and only members will be able to see and access this workspace.
+                                    Private workspace is only accessible by workspace members.
                                 </p>
                             </div>)
                             :
@@ -139,7 +139,7 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                                     <MdPublic className='mr-2' />Public
                                 </div>
                                 <p className='text-gray-500 text-sm mt-1'>
-                                This is a public workspace and anyone with the link can view it.
+                                Anyone on the internet can see this workspace. Only workspace members can edit.
                                 </p>
                             </div>)
                             }
@@ -280,7 +280,7 @@ const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility
                             <RiLock2Line className='mr-2' />Private
                         </div>
                         <p className='text-gray-500 text-sm mt-1'>
-                            Only workspace members can view and access this workspace.
+                            Private workspace is only accessible by workspace members.
                         </p>
                     </div>
                     <div onClick={()=>{changeWorkspaceVisibility(false)}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(!workspace.isPrivate)?`border-2 border-[#49C5C5]`:`border-none`}`}>
@@ -288,7 +288,7 @@ const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility
                             <MdPublic className='mr-2' />Public
                         </div>
                         <p className='text-gray-500 text-sm mt-1'>
-                            Anyone with the link can view this workspace.
+                            Anyone on the internet can see this workspace. Only workspace members can edit.
                         </p>
                     </div>
                 </div>

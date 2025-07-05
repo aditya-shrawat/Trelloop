@@ -68,7 +68,7 @@ const HomePage = () => {
                     (loadingWorkspaces)?
                     <div>loadingWorkspaces</div>:
                     workspaces.map((workspace)=>(
-                      <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/home`} key={workspace._id} 
+                      <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
                         className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
                         <div className="w-auto h-auto inline-block mr-3">
                           <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">

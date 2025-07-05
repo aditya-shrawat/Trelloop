@@ -173,7 +173,7 @@ const WorkspaceDropDown = () => {
             (loading)?
             <div>Loading</div>:
             workspaces.map((workspace)=>(
-                <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/home`} key={workspace._id} 
+                <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
                     className="w-full px-2 py-2 bg-white hover:scale-105 shadow-[0px_0px_4px_rgba(12,12,13,0.2)] rounded-lg flex items-center cursor-pointer ">
                     <div className="w-auto h-auto inline-block mr-4">
                     <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
@@ -225,7 +225,7 @@ const StarredDropDown = ()=>{
                 <div>loading starred boards</div>
                 :
                 starredBoards.map((board)=>(
-                    <Link to={`/board/${board.name.replaceAll(" ","")}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg flex items-center cursor-pointer ">
+                    <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg flex items-center cursor-pointer ">
                         <div className="w-auto h-auto inline-block mr-4">
                         <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
                             {board.name[0].toUpperCase()}

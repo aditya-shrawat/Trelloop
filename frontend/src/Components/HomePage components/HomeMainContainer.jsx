@@ -44,7 +44,7 @@ const HomeMainContainer = () => {
               <div>loading starred boards</div>
             ) : (
               (starredBoards.length !==0) && starredBoards.map((board) => (
-                <Link to={`/board/${board.name.replaceAll(" ", "")}/${board._id}`} key={board._id}
+                <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
                   className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
                 >
                   <div className="w-auto h-auto inline-block mr-4">

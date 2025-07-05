@@ -16,7 +16,6 @@ const Board = () => {
     const [lists,setLists] = useState([]);
     const [starStatus,setStarStatus] = useState(false)
     const [showBoardOptions,setShowBoardOptions] = useState(false)
-    const [workspace,setWorkspace] = useState({});
 
     const fetchBoard = async ()=>{
             try {
@@ -26,7 +25,6 @@ const Board = () => {
                 );
 
                 setBoard(response.data.board)
-                setWorkspace(response.data.workspace)
             } catch (error) {
                 console.log("Error while fetching board - ",error)
             }
@@ -117,8 +115,8 @@ const Board = () => {
                         <FaBarsStaggered  />
                     </div>
                     {
-                        (showBoardOptions&&board&&workspace) && <BoardOptionMenu boardId={board._id} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
-                          workspace={workspace}  setShowBoardOptions={setShowBoardOptions} />
+                        (showBoardOptions && board) && <BoardOptionMenu board={board} setBoard={setBoard} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
+                        setShowBoardOptions={setShowBoardOptions} />
                     }
                 </div>
             </div>

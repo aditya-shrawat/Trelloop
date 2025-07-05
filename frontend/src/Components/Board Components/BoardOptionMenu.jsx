@@ -7,10 +7,14 @@ import { BsPersonWorkspace } from "react-icons/bs";
 import { MdOutlineVisibility } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { RiLock2Line } from "react-icons/ri";
+import { MdPublic } from "react-icons/md";
+import { IoIosArrowBack } from "react-icons/io";
 
-const BoardOptionMenu = ({boardId,starStatus,toggleStarStatus,workspace,setShowBoardOptions})=>{
+const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions})=>{
     const navRef = useRef(null);
-    const [showDeletePopup,setDeletePopup] = useState(false)
+    const [DeletePopup,setDeletePopup] = useState(false)
+    const [VisibilityPopup,setVisibilityPopup] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -25,7 +29,8 @@ const BoardOptionMenu = ({boardId,starStatus,toggleStarStatus,workspace,setShowB
 
     return (
         <div ref={navRef} className="w-72 sm:w-[350px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6  ">
-            <div className=" w-full h-full px-3 py-4 ">
+            {(!VisibilityPopup)?
+            (<div className=" w-full h-full px-3 py-4 ">
                 <div className="w-full h-full space-y-1 ">
                     <div onClick={toggleStarStatus} className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center ">
                         <div className='mr-3 text-lg'>{
@@ -42,14 +47,14 @@ const BoardOptionMenu = ({boardId,starStatus,toggleStarStatus,workspace,setShowB
                         <div className='mr-3 text-lg'><TbListDetails/></div> Activity
                     </div>
                 </div>
-                <div className="w-full h-auto py-3 border-t-[1px] border-gray-300 px-2 mt-2">
-                    <div className='text-gray-700 mb-3'>
+                <div className="w-full h-auto py-3 border-t-[1px] border-gray-300 mt-2">
+                    <div className='p-2 text-gray-700 '>
                         <div className="font-semibold flex items-center"><div className='mr-3 text-lg'><BsPersonWorkspace/></div>Workspace</div>
-                        <h3 className='break-words text-gray-500 text-sm'>{workspace.name}</h3>
+                        <h3 className='break-words text-gray-500 text-sm'>{board.workspace.name}</h3>
                     </div>
-                    <div className='text-gray-700'>
-                        <div className="font-semibold flex items-center"><div className='mr-3 text-lg'><MdOutlineVisibility/></div>Visibility</div>
-                        <h3 className='text-sm text-gray-500'>Any member of this workspace can view and edit this board.</h3>
+                    <div onClick={()=>{setVisibilityPopup(true)}} className='p-2 text-gray-700 flex items-center hover:bg-gray-100 rounded-md cursor-pointer'>
+                        <div className="font-semibold flex items-center"><div className='mr-3 text-lg'><MdOutlineVisibility/></div>Visibility: </div>
+                        <h3 className='text-sm text-gray-500 ml-1'>{board.visibility}</h3>
                     </div>
                 </div>
                 <div className="pt-3 border-t-[1px] border-gray-300 relative">
@@ -57,10 +62,13 @@ const BoardOptionMenu = ({boardId,starStatus,toggleStarStatus,workspace,setShowB
                         <div className='mr-3 text-lg'><RiDeleteBin6Line/></div> Delete board
                     </div>
                     {
-                        showDeletePopup && <DeleteBoardPopup boardId={boardId} setDeletePopup={setDeletePopup}  />
+                        DeletePopup && <DeleteBoardPopup boardId={board._id} setDeletePopup={setDeletePopup}  />
                     }
                 </div>
-            </div>
+            </div>)
+            :
+            (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
+            }
         </div>
     )
 }
@@ -126,6 +134,75 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
                         Cancel
                     </button>
                 </div>
+            </div>
+        </div>
+    )
+}
+
+
+const BoardVisibilityPopup = ({board,setBoard,setVisibilityPopup})=>{
+    const [errorMsg,setErrorMsg] = useState("")
+
+
+    const changeBoardVisibility = async (newVisibility)=>{
+        if(newVisibility.trim()===''){
+            return ;
+        }
+
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.post(`${BackendURL}/board/${board._id}/visibility`,{newVisibility},
+            {withCredentials: true}
+            );
+
+            setBoard(response.data.board)
+        } catch (error) {
+            console.log("Error while changing board visibility - ",error)
+            setErrorMsg("Something went wrong!")
+        }
+    }
+
+
+    return (
+        <div className='bg-white h-fit w-full p-4 rounded-lg '>
+            <div className='w-full h-full  '>
+                <div className='w-full text-start mb-2'>
+                    <h1 className='text-lg font-semibold text-gray-700 flex items-center'>
+                        <span onClick={()=>setVisibilityPopup(false)} className='cursor-pointer p-1 mr-1'><IoIosArrowBack /></span> 
+                        Change visibility
+                    </h1>
+                </div>
+                <div className='w-full space-y-2'>
+                    <div onClick={()=>{changeBoardVisibility('Workspace')}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(board.visibility==='Workspace')?`border-2 border-[#49C5C5]`:`border-none`}`}>
+                        <div className='text-gray-700 font-semibold flex items-center'>
+                            <BsPersonWorkspace className='mr-2' />Workspace
+                        </div>
+                        <p className='text-gray-500 text-sm'>
+                            All the members of the <span className='font-semibold'>{board.workspace.name}</span> workspace can see and edit this board.
+                        </p>
+                    </div>
+                    <div onClick={()=>{changeBoardVisibility('Private')}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(board.visibility==='Private')?`border-2 border-[#49C5C5]`:`border-none`}`}>
+                        <div className='text-gray-700 font-semibold flex items-center'>
+                            <RiLock2Line className='mr-2' />Private
+                        </div>
+                        <p className='text-gray-500 text-sm'>
+                            Only board members and workspace admin can see and edit this board.
+                         </p>
+                    </div>
+                    <div onClick={()=>{changeBoardVisibility('Public')}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(board.visibility==='Public')?`border-2 border-[#49C5C5]`:`border-none`}`}>
+                        <div className='text-gray-700 font-semibold flex items-center'>
+                            <MdPublic className='mr-2' />Public
+                        </div>
+                        <p className='text-gray-500 text-sm'>
+                            Anyone on the internet can see this board. Only board members and workspace members can edit.
+                        </p>
+                    </div>
+                </div>
+                {   (errorMsg.trim()!=="") &&
+                    <div className='text-red-600 text-sm mt-2'>
+                    {errorMsg}
+                    </div>
+                }
             </div>
         </div>
     )

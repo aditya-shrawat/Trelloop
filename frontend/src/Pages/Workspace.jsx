@@ -87,25 +87,25 @@ const Workspace = () => {
                 <div className="w-full h-auto mt-4 ">
                     {workspace &&
                     <> 
-                    <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/home`} 
+                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} 
                         className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
                         ${(contentType==='home')?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
                         "text-gray-700 hover:bg-gray-100"} `}>
                         <TbLayoutDashboardFilled className="mr-3 text-xl"/> Boards
                     </Link>
-                    <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/members`}
+                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/members`}
                         className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
                         ${isActive("members")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
                         "text-gray-700 hover:bg-gray-100"} `}>
                         <IoPerson className="mr-3 text-xl"/> Members
                     </Link>
-                    <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/activity`} 
+                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/activity`} 
                         className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
                         ${isActive("activity")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
                         "text-gray-700 hover:bg-gray-100"} `}>
                         <TbListDetails className="mr-3 text-xl"/> Activity
                     </Link>
-                    <Link to={`/workspace/${workspace.name.replaceAll(" ","")}/${workspace._id}/settings`} 
+                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
                         className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
                         ${isActive("settings")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
                         "text-gray-700 hover:bg-gray-100"} `}>
