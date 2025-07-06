@@ -25,7 +25,8 @@ const Workspace = () => {
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false)
     const {user} = useUser();
     const navigate = useNavigate();
-    const [isAdmin,setIsAdmin] = useState(false);
+    const [isAdmin,setIsAdmin] = useState();
+    const [isMember, setIsMember] = useState();
 
     const isActive = (type) => contentType === type;
 
@@ -47,17 +48,31 @@ const Workspace = () => {
         fetchWorkspace()
     },[])
 
-    useEffect(()=>{ // is current user is admin
-        if(workspace && user && (user.id?.toString() === workspace.createdBy?.toString())){
-            setIsAdmin(true);
+    useEffect(() => {
+        if (workspace && user) {
+            const userId = user.id?.toString();
+            const creatorId = workspace.createdBy?.toString();
+
+            setIsAdmin(userId === creatorId);
+
+            const isUserMember = workspace.members?.some(
+                member => member.toString() === userId
+            );
+
+            setIsMember(isUserMember);
         }
-    },[workspace,user])
+    }, [contentType,workspace,user]);
+
 
     useEffect(()=>{
         if(contentType !== "members" && contentType !== "settings" && contentType !== "activity" && contentType !== "home" ){
             navigate("*")
         }
-    },[contentType])
+
+        if ((workspace && isAdmin!==undefined && isMember!==undefined) && (contentType === "settings" && workspace?.isPrivate === false && !isAdmin && !isMember)){
+            navigate("*");
+        }
+    },[contentType, workspace, isAdmin, isMember])
 
 
   return (
@@ -105,12 +120,14 @@ const Workspace = () => {
                         "text-gray-700 hover:bg-gray-100"} `}>
                         <TbListDetails className="mr-3 text-xl"/> Activity
                     </Link>
-                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
-                        className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                        ${isActive("settings")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
-                        "text-gray-700 hover:bg-gray-100"} `}>
-                        <IoMdSettings className="mr-3 text-xl"/> Settings
-                    </Link>
+                    {(isAdmin || isMember) && 
+                        (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
+                            className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                            ${isActive("settings")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
+                            "text-gray-700 hover:bg-gray-100"} `}>
+                            <IoMdSettings className="mr-3 text-xl"/> Settings
+                        </Link>)
+                    }
                     </>
                     }
                 </div>
@@ -169,14 +186,14 @@ const Workspace = () => {
                     <div className="h-auto w-full px-2 py-6 ">
                         {contentType === "members" ? (
                             <MembersSlide />
-                        ) : contentType === "settings" ? (
-                            <SettingsSlide workspace={workspace} setWorkspace={setWorkspace}/>
+                        ) : (contentType === "settings" && (isAdmin || isMember)) ? (
+                            <SettingsSlide isAdmin={isAdmin} isMember={isMember} workspace={workspace} setWorkspace={setWorkspace}/>
                         ) : contentType === "activity" ? (
                             <WorkspaceActivity />
                         ) : contentType === "home" ? (
-                            <BoardSlide />
+                            <BoardSlide isAdmin={isAdmin} isMember={isMember} />
                         ) : (
-                            navigate("*")
+                            null
                         )}
                     </div>
                 }

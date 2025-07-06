@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useUser } from '../Contexts/UserContext';
 
 dayjs.extend(relativeTime);
 
@@ -35,6 +36,14 @@ const CardDetailsModel = () => {
     const [cardFunctionality,setCardFunctionality] = useState(null);
     const [attachments,setAttachments] = useState([])
     const navigate = useNavigate();
+    const [board,setBoard] = useState()
+    const {user} = useUser()
+    const [UserRole,setUserRole] = useState({
+                                isBoardMember: undefined,
+                                isWorkspaceMember: undefined,
+                                isBoardAdmin: undefined,
+                                isWorkspaceAdmin: undefined
+                            });
 
 
     useEffect(() => {
@@ -61,6 +70,7 @@ const CardDetailsModel = () => {
             setNewCardInfo({name:response.data.card.name , description:response.data.card.description});
             setIsCompleted(response.data.card.isCompleted);
             setAttachments(response.data.card.attachments);
+            setBoard(response.data.board);
         } catch (error) {
             console.log("Error while fetching card details - ",error)
         }
@@ -90,6 +100,25 @@ const CardDetailsModel = () => {
         fetchCardDetails()
         fetchCardActivities()
     },[])
+
+    useEffect(() => {
+        if (board && user) {
+            const workspace = board.workspace;
+            const userId = user.id?.toString();
+
+            const isBoardMember = board.members?.some(id => id.toString() === userId);
+            const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
+            const isBoardAdmin = board.admin?.toString() === userId;
+            const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
+
+            setUserRole({
+                    isBoardMember,
+                    isWorkspaceMember,
+                    isBoardAdmin,
+                    isWorkspaceAdmin
+                });
+        }
+    }, [board,user]);
 
 
     const handleInput = (e)=>{
@@ -133,7 +162,6 @@ const CardDetailsModel = () => {
 
 
     const toggleCardStatus = async (e)=>{
-        e.preventDefault();
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
             const response = await axios.patch(`${BackendURL}/card/${id}/isCompleted`,
@@ -159,7 +187,8 @@ const CardDetailsModel = () => {
             <div className="flex-1 p-6 ">
                 {/* Header */}
                 <div className="flex items-start ">
-                    <div onClick={toggleCardStatus} className='h-auto w-auto mt-1 cursor-pointer'>
+                    <div onClick={()=>{if(UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin){toggleCardStatus()}}}
+                        className='h-auto w-auto mt-1 cursor-pointer'>
                         {
                         (isCompleted)?
                             <GoCheckCircleFill className="text-2xl text-green-500" />:
@@ -195,7 +224,8 @@ const CardDetailsModel = () => {
                             }
                         </div>
 
-                        <div className='w-auto ml-4 '>
+                        { (board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                        (<div className='w-auto ml-4 '>
                             { (!updatingCard) ?
                             <div onClick={()=>{setUpdatingCard(true)}}
                                 className=' text-gray-700 font-semibold px-2 py-0.5 cursor-pointer rounded-lg 
@@ -216,7 +246,7 @@ const CardDetailsModel = () => {
                                 </div>
                             </div>
                             }
-                        </div>
+                        </div>)}
                     </div>
                 </div>
 
@@ -276,7 +306,8 @@ const CardDetailsModel = () => {
                         </div>
                     </div> 
                     <div className="w-full h-full space-y-4 ">
-                        <div className="flex ">
+                        {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                        (<div className="flex ">
                             <div className='h-auto w-auto mr-3'>
                                 <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
                                     <span className=" font-semibold text-white">AS</span>
@@ -285,7 +316,7 @@ const CardDetailsModel = () => {
                             <input placeholder="Write a comment..." 
                                 className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
                             />
-                        </div>
+                        </div>)}
                         { (loadingCardActivities) ?
                             <div>Loading activity</div> :
                             (cardActivities.map((activity)=>(
@@ -299,11 +330,13 @@ const CardDetailsModel = () => {
             {/* Sidebar */}
             <div className="sm:w-52 mt-4 sm:mt-none p-6 sm:pr-6 sm:p-2
                     space-y-4 grid grid-cols-2 gap-x-4 sm:flex sm:flex-col ">
-                <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                (<button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                      flex items-center text-gray-700">
                     <IoPersonAdd className="text-lg mr-3" />
                     Add member
-                </button>
+                </button>)
+                }
 
                 <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                      flex items-center text-gray-700">
@@ -317,6 +350,8 @@ const CardDetailsModel = () => {
                     Dates
                 </button>
 
+                {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                (<>
                 <div className='h-auto w-auto relative'>
                     <button onClick={()=>{setCardFunctionality("attachment")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
@@ -334,6 +369,7 @@ const CardDetailsModel = () => {
                     <BsLayersFill className="text-lg mr-3" />
                     Cover
                 </button>
+                </>)}
             </div>
         </div>
     </div>

@@ -64,7 +64,8 @@ export const getBoardData = async (req,res)=>{
     try {
         const {boardId} = req.params ;
 
-        const board = await Board.findById(boardId).select("name workspace admin visibility").populate("admin workspace",'name')
+        const board = await Board.findById(boardId).select("name workspace admin members visibility").populate("admin",'name')
+        .populate({path: "workspace",select: "name members createdBy"});
         if(!board){
             return res.status(404).json({error:"Board not found."})
         }
@@ -220,7 +221,7 @@ export const changeVisibility = async (req,res)=>{
         const {boardId} = req.params;
         let {newVisibility} = req.body
 
-        if (!req.canEdit) {
+        if (!req.isWorkspaceAdmin && !req.isBoardAdmin) {
             return res.status(403).json({ error: "You don't have permission to edit this board." });
         }
 
@@ -229,7 +230,8 @@ export const changeVisibility = async (req,res)=>{
             return res.status(403).json({error:`${newVisibility} visibility doesn't exist`});
         }
 
-        const board = await Board.findById(boardId).select("name workspace admin visibility").populate("admin workspace",'name')
+        const board = await Board.findById(boardId).select("name workspace admin members visibility").populate("admin",'name')
+        .populate({path: "workspace",select: "name members createdBy"});
         if(!board){
             return res.status(404).json({error:"Board doesn't exist."})
         }

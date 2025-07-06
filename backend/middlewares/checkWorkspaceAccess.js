@@ -26,6 +26,7 @@ const checkWorkspaceAccess = async (req,res,next)=> {
 
     req.canEdit = canEdit;
     req.workspace = workspace;
+    req.isCreator = isCreator;
 
     next();
   } catch (error) {

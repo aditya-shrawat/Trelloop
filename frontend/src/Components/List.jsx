@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import Card from "./Card";
 
-const List = ({list,boardId}) => {
+const List = ({list,boardId,UserRole}) => {
     const [cards,setCards] = useState([]);
     const [loading,setLoading] = useState(true);
 
@@ -32,7 +32,7 @@ const List = ({list,boardId}) => {
   return (
     <div className="w-[270px] shrink-0 h-full mr-4">
 
-    <div className="max-h-full h-auto py-1 flex flex-col border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
+    <div className="max-h-full h-auto py-2 flex flex-col border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
       <div className="w-full px-3 pt-2 pb-1 break-words font-semibold text-gray-700">
         {list.name}
       </div>
@@ -44,15 +44,17 @@ const List = ({list,boardId}) => {
             <>
                 {
                 cards.map((card)=>(
-                    <Card key={card._id} card={card} />
+                    <Card key={card._id} card={card} UserRole={UserRole} />
                 ))
                 }
             </>
         }
       </div>
-      <div className="px-3 py-2">
-        <AddNewCard listId={list._id} boardId={boardId} setCards={setCards} />
-      </div>
+      { (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) &&
+        <div className="px-3 py-2">
+            <AddNewCard listId={list._id} boardId={boardId} setCards={setCards} />
+        </div>
+      }
     </div>
 
     </div>

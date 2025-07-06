@@ -38,6 +38,8 @@ const checkBoardAccess = async (req,res,next)=> {
     }
 
     req.canEdit = canEdit;
+    req.isBoardAdmin = isBoardAdmin;
+    req.isWorkspaceAdmin = isWorkspaceAdmin;
 
     next();
   } catch (error) {

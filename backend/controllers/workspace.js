@@ -54,7 +54,7 @@ export const getWorkspaceData = async (req,res)=>{
     try {
         const workspaceId = req.params.id;
 
-        const workspace = await Workspace.findById(workspaceId).select('name description createdBy isPrivate');
+        const workspace = await Workspace.findById(workspaceId).select('name description createdBy members isPrivate');
 
         return res.status(200).json({message:"Workspace fetched successfully.",workspace})
     } catch (error) {
@@ -201,11 +201,11 @@ export const updateWorkspaceVisibility = async (req,res)=>{
         const {id} = req.params ;
         const {newVisibility} = req.body ;
 
-        if (!req.canEdit) {
+        if (!req.isCreator) {
             return res.status(403).json({ error: "You don't have permission to edit this workspace." });
         }
 
-        if(typeof newVisibility === "boolean"){
+        if(typeof newVisibility !== "boolean"){
             return res.status(403).json({error:`${newVisibility} visibility doesn't exist`});
         }
         

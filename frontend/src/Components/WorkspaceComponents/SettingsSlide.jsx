@@ -10,9 +10,9 @@ const initialWorkspacedata ={
     description:""
 }
 
-const SettingsSlide = ({workspace,setWorkspace}) => {
+const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
     const [editWorkspace,setEditWorkspace]  = useState(false)
-    const [workspaceData,setWorkspaceData] = useState(initialWorkspacedata);
+    const [workspaceData,setWorkspaceData] = useState(initialWorkspacedata); // stores new input data
     const [errorMsg,setErrorMsg] = useState("")
     const [deleteWorkspace,setDeleteWorkspace] = useState(false)
     const [changingVisibility,setChangingVisibility] = useState(false);
@@ -96,15 +96,15 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                             {errorMsg}
                         </div>
                     }
-                    {
+                    {(isAdmin || isMember) && (
                       (!editWorkspace)?
-                        <div className="w-full mt-8 flex ">
+                        (<div className="w-full mt-8 flex ">
                             <div onClick={()=>{setEditWorkspace(true)}} className="px-4 py-1 cursor-pointer bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] font-semibold text-white rounded-lg flex justify-center items-center">
                                 <BiEdit className='mr-2 text-lg' />Edit workspace
                             </div>
-                        </div>
+                        </div>)
                       :
-                        <div className="w-full mt-8 flex ">
+                        (<div className="w-full mt-8 flex ">
                             <div>
                                 <button onClick={updateWorkspace} className="px-6 py-1 cursor-pointer bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] font-semibold text-white rounded-lg">
                                 Update
@@ -115,8 +115,8 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                                 Cancel
                                 </button>
                             </div>
-                        </div>
-                    }
+                        </div>)
+                    )}
 
                     <div className='w-full mt-6 '>
                         <div className='w-full py-2 border-b-[1px] border-gray-300'>
@@ -143,6 +143,7 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                                 </p>
                             </div>)
                             }
+                            { (isAdmin) &&
                             <div className='w-fit h-auto relative inline-block '>
                                 <div onClick={()=>{setChangingVisibility(true)}} className='px-4 py-1 mt-4 md:ml-4 border-[1px] border-gray-300 cursor-pointer 
                                     text-gray-700 font-semibold bg-gray-50 rounded-lg hover:bg-gray-200 '>
@@ -152,21 +153,23 @@ const SettingsSlide = ({workspace,setWorkspace}) => {
                                 (changingVisibility)&&
                                 <ChangeVisibilityComponent workspace={workspace} setWorkspace={setWorkspace} setChangingVisibility={setChangingVisibility} />
                                 }
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
             </div>
     
-            <div className="mt-5 relative inline-block">
-                <div onClick={()=>{setDeleteWorkspace(true)}} className=" inline-block px-3 py-2 border-[1px] border-red-500 text-red-500 cursor-pointer hover:font-semibold rounded-lg">
-                    Delete this Workspace ?
+            {(isAdmin) &&
+                <div className="mt-5 relative inline-block">
+                    <div onClick={()=>{setDeleteWorkspace(true)}} className=" inline-block px-3 py-2 border-[1px] border-red-500 text-red-500 cursor-pointer hover:font-semibold rounded-lg">
+                        Delete this Workspace ?
+                    </div>
+                    {
+                    (deleteWorkspace)&&
+                    <DeleteComponent workspaceId={workspace._id} setDeleteWorkspace={setDeleteWorkspace} />
+                    }
                 </div>
-                {
-                  (deleteWorkspace)&&
-                  <DeleteComponent workspaceId={workspace._id} setDeleteWorkspace={setDeleteWorkspace} />
-                }
-            </div>
+            }
         </div>
     );
   };

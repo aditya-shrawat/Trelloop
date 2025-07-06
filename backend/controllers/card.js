@@ -1,4 +1,5 @@
 import Activity from "../models/Activity.js";
+import Board from "../models/board.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
 
@@ -82,10 +83,15 @@ export const fetchCardData = async (req,res)=>{
         const {cardId} = req.params;
         
         const card = req.card;
+        const list = await List.findById(card.list).select('name board')
 
-        const list = await List.findById(card.list).select('name')
+        const board = await Board.findById(list.board).select("name workspace admin members visibility").populate("admin",'name')
+        .populate({path: "workspace",select: "name members createdBy"});
+        if(!board){
+            return res.status(404).json({error:"Board doesn't exist."})
+        }
 
-        return res.status(200).json({message:"Card details fetched succssfully.",card,list})
+        return res.status(200).json({message:"Card details fetched succssfully.",card,list,board})
     } catch (error) {
         console.log("Error while fetching card details - ",error)
         return res.status(500).json({error:"Internal server error."})

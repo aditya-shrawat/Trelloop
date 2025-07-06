@@ -25,7 +25,7 @@ const checkCardAccess = async (req, res, next) => {
     const isWorkspaceMember = workspace.members.some(id => id.toString() === userId);
     const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
 
-    if (board.visibility === 'Workspace' && !isWorkspaceMember && !isWorkspaceAdmin) {
+    if (board.visibility === 'Workspace' && !isWorkspaceMember && !isWorkspaceAdmin && !isBoardMember && !isBoardAdmin) {
       return res.status(403).json({ error: "Access denied to this card" });
     }
 

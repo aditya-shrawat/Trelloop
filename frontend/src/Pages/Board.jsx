@@ -8,6 +8,7 @@ import Header from '../Components/Header';
 import { FaBarsStaggered } from "react-icons/fa6";
 import BoardOptionMenu from '../Components/Board Components/BoardOptionMenu';
 import { useParams } from 'react-router-dom';
+import { useUser } from '../Contexts/UserContext';
 
 const Board = () => {
     const { id, name } = useParams();
@@ -16,6 +17,14 @@ const Board = () => {
     const [lists,setLists] = useState([]);
     const [starStatus,setStarStatus] = useState(false)
     const [showBoardOptions,setShowBoardOptions] = useState(false)
+    const [UserRole,setUserRole] = useState({
+                            isBoardMember: undefined,
+                            isWorkspaceMember: undefined,
+                            isBoardAdmin: undefined,
+                            isWorkspaceAdmin: undefined
+                        });
+
+    const {user} = useUser();
 
     const fetchBoard = async ()=>{
             try {
@@ -85,6 +94,25 @@ const Board = () => {
         }
     }
 
+    useEffect(() => {
+        if (board && user) {
+            const workspace = board.workspace;
+            const userId = user.id?.toString();
+
+            const isBoardMember = board.members?.some(id => id.toString() === userId);
+            const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
+            const isBoardAdmin = board.admin?.toString() === userId;
+            const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
+
+            setUserRole({
+                    isBoardMember,
+                    isWorkspaceMember,
+                    isBoardAdmin,
+                    isWorkspaceAdmin
+                });
+        }
+    }, [board,user]);
+
   return (
     <div className='w-full h-screen flex flex-col '>
         <Header  />
@@ -116,7 +144,7 @@ const Board = () => {
                     </div>
                     {
                         (showBoardOptions && board) && <BoardOptionMenu board={board} setBoard={setBoard} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
-                        setShowBoardOptions={setShowBoardOptions} />
+                        setShowBoardOptions={setShowBoardOptions} UserRole={UserRole} />
                     }
                 </div>
             </div>
@@ -128,12 +156,12 @@ const Board = () => {
                 <>
                     { (board && board._id)&&
                     lists.map((list)=>(
-                        <List key={list._id} list={list} boardId={board._id} />
+                        <List key={list._id} list={list} boardId={board._id} UserRole={UserRole} />
                     ))
                     }
                 </>
                 }
-                { board &&
+                { (board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) ) &&
                     <AddNewList boardId={board._id} setLists={setLists} />
                 }
         </div>

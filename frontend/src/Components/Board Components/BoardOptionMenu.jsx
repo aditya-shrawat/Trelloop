@@ -11,7 +11,7 @@ import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import { IoIosArrowBack } from "react-icons/io";
 
-const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions})=>{
+const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
     const [DeletePopup,setDeletePopup] = useState(false)
     const [VisibilityPopup,setVisibilityPopup] = useState(false)
@@ -40,31 +40,34 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
                             <div className='text-[#ffc300]'><TbStarFilled /></div>
                         }</div> Star
                     </div>
-                    <div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                    {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                    (<div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><div className='h-4 w-4 bg-red-400 rounded-sm'></div></div>Change background
-                    </div>
+                    </div>)}
                     <div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><TbListDetails/></div> Activity
                     </div>
                 </div>
-                <div className="w-full h-auto py-3 border-t-[1px] border-gray-300 mt-2">
+                <div className="w-full h-auto pt-3 border-t-[1px] border-gray-300 mt-2">
                     <div className='p-2 text-gray-700 '>
                         <div className="font-semibold flex items-center"><div className='mr-3 text-lg'><BsPersonWorkspace/></div>Workspace</div>
                         <h3 className='break-words text-gray-500 text-sm'>{board.workspace.name}</h3>
                     </div>
-                    <div onClick={()=>{setVisibilityPopup(true)}} className='p-2 text-gray-700 flex items-center hover:bg-gray-100 rounded-md cursor-pointer'>
+                    <div onClick={()=>{if(UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin){setVisibilityPopup(true)}}} 
+                            className={`p-2 text-gray-700 flex items-center ${(UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)&&`hover:bg-gray-100 rounded-md cursor-pointer`}`}>
                         <div className="font-semibold flex items-center"><div className='mr-3 text-lg'><MdOutlineVisibility/></div>Visibility: </div>
                         <h3 className='text-sm text-gray-500 ml-1'>{board.visibility}</h3>
                     </div>
                 </div>
-                <div className="pt-3 border-t-[1px] border-gray-300 relative">
+                {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                (<div className="pt-3 mt-3 border-t-[1px] border-gray-300 relative">
                     <div onClick={()=>{setDeletePopup(true)}} className="p-2 font-semibold text-gray-700 hover:text-red-600 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><RiDeleteBin6Line/></div> Delete board
                     </div>
                     {
                         DeletePopup && <DeleteBoardPopup boardId={board._id} setDeletePopup={setDeletePopup}  />
                     }
-                </div>
+                </div>)}
             </div>)
             :
             (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
