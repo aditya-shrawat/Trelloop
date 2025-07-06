@@ -10,11 +10,13 @@ import axios from 'axios';
 import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import { IoIosArrowBack } from "react-icons/io";
+import BoardActivity from './BoardActivity';
 
 const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
     const [DeletePopup,setDeletePopup] = useState(false)
     const [VisibilityPopup,setVisibilityPopup] = useState(false)
+    const [showActivity,setShowActivity] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -28,10 +30,15 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
 
 
     return (
-        <div ref={navRef} className="w-72 sm:w-[350px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6  ">
-            {(!VisibilityPopup)?
-            (<div className=" w-full h-full px-3 py-4 ">
-                <div className="w-full h-full space-y-1 ">
+        <div ref={navRef} className="w-full max-w-[300px] sm:max-w-[350px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6  ">
+            {(VisibilityPopup )?
+            (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
+            :
+            (showActivity)?
+            (<BoardActivity boardId={board._id} setShowActivity={setShowActivity} />)
+            :
+            (<div className=" w-full h-auto px-3 py-4 ">
+                <div className="w-full space-y-1 ">
                     <div onClick={toggleStarStatus} className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center ">
                         <div className='mr-3 text-lg'>{
                             (!starStatus)?
@@ -44,7 +51,8 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
                     (<div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><div className='h-4 w-4 bg-red-400 rounded-sm'></div></div>Change background
                     </div>)}
-                    <div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                    <div onClick={()=>{setShowActivity(true)}} 
+                            className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><TbListDetails/></div> Activity
                     </div>
                 </div>
@@ -69,8 +77,6 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
                     }
                 </div>)}
             </div>)
-            :
-            (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
             }
         </div>
     )
@@ -167,7 +173,7 @@ const BoardVisibilityPopup = ({board,setBoard,setVisibilityPopup})=>{
 
 
     return (
-        <div className='bg-white h-fit w-full p-4 rounded-lg '>
+        <div className='bg-white h-auto w-full p-4 rounded-lg '>
             <div className='w-full h-full  '>
                 <div className='w-full text-start mb-2'>
                     <h1 className='text-lg font-semibold text-gray-700 flex items-center'>

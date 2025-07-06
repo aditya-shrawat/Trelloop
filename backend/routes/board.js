@@ -1,7 +1,7 @@
 
 import express from 'express';
 import checkAuthentication from '../middlewares/authentication.js';
-import { allJoinedWorkspacesAndBoards, changeVisibility, deleteBoard, getBoardData, getBoardStarStatus, getStarredBoards, toggleBoardStarStatus } from '../controllers/board.js';
+import { allJoinedWorkspacesAndBoards, changeVisibility, deleteBoard, getBoardActivies, getBoardData, getBoardStarStatus, getStarredBoards, toggleBoardStarStatus } from '../controllers/board.js';
 import { creatingNewList } from '../controllers/list.js';
 import checkBoardAccess from '../middlewares/checkBoardAccess.js';
 import { fetchAllLists } from '../controllers/list.js';
@@ -16,6 +16,7 @@ router.post("/:boardId/visibility",checkAuthentication,checkBoardAccess,changeVi
 router.get("/:boardId/starred",checkAuthentication,getBoardStarStatus)
 router.post("/:boardId/starred",checkAuthentication,toggleBoardStarStatus)
 router.delete("/:boardId/delete",checkAuthentication,checkBoardAccess,deleteBoard)
+router.get("/:boardId/activities",checkAuthentication,checkBoardAccess,getBoardActivies)
 
 router.post("/:boardId/newList",checkAuthentication,checkBoardAccess,creatingNewList)
 router.get("/:boardId/lists",checkAuthentication,checkBoardAccess,fetchAllLists)

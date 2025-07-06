@@ -258,3 +258,25 @@ export const changeVisibility = async (req,res)=>{
         return res.status(500).json({error:"Internal server error."})
     }
 }
+
+
+export const getBoardActivies= async (req,res)=>{
+    try {
+        const {boardId} = req.params;
+        
+        const board = await Board.findById(boardId);
+        if(!board){
+            return res.status(400).json({error:"Board not found."})
+        }
+
+        const boardActivities = await Activity.find({board:board._id})
+        .select("board card user type data createdAt").populate("user",'_id name')
+
+        const activities = boardActivities.sort((a, b) => b.createdAt - a.createdAt);
+
+        return res.status(200).json({message:"Board activities fetched succssfully.",activities})
+    } catch (error) {
+        console.log("Error in fetching board activities - ",error)
+        return res.status(500).json({error:"Internal server error."})
+    }
+}

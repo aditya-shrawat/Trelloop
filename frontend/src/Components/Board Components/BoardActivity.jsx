@@ -1,67 +1,70 @@
-import axios from 'axios';
 import React from 'react'
-import { useEffect } from 'react';
 import { useState } from 'react';
-
+import { IoIosArrowBack } from "react-icons/io";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 dayjs.extend(relativeTime);
 
-const WorkspaceActivity = () => {
+const BoardActivity = ({boardId,setShowActivity})=>{
     const [activities,setActivities] = useState([])
     const [loadingActivities,setLoadingActivities] = useState(true)
-    const { id, name } = useParams();
 
-    const fetchWorkspaceActivities = async ()=>{
+    const fetchBoardActivities = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/workspace/${id}/activities`,
+            const response = await axios.get(`${BackendURL}/board/${boardId}/activities`,
             {withCredentials: true}
             );
 
             setActivities(response.data.activities)
-            setLoadingActivities(false)
         } catch (error) {
-            console.log("Error while fetching workspace activities - ",error)
+            console.log("Error while fetching board activities - ",error)
+        }
+        finally{
+            setLoadingActivities(false)
         }
     }
 
     useEffect(()=>{
-        if(id && name){
-            fetchWorkspaceActivities()
+        if(boardId){
+            fetchBoardActivities()
         }
-    },[id,name])
+    },[boardId])
 
-  return (
-    <div className="w-full h-auto ">
-        <div className="pb-6 mb-4 border-b-[1px] border-gray-300 ">
-          <h2 className="text-xl font-semibold text-gray-700">Workspace activity</h2>
-          <h2 className="text-base text-gray-500 ">
-            Track all recent activities across your workspace.
-          </h2>
+
+    return (
+        <div className='bg-white w-full p-4 h-auto rounded-lg overflow-hidden'>
+            <div className='w-full h-auto max-h-[480px] overflow-y-auto overflow-x-hidden relative'>
+                <div className='w-full text-start py-1 bg-white sticky left-0 top-0'>
+                    <h1 className='text-lg font-semibold text-gray-700 flex items-center'>
+                        <span onClick={()=>setShowActivity(false)} className='cursor-pointer p-1 mr-1'><IoIosArrowBack /></span> 
+                        Board activity
+                    </h1>
+                </div>
+                <div className='w-full h-full space-y-2 mt-4'>
+                    { (loadingActivities) ?
+                        <div className='h-10 w-full flex items-center justify-center'>Loading workspace activities...</div> :
+                        (activities.length !==0)?
+                        (activities.map((activity)=>(
+                            <BoardActivityItem key={activity._id} activity={activity}  />
+                        ))):
+                        (
+                        <div className='h-10 w-full flex items-center justify-center'>No activity</div>
+                        )
+                    }
+                </div>
+            </div>
         </div>
-        <div className="w-full h-auto space-y-4 ">
-            { (loadingActivities) ?
-                <div>Loading workspace activities...</div> :
-                (activities.length !==0)?
-                (activities.map((activity)=>(
-                    <WorkspaceActivityItem key={activity._id} activity={activity}  />
-                ))):
-                (
-                <div>No activity</div>
-                )
-            }
-        </div>
-    </div>
-  )
+    )
 }
 
-export default WorkspaceActivity
+export default BoardActivity
 
 
-const WorkspaceActivityItem = ({activity})=>{
+const BoardActivityItem = ({activity})=>{
     const createdAt = dayjs(activity.createdAt);
     const now = dayjs();
     const diffInHours = now.diff(createdAt, 'hour');
@@ -69,32 +72,17 @@ const WorkspaceActivityItem = ({activity})=>{
 
 
     const getActivityMessage =(activity)=> {
-        const { type, data,card,board } = activity;
+        const { type, data,card } = activity;
 
         switch (type) {
-            case "workspace_renamed":
-            return <>renamed the workspace from "{data.workspace_oldName}" to "{data.workspace_newName}".</>;
-
-            case "workspace_newInfo":
-            return <>updated the workspace name "{data.workspace_oldName}" to "{data.workspace_newName}" and updated description.</>;
-
-            case "workspace_newDesc":
-            return <>updated workspace description.</>;
-
-            case "workspace_visibility_updated":
-            return <>changed workspace visibility from "{(data.prevVisibility)?"Private":"Public"}" to "{(data.newVisibility)?"Private":"Public"}".</>;
-
             case "board_created": 
-            return <>created <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a> board to this workspace.</>;
-
-            case "board_deleted": 
-            return <>deleted <a className="common-a-tag-css">{data.board_name}</a> board on this workspace.</>;
+            return <>created this board.</>;
 
             case "board_visibility_updated":
-            return <>changed visibility of the <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${board?.toString()}`} className="common-a-tag-css">{data.board_name}</a> board from "{data.prevVisibility}" to "{data.newVisibility}".</>;
+            return <>changed visibility of the board from "{data.prevVisibility}" to "{data.newVisibility}".</>;
 
             case "list_created":
-            return <>added  the list "{data.list_name}" to <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a> board.</>;
+            return <>added the list "{data.list_name}" to this board.</>;
 
             case "card_created":
             return <>added the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> to the list "{data.list_name}".</>;
@@ -132,9 +120,9 @@ const WorkspaceActivityItem = ({activity})=>{
 
     return (
         <div className='w-full flex '>
-            <div className='h-auto w-auto mr-2'>
-                <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                    <span className="font-semibold text-white text-lg ">
+            <div className='h-auto w-auto mr-3'>
+                <div className="w-7 h-7 rounded-full bg-blue-300 flex items-center justify-center">
+                    <span className="font-semibold text-white text-base ">
                         {activity.user.name && activity.user.name[0].toUpperCase()}
                     </span>
                 </div>
