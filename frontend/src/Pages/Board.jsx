@@ -9,6 +9,7 @@ import { FaBarsStaggered } from "react-icons/fa6";
 import BoardOptionMenu from '../Components/Board Components/BoardOptionMenu';
 import { useParams } from 'react-router-dom';
 import { useUser } from '../Contexts/UserContext';
+import AddMemberToBoard from '../Components/Board Components/AddMemberToBoard';
 
 const Board = () => {
     const { id, name } = useParams();
@@ -23,6 +24,8 @@ const Board = () => {
                             isBoardAdmin: undefined,
                             isWorkspaceAdmin: undefined
                         });
+    const [isJoining,setIsJoining] = useState(false);
+    const [isAddingNewMembers,setIsAddingNewMembers] = useState(false);
 
     const {user} = useUser();
 
@@ -101,7 +104,7 @@ const Board = () => {
 
             const isBoardMember = board.members?.some(id => id.toString() === userId);
             const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
-            const isBoardAdmin = board.admin?.toString() === userId;
+            const isBoardAdmin = board.admin._id?.toString() === userId;
             const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
 
             setUserRole({
@@ -112,6 +115,29 @@ const Board = () => {
                 });
         }
     }, [board,user]);
+
+    const joinMember = async()=>{
+        if(UserRole.isBoardMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin){
+            console.log("you are admin")
+            return;
+        }
+        setIsJoining(true);
+
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.post(`${BackendURL}/board/${id}/join`,
+                {},
+                {withCredentials: true}
+            );
+
+            console.log(response.data.message)
+        } catch (error) {
+            console.log("Error in joing board memb - ",error)
+        }
+        finally{
+            setIsJoining(false);
+        }
+    }
 
   return (
     <div className='w-full h-screen flex flex-col '>
@@ -138,14 +164,49 @@ const Board = () => {
                         }
                     </div>
                 </div>
-                <div className='w-auto' >
-                    <div onClick={()=>{setShowBoardOptions(true)}} className='w-auto h-auto p-2 text-xl cursor-pointer hover:bg-gray-100 rounded-lg'>
-                        <FaBarsStaggered  />
+                <div className='w-auto flex' >
+                    { (board) &&
+                    <div className='flex items-center mr-3'>
+                        <div className='w-auto h-auto'> 
+                            <div title='Admin' className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center cursor-pointer">
+                                <span className="font-semibold text-white text-lg ">
+                                    {board.admin.name && board.admin.name[0].toUpperCase()} 
+                                </span>
+                            </div>
+                        </div>
+                        {(board) &&
+                            (
+                                (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)?
+                                    (
+                                    <div className='relative '>
+                                        <div onClick={()=>{setIsAddingNewMembers(true)}} className='w-auto h-auto'>
+                                            <div className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
+                                                Add
+                                            </div>
+                                        </div>
+                                        {isAddingNewMembers && <AddMemberToBoard setIsAddingNewMembers={setIsAddingNewMembers} board={board} />}
+                                    </div>
+                                    )
+                                :
+                                (!UserRole.isBoardMember && UserRole.isWorkspaceMember && (board.visibility==='Workspace' || board.visibility==='Public'))&&
+                                    (<div onClick={joinMember} className='w-auto h-auto'>
+                                        <div className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
+                                            {(isJoining)?"...":"Join"}
+                                        </div>
+                                    </div>)
+                            )
+                        }
                     </div>
-                    {
-                        (showBoardOptions && board) && <BoardOptionMenu board={board} setBoard={setBoard} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
-                        setShowBoardOptions={setShowBoardOptions} UserRole={UserRole} />
                     }
+                    <div className='w-auto'>
+                        <div onClick={()=>{setShowBoardOptions(true)}} className='w-auto h-auto p-2 text-xl cursor-pointer hover:bg-gray-100 rounded-lg'>
+                            <FaBarsStaggered  />
+                        </div>
+                        {
+                            (showBoardOptions && board) && <BoardOptionMenu board={board} setBoard={setBoard} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
+                            setShowBoardOptions={setShowBoardOptions} UserRole={UserRole} />
+                        }
+                    </div>
                 </div>
             </div>
         </div>

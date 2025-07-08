@@ -12,7 +12,7 @@ import CardRouter from './routes/card.js'
 import http from "http"
 import {Server} from "socket.io"
 import { workspaceSocketHandler } from './socket/workspaceSocket.js';
-import { searchUsers } from './controllers/search.js';
+import searchRouter from './routes/search.js'
 import checkAuthentication from './middlewares/authentication.js';
 import { fetchUserInfo } from './controllers/userInfo.js';
 import NotificationRouter from './routes/notification.js'
@@ -55,7 +55,7 @@ app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
 app.use('/board',BoardRouter);
 app.use('/card',CardRouter)
-app.get('/search',checkAuthentication,searchUsers)
+app.use('/search',searchRouter);
 app.use('/notification',NotificationRouter)
 
 server.listen(PORT,()=>console.log(`Server is running on port ${PORT}...`))

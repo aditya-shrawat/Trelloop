@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 import { RxCross2 } from "react-icons/rx";
-import socket from "../../socket/socket.js";
+import socket from "../../Socket/socket";
 
 
 const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
@@ -71,7 +71,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
 
     try {
         const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/search?query=${value}`,
+        const response = await axios.get(`${BackendURL}/search/global-users?query=${value}`,
             {withCredentials: true}
         );
 

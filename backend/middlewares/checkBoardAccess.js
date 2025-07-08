@@ -20,7 +20,7 @@ const checkBoardAccess = async (req,res,next)=> {
     const isBoardAdmin = board.admin?.toString() === userId;
     const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
 
-    if(board.visibility === 'Workspace' && (!isWorkspaceAdmin && !isWorkspaceMember)){
+    if(board.visibility === 'Workspace' && (!isWorkspaceAdmin && !isWorkspaceMember && !isBoardAdmin && !isBoardMember)){
       return res.status(403).json({error:"Access denied to this board."})
     }
 

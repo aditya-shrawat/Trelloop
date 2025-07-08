@@ -280,3 +280,68 @@ export const getBoardActivies= async (req,res)=>{
         return res.status(500).json({error:"Internal server error."})
     }
 }
+
+
+export const joinMemberInBoard = async (req,res)=>{
+    try {
+        const {boardId} = req.params;
+        const user = req.user;
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+        if(req.isBoardAdmin || req.isWorkspaceAdmin) return res.status(400).json({error:"User is already a member."});
+         
+        const board = await Board.findById(boardId)
+        const alreadyMember = board.members.some(id => id.toString() === (user.id).toString());
+        if(alreadyMember) return res.status(400).json({error:"User is already a member."});
+
+        board.members.push(user.id);
+        await board.save();
+
+        return res.status(200).json({message:"User is added successfully."});
+    } catch (error) {
+        console.log("Error in joining board - ",error)
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+export const fetchBoardMembers = async (req,res)=>{
+    try {
+        const {boardId} = req.params 
+
+        const board = await Board.findById(boardId)
+
+        await board.populate("admin members","name");
+
+        return res.status(200).json({message:"Board members fetched successfully.",
+            members:board.members,admin:board.admin,currentUser:req.user
+        })
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."});
+    }
+}
+
+export const addNewMembers = async (req,res)=>{
+    try {
+        const {boardId} = req.params;
+        const {selectedUsers} = req.body;
+        
+        if (!req.isWorkspaceAdmin && !req.isBoardAdmin) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+         
+        const board = await Board.findById(boardId)
+        
+        selectedUsers.forEach((userId) => {
+            if(!board.members.some(id => id.toString()===(userId).toString()) && req.isWorkspaceAdmin!==(userId).toString() && req.isBoardAdmin!==(userId).toString() ){
+                board.members.push(userId);
+            }
+        });
+        await board.save();
+
+        return res.status(200).json({message:"User is added successfully."});
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."});
+    }
+}

@@ -43,7 +43,7 @@ const HomeMainContainer = () => {
             {loadingStarredBoards ? (
               <div>loading starred boards</div>
             ) : (
-              (starredBoards.length !==0) && starredBoards.map((board) => (
+              (starredBoards) && starredBoards?.map((board) => (
                 <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
                   className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
                 >
