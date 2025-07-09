@@ -3,6 +3,7 @@ import Board from "../models/board.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
 import StarredBoard from "../models/starredBoard.js";
+import User from "../models/user.js";
 import Workspace from "../models/workspace.js";
 
 
@@ -343,5 +344,60 @@ export const addNewMembers = async (req,res)=>{
         return res.status(200).json({message:"User is added successfully."});
     } catch (error) {
         return res.status(500).json({error:"Internal server error."});
+    }
+}
+
+
+export const removeBoardMember = async (req,res)=>{
+    try {
+        const {boardId} = req.params
+        const {userId} = req.body
+
+        if (!req.isWorkspaceAdmin && !req.isBoardAdmin) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+
+        const board = await Board.findById(boardId);
+        const user = await User.findById(userId);
+        if(!user){
+            return res.status(404).json({error:"user not found."})
+        }
+
+        board.members = board.members.filter(memberId => memberId.toString() !== userId);
+        await board.save();
+
+        await board.populate("members", "name _id");
+
+        return res.status(200).json({message:"User removed successfully.",members:board.members})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+
+export const leaveBoard = async (req,res)=>{
+    try {
+        const {boardId} = req.params
+        const userId = req.user.id
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+
+        const board = await Board.findById(boardId);
+        const user = await User.findById(userId);
+        if(!user){
+            return res.status(404).json({error:"user not found."})
+        }
+
+        board.members = board.members.filter((user)=> user._id.toString() !== userId);
+        await board.save();
+
+        await board.populate("members", "name _id");
+
+        return res.status(200).json({message:"User left board successfully.",members:board.members})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
     }
 }

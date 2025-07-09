@@ -11,12 +11,15 @@ import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import { IoIosArrowBack } from "react-icons/io";
 import BoardActivity from './BoardActivity';
+import { IoPerson } from "react-icons/io5";
+import BoardMembers from './BoardMembers';
 
 const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
     const [DeletePopup,setDeletePopup] = useState(false)
     const [VisibilityPopup,setVisibilityPopup] = useState(false)
     const [showActivity,setShowActivity] = useState(false);
+    const [showMembers,setShowMembers] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -30,12 +33,15 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
 
 
     return (
-        <div ref={navRef} className="w-full max-w-[300px] sm:max-w-[350px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6  ">
+        <div ref={navRef} className="w-full max-w-[300px] sm:max-w-[370px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6  ">
             {(VisibilityPopup )?
             (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
             :
             (showActivity)?
             (<BoardActivity boardId={board._id} setShowActivity={setShowActivity} />)
+            :
+            (showMembers)?
+            (<BoardMembers boardId={board._id} setShowMembers={setShowMembers} />)
             :
             (<div className=" w-full h-auto px-3 py-4 ">
                 <div className="w-full space-y-1 ">
@@ -51,6 +57,10 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
                     (<div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><div className='h-4 w-4 bg-red-400 rounded-sm'></div></div>Change background
                     </div>)}
+                    <div  onClick={()=>{setShowMembers(true)}}
+                            className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                        <div className='mr-3 text-lg'><IoPerson/></div> Members
+                    </div>
                     <div onClick={()=>{setShowActivity(true)}} 
                             className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><TbListDetails/></div> Activity
