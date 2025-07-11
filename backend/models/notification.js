@@ -18,6 +18,10 @@ const notificationSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId, 
         ref:"Workspace" 
     },
+    boardId:{ 
+        type:mongoose.Schema.Types.ObjectId, 
+        ref:"Board" 
+    },
     message:{ 
         type:String, 
         required:true 

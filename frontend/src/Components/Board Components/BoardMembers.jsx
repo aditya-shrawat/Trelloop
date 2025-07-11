@@ -42,7 +42,7 @@ const BoardMembers = ({boardId,setShowMembers}) => {
                     {`Board members (${(members||admin)?`${members.length+1}`:`0`})`}
                 </h1>
             </div>
-            <div className="w-full h-auto max-h-[440px] overflow-y-auto overflow-x-hidden">
+            <div className="w-full h-auto">
                 { (loadingMembers)?
                 (<div>Loading workspace members...</div>)
                 :

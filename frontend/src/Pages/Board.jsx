@@ -10,6 +10,8 @@ import BoardOptionMenu from '../Components/Board Components/BoardOptionMenu';
 import { useParams } from 'react-router-dom';
 import { useUser } from '../Contexts/UserContext';
 import AddMemberToBoard from '../Components/Board Components/AddMemberToBoard';
+import socket from '../Socket/socket';
+import useBoardSocket from '../Socket/useBoardSocket';
 
 const Board = () => {
     const { id, name } = useParams();
@@ -22,7 +24,8 @@ const Board = () => {
                             isBoardMember: undefined,
                             isWorkspaceMember: undefined,
                             isBoardAdmin: undefined,
-                            isWorkspaceAdmin: undefined
+                            isWorkspaceAdmin: undefined,
+                            joinRequestSent:undefined
                         });
     const [isJoining,setIsJoining] = useState(false);
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false);
@@ -58,12 +61,6 @@ const Board = () => {
         }
     }
 
-    useEffect(()=>{
-        fetchBoard()
-        fetchLists()
-    },[id,name])
-
-
     const fetchStarStatus = async (e)=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
@@ -78,8 +75,12 @@ const Board = () => {
     }
 
     useEffect(()=>{
-        fetchStarStatus()
-    },[])
+        if(id && name){
+            fetchBoard()
+            fetchLists()
+            fetchStarStatus()
+        }
+    },[id,name])
 
     const toggleStarStatus = async (e)=>{
         e.preventDefault();
@@ -106,19 +107,20 @@ const Board = () => {
             const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
             const isBoardAdmin = board.admin._id?.toString() === userId;
             const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
+            const joinRequestSent = board.pendingRequests?.some(id =>id.toString()===userId);
 
             setUserRole({
                     isBoardMember,
                     isWorkspaceMember,
                     isBoardAdmin,
-                    isWorkspaceAdmin
+                    isWorkspaceAdmin,
+                    joinRequestSent
                 });
         }
     }, [board,user]);
 
     const joinMember = async()=>{
         if(UserRole.isBoardMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin){
-            console.log("you are admin")
             return;
         }
         setIsJoining(true);
@@ -136,6 +138,29 @@ const Board = () => {
         }
         finally{
             setIsJoining(false);
+        }
+    }
+
+    let shouldJoinBoardRoom = UserRole.isBoardAdmin || UserRole.isBoardMember || UserRole.isWorkspaceAdmin || UserRole.isWorkspaceMember ;
+    useBoardSocket(socket, (shouldJoinBoardRoom)?id:null ,{}); // join board room
+
+    const sendRequestToJoinBoard = async ()=>{
+        if(!board._id || !user.id){
+            return
+        }
+
+        setUserRole((prev) => ({ ...prev, joinRequestSent: true }));
+        try {
+            socket.emit('send_board_request',{
+                boardId:board._id,
+                senderId:user.id
+            })
+
+            socket.once('board_request_sent',(data)=>{
+                console.log("request sent - ",data)
+            })
+        } catch (error) {
+            console.log("error while sending request", error);
         }
     }
 
@@ -188,12 +213,27 @@ const Board = () => {
                                     </div>
                                     )
                                 :
-                                (!UserRole.isBoardMember && UserRole.isWorkspaceMember && (board.visibility==='Workspace' || board.visibility==='Public'))&&
+                                (!UserRole.isBoardMember && UserRole.isWorkspaceMember && (board.visibility==='Workspace' || board.visibility==='Public')) ?
                                     (<div onClick={joinMember} className='w-auto h-auto'>
                                         <div className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
                                             {(isJoining)?"...":"Join"}
                                         </div>
                                     </div>)
+                                :
+                                (board.visibility==='Public' && (!UserRole.isBoardMember && !UserRole.isWorkspaceMember && !UserRole.isBoardAdmin && !UserRole.isWorkspaceAdmin && !UserRole.joinRequestSent) ) ? 
+                                    (<div className='w-auto h-auto'>
+                                        <div onClick={sendRequestToJoinBoard} className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
+                                            Send Request
+                                        </div>
+                                    </div>)
+                                :
+                                (board.visibility==='Public' && UserRole.joinRequestSent)?
+                                    (<div className='w-auto h-auto'>
+                                        <div className='px-4 py-1 ml-3 bg-gray-100 border-[1px] border-gray-300 rounded-md cursor-pointer text-gray-500 font-semibold'>
+                                            Pending...
+                                        </div>
+                                    </div>)
+                                :null
                             )
                         }
                     </div>

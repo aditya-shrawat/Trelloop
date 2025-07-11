@@ -4,12 +4,6 @@ import Workspace from "../models/workspace.js"
 
 
 export const workspaceSocketHandler = (io, socket)=>{
-    // Joining user in a room for direct notifications
-    socket.on('register_user_socket', ({userId })=> {
-        socket.join(`user_${userId}`);
-    });
-
-    // Joining workspace room
     socket.on('join_workspace_room', ({ workspaceId })=>{
         socket.join(`workspace_${workspaceId}`);
     });

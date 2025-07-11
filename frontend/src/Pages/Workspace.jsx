@@ -15,6 +15,8 @@ import MembersSlide from "../Components/WorkspaceComponents/MembersSlide";
 import { useUser } from "../Contexts/UserContext";
 import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
+import useWorkspaceSocket from "../Socket/useWorkspaceSocket";
+import socket from "../Socket/socket";
 
 const Workspace = () => {
     const location = useLocation();
@@ -73,6 +75,9 @@ const Workspace = () => {
             navigate("*");
         }
     },[contentType, workspace, isAdmin, isMember])
+
+    // join workspace room 
+    useWorkspaceSocket(socket, (isAdmin || isMember) ? workspace._id : null, {});
 
 
   return (
@@ -199,7 +204,7 @@ const Workspace = () => {
                 }
             </div>
             {
-                (isAddingNewMembers)&& <AddNewMembers setIsAddingNewMembers={setIsAddingNewMembers} workspace={{id,name}} />
+                (isAddingNewMembers && isAdmin)&& <AddNewMembers setIsAddingNewMembers={setIsAddingNewMembers} workspace={{id,name}} />
             }
         </div>
     </main>

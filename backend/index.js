@@ -16,6 +16,7 @@ import searchRouter from './routes/search.js'
 import checkAuthentication from './middlewares/authentication.js';
 import { fetchUserInfo } from './controllers/userInfo.js';
 import NotificationRouter from './routes/notification.js'
+import { boardSocket } from './socket/boardSocket.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -43,7 +44,12 @@ app.use(express.json())
 io.on('connection', (socket) => {
   console.log(`Socket connected: ${socket.id}`);
 
+  socket.on('register_user_socket', ({userId })=> {
+    socket.join(`user_${userId}`);
+  });
+  
   workspaceSocketHandler(io, socket);
+  boardSocket(io,socket);
 
   socket.on('disconnect', ()=>{
     console.log(`Socket disconnected: ${socket.id}`);

@@ -8,9 +8,10 @@ import CreateWorkspace from "./CreateWorkspace";
 import CreateBoard from "./CreateBoard";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import WorkspaceSocket from "../Socket/WorkspaceSocket.js";
 import { useUser } from "../Contexts/UserContext.jsx";
 import Notification from "./Notification.jsx";
+import { cleanupNotificationListener, registerUserSocket, setupNotificationListener } from "../Socket/socketService.js";
+import socket from "../Socket/socket.js";
 
 const Header = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -21,12 +22,16 @@ const Header = () => {
 
     const {user} = useUser();
 
-    useEffect(()=>{
-        if(user){
-            const currentUser = user
-            WorkspaceSocket(currentUser,setUnreadCount);
-        }    
-    },[user])
+    useEffect(() => {
+        if (!user?.id) return;
+
+        registerUserSocket(socket,user.id);
+        setupNotificationListener(socket,setUnreadCount);
+
+        return () => {
+            cleanupNotificationListener(socket);
+        };
+    },[user]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {

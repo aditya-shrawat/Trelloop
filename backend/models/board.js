@@ -18,7 +18,7 @@ const boardSchema = mongoose.Schema({
     members:[
         {type:mongoose.Schema.Types.ObjectId, ref:'User' }
     ],
-    pendingInvites: [
+    pendingRequests: [
         {type:mongoose.Schema.Types.ObjectId, ref:'User' }
     ],
     visibility:{ 

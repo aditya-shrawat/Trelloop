@@ -71,6 +71,8 @@ const NotificationItem = ({notif,setNotifications})=>{
     const [accepting, setAccepting] = useState(false);
     const [rejecting, setRejecting] = useState(false);
     const [closing, setClosing] = useState(false);
+    const [rejectingBoardRequest,setRejectingBoardRequest] = useState(false)
+    const [acceptingBoardRequest,setAcceptingBoardRequest] = useState(false)
 
     const acceptingInvitation = async ()=>{
         if(accepting) return;
@@ -97,7 +99,7 @@ const NotificationItem = ({notif,setNotifications})=>{
     }
 
     const rejectingInvitation = async ()=>{
-        if(accepting) return;
+        if(rejecting) return;
         try {
             setRejecting(true);
 
@@ -139,6 +141,48 @@ const NotificationItem = ({notif,setNotifications})=>{
         }
     }
 
+    const acceptBoardRequest = async ()=>{
+        if(acceptingBoardRequest) return;
+        try {
+            setAcceptingBoardRequest(true);
+
+            socket.emit("accept_board_request",{boardId:notif.boardId,senderId:notif.userId,userId:notif.senderId._id })
+
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
+                {withCredentials: true}
+            );
+
+            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+        } catch (error) {
+            console.log("Error while accpting request -",error)
+        }
+        finally {
+            setAcceptingBoardRequest(false);
+        }
+    }
+
+    const rejectBoardRequest = async ()=>{
+        if(rejectingBoardRequest) return;
+        try {
+            setRejectingBoardRequest(true);
+
+            socket.emit("reject_board_request",{boardId:notif.boardId,senderId:notif.userId,userId:notif.senderId._id })
+
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
+                {withCredentials: true}
+            );
+
+            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+        } catch (error) {
+            console.log("Error while rejecting board request -",error)
+        }
+        finally {
+            setRejectingBoardRequest(false);
+        }
+    }
+
     return(
         (notif.type === 'invite') ?
         (
@@ -165,7 +209,8 @@ const NotificationItem = ({notif,setNotifications})=>{
         </div>
         )
         :
-        (notif.type === 'member_joined' || notif.type === 'invite_rejected' || notif.type === 'member_removed'|| notif.type === 'member_left') ?
+        (notif.type === 'member_joined' || notif.type === 'invite_rejected' || notif.type === 'member_removed'|| notif.type === 'member_left' 
+            || notif.type === 'board_request_accepted' || notif.type ==='board_request_rejected' ) ?
         (
         <div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)] '>
             <div className="w-full flex ">
@@ -185,6 +230,30 @@ const NotificationItem = ({notif,setNotifications})=>{
             </div>
         </div>
         )
-        : null
+        : (notif.type === 'board_request') ?
+        (<div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)]'>
+            <div className="w-full flex ">
+                <div className=" mr-2">
+                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center">
+                        {notif.senderId.name[0].toUpperCase()}
+                    </div>
+                </div>
+                <p className='text-base text-gray-500'>
+                    <span className="font-semibold text-base text-gray-700 mr-1">{notif.senderId.name}</span> 
+                    {notif.message}
+                </p>
+            </div>
+            <div className='w-full mt-4 flex justify-evenly '>
+                <button onClick={acceptBoardRequest} className={`w-[40%] px-2 py-1 rounded-lg cursor-pointer outline-none border-none
+                     text-base font-semibold text-white ${(acceptingBoardRequest)?`bg-[#5fcaca]`:`bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-md`}`}>
+                    {acceptingBoardRequest ? "Accepting..." : "Accept"}
+                </button>
+                <button onClick={rejectBoardRequest} className='w-[40%] px-2 py-1 rounded-lg cursor-pointer outline-none border-[1px] border-gray-300 text-base font-semibold text-gray-700 hover:bg-gray-50 '>
+                    {rejectingBoardRequest ? "Rejecting..." : "Reject"}
+                </button>
+            </div>
+        </div>)
+        :null
+
     )
 }

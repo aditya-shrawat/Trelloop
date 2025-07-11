@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRef } from "react";
 import { RxCross2 } from "react-icons/rx";
 import socket from "../../Socket/socket";
+import useWorkspaceSocket from "../../Socket/useWorkspaceSocket"
 
 
 const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
@@ -15,23 +16,10 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
   const [workspaceMembers,setWorkspaceMembers] = useState([]);
   const [selectedUsersInfo,setSelectedUsersInfo] = useState([]);
   const [selectedUsersIds,setSelectedUsersIds] = useState([]);
-  const [workspaceId,setWorkspaceId] = useState('');
-  const [workspaceName,setWorkspaceName] = useState('');
   const [admin,setAdmin] = useState();
-
-  useEffect(()=>{
-    setWorkspaceId(workspace.id);
-    setWorkspaceName(workspace.name);
-  },[])
-
-  useEffect(() => {
-    if (workspaceId && workspaceName) {
-        // join workspace room
-        socket.emit("join_workspace_room", { workspaceId });
-
-        fetchworkspaceMembers();
-    }
-  }, [workspaceId]);
+  
+  // join workspace room
+  useWorkspaceSocket (socket,workspace.id,{});
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -47,7 +35,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
   const fetchworkspaceMembers = async ()=>{
     try {
         const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/workspace/${workspaceName}/${workspaceId}/members`,
+        const response = await axios.get(`${BackendURL}/workspace/${workspace.name}/${workspace.id}/members`,
             {withCredentials: true}
         );
 
@@ -57,6 +45,12 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
         console.log("Error in fetching workspace members - ",error)
     }
   }
+
+  useEffect(()=>{
+    if(!workspace) return ;
+
+    fetchworkspaceMembers()
+  },[workspace])
 
   const searchUsers = async (e) => {
     e.preventDefault();
@@ -118,11 +112,15 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
     if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
 
     try {
-        socket.emit("send_workspace_invite", {
-        workspaceId,
+      socket.emit("send_workspace_invite", {
+        workspaceId:workspace.id,
         userIds:selectedUsersIds,
         senderId: admin._id,
-    });
+      });
+
+      socket.once("workspace_invite_sent", (data) => {
+        console.log("invitation data : ", data);
+      });
     } catch (error) {
         console.log("Error while sending invitation - ",error)
     }
@@ -132,16 +130,6 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
         setIsAddingNewMembers(false)
     }
   }
-
-  useEffect(() => {
-    socket.on("workspace_invite_sent", (data) => {
-        console.log("invitation data : ", data);
-    });
-
-    return () => {
-        socket.off("workspace_invite_sent");
-    };
-  }, []);
 
 
   return (

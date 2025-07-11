@@ -65,7 +65,7 @@ export const getBoardData = async (req,res)=>{
     try {
         const {boardId} = req.params ;
 
-        const board = await Board.findById(boardId).select("name workspace admin members visibility").populate("admin",'name')
+        const board = await Board.findById(boardId).select("name workspace admin members pendingRequests visibility").populate("admin",'name')
         .populate({path: "workspace",select: "name members createdBy"});
         if(!board){
             return res.status(404).json({error:"Board not found."})
