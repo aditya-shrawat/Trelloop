@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { useUser } from "../../Contexts/UserContext";
+import socket from "../../Socket/socket";
+import useBoardSocket from "../../Socket/useBoardSocket";
 
 
 const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
@@ -16,7 +19,8 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
   const [selectedUsersIds,setSelectedUsersIds] = useState([]);
   const [workspaceMembers,setWorkspaceMembers] = useState([]);
   const [selectFrom,setSelectFrom] = useState('Workspace');
-
+  const {user} = useUser()
+  useBoardSocket(socket,board._id,{});
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -136,6 +140,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
     );
   };
 
+  // directly add workspace members to board
   const addSelectedUsers = async (e)=>{
     e.preventDefault()
     if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
@@ -158,8 +163,30 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
     }
   }
 
-  const sendInvite = ()=>{
-    console.log("send invite to - ",selectedUsersIds,selectedUsersInfo)
+  // send invite to selected users (select from all users available)
+  const inviteSelectedUsers = async(e)=>{
+    e.preventDefault()
+    if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
+
+    console.log(user);
+    try {
+      socket.emit("send_board_invite", {
+        boardId:board._id,
+        userIds:selectedUsersIds,
+        senderId:user.id,
+      });
+
+      socket.once("board_invite_sent", (data) => {
+        console.log("invitation data : ", data);
+      });
+    } catch (error) {
+      console.log("Error while sending invite - ",error)
+    }
+    finally{
+      setSelectedUsersIds([])
+      setSelectedUsersIds([])
+      setIsAddingNewMembers(false)
+    }
   }
 
 
@@ -260,7 +287,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
                 Add members
                 </button>)
             :
-                (<button onClick={sendInvite}
+                (<button onClick={inviteSelectedUsers}
                 className={`${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-[#49C5C5] hover:bg-[#5fcaca] 
                     hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] cursor-pointer`:`bg-[#5fcaca] cursor-not-allowed`} 
                     w-full py-2 font-semibold text-base text-white rounded-xl outline-none border-none `}>

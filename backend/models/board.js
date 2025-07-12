@@ -21,6 +21,9 @@ const boardSchema = mongoose.Schema({
     pendingRequests: [
         {type:mongoose.Schema.Types.ObjectId, ref:'User' }
     ],
+    pendingInvites: [
+        {type:mongoose.Schema.Types.ObjectId, ref:'User' }
+    ],
     visibility:{ 
         type:String, 
         default:'Workspace' 

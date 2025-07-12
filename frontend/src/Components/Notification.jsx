@@ -74,15 +74,25 @@ const NotificationItem = ({notif,setNotifications})=>{
     const [rejectingBoardRequest,setRejectingBoardRequest] = useState(false)
     const [acceptingBoardRequest,setAcceptingBoardRequest] = useState(false)
 
-    const acceptingInvitation = async ()=>{
-        if(accepting) return;
+    const acceptingInvitation = async (type)=>{
+        if(accepting || (type!=='Workspace' && type!=='Board')) return;
         try {
             setAccepting(true);
-
-            socket.emit("accept_workspace_invite",{workspaceId:notif.workspaceId, userId:notif.userId })
-            socket.on("workspace_invite_accepted",(data)=>{
-                console.log("Workspace invite accepted")
-            })
+            
+            if(type === 'Workspace'){
+                console.log("Workspace invite accept")
+                socket.emit("accept_workspace_invite",{workspaceId:notif.workspaceId, userId:notif.userId })
+                socket.on("workspace_invite_accepted",(data)=>{
+                    console.log("Workspace invite accepted")
+                })
+            }
+            else if(type === 'Board'){
+                console.log("board invite accept")
+                socket.emit("accept_board_invite",{boardId:notif.boardId,userId:notif.senderId,senderId:notif.userId })
+                // socket.on("board_invite_accepted",(data)=>{
+                //     console.log("Board invite rejected")
+                // })
+            }
 
             const BackendURL = import.meta.env.VITE_BackendURL;
             const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
@@ -98,15 +108,25 @@ const NotificationItem = ({notif,setNotifications})=>{
         }
     }
 
-    const rejectingInvitation = async ()=>{
-        if(rejecting) return;
+    const rejectingInvitation = async (type)=>{
+        if(rejecting || (type!=='Workspace' && type!=='Board')) return;
         try {
             setRejecting(true);
 
-            socket.emit("reject_workspace_invite",{workspaceId:notif.workspaceId, userId:notif.userId })
-            socket.on("workspace_invite_rejected",(data)=>{
-                console.log("Workspace invite rejected")
-            })
+            if(type === 'Workspace'){
+                console.log("workspace invite reject.")
+                socket.emit("reject_workspace_invite",{workspaceId:notif.workspaceId, userId:notif.userId })
+                socket.on("workspace_invite_rejected",(data)=>{
+                    console.log("Workspace invite rejected")
+                })
+            }
+            else if(type === 'Board'){
+                console.log("board invite reject.")
+                socket.emit("reject_board_invite",{boardId:notif.boardId,userId:notif.senderId,senderId:notif.userId })
+                // socket.on("board_invite_rejected",(data)=>{
+                //     console.log("Board invite rejected")
+                // })
+            }
 
             const BackendURL = import.meta.env.VITE_BackendURL;
             const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
@@ -184,7 +204,7 @@ const NotificationItem = ({notif,setNotifications})=>{
     }
 
     return(
-        (notif.type === 'invite') ?
+        (notif.type === 'invite' || notif.type === 'board_invite') ?
         (
         <div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)]'>
             <div className="w-full flex ">
@@ -198,11 +218,13 @@ const NotificationItem = ({notif,setNotifications})=>{
                 </p>
             </div>
             <div className='w-full mt-4 flex justify-evenly '>
-                <button onClick={acceptingInvitation} className={`w-[40%] px-2 py-1 rounded-lg cursor-pointer outline-none border-none
+                <button onClick={() => acceptingInvitation(notif.type === 'board_invite' ? 'Board' : 'Workspace')}
+                        className={`w-[40%] px-2 py-1 rounded-lg cursor-pointer outline-none border-none
                      text-base font-semibold text-white ${(accepting)?`bg-[#5fcaca]`:`bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-md`}`}>
                     {accepting ? "Accepting..." : "Accept"}
                 </button>
-                <button onClick={rejectingInvitation} className='w-[40%] px-2 py-1 rounded-lg cursor-pointer outline-none border-[1px] border-gray-300 text-base font-semibold text-gray-700 hover:bg-gray-50 '>
+                <button onClick={() => rejectingInvitation(notif.type === 'board_invite' ? 'Board' : 'Workspace')}
+                        className='w-[40%] px-2 py-1 rounded-lg cursor-pointer outline-none border-[1px] border-gray-300 text-base font-semibold text-gray-700 hover:bg-gray-50 '>
                     {rejecting ? "Rejecting..." : "Reject"}
                 </button>
             </div>
@@ -210,7 +232,7 @@ const NotificationItem = ({notif,setNotifications})=>{
         )
         :
         (notif.type === 'member_joined' || notif.type === 'invite_rejected' || notif.type === 'member_removed'|| notif.type === 'member_left' 
-            || notif.type === 'board_request_accepted' || notif.type ==='board_request_rejected' ) ?
+            || notif.type === 'board_request_accepted' || notif.type ==='board_request_rejected' ||notif.type ==='board_invite_accepted' || notif.type ==='board_invite_rejected' ) ?
         (
         <div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)] '>
             <div className="w-full flex ">
