@@ -78,6 +78,9 @@ const BoardActivityItem = ({activity})=>{
             case "board_created": 
             return <>created the board.</>;
 
+            case "board_rename":
+            return <>renamed the board from "{data.board_oldName}" to "{data.board_newName}".</>;
+
             case "board_visibility_updated":
             return <>changed the visibility of the board from "{data.prevVisibility}" to "{data.newVisibility}".</>;
 

@@ -394,3 +394,39 @@ export const leaveBoard = async (req,res)=>{
         return res.status(500).json({error:"Internal server error."})
     }
 }
+
+
+export const renameBoard = async (req,res)=>{
+    try {
+        const {boardId} = req.params
+        const {newName} = req.body
+
+        if(newName.trim()==="") return res.status(404).json({error:"Board new name is required."})
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+
+        const board = await Board.findById(boardId);
+        const prevName = board.name;
+        board.name = newName.trim();
+        await board.save()
+
+        await Activity.create({
+            workspace:board.workspace,
+            board:boardId,
+            user:req.user.id,
+            type:'board_rename',
+            data:{
+                board_oldName:prevName,
+                boardId:board._id,
+                board_newName:newName.trim(),
+            },
+            createdAt: new Date()
+        })
+
+        return res.status(200).json({message:"Board renamed successfully."});
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}

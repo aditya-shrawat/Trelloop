@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
     const divref = useRef();
@@ -119,12 +121,12 @@ const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
                 </div>
             :
             <div className='w-full'>
-                <div onClick={()=>{setIsEditingList(true)}} className='text-gray-700 hover:bg-gray-100 font-semibold rounded-lg px-2 py-1 cursor-pointer '>
-                    Edit title
+                <div onClick={()=>{setIsEditingList(true)}} className='text-gray-700 hover:bg-gray-100 font-semibold rounded-lg px-2 py-1 cursor-pointer flex items-center'>
+                    <div className='mr-2 '><FiEdit/></div> Change Title
                 </div>
                 { (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) &&
-                    <div onClick={()=>{setIsDeletingList(true)}} className='text-gray-700 hover:bg-gray-100 hover:text-red-600 font-semibold rounded-lg px-2 py-1 mt-1 cursor-pointer'>
-                        Delete list
+                    <div onClick={()=>{setIsDeletingList(true)}} className='text-gray-700 hover:bg-gray-100 hover:text-red-600 font-semibold rounded-lg px-2 py-1 mt-1 cursor-pointer flex items-center'>
+                        <div className='mr-2'><RiDeleteBin6Line/></div> Delete list
                     </div>
                 }
             </div>

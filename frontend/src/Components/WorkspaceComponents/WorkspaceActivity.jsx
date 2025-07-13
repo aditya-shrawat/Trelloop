@@ -87,6 +87,9 @@ const WorkspaceActivityItem = ({activity})=>{
             case "board_created": 
             return <>created the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a> in this workspace.</>;
 
+            case "board_rename": 
+            return <>renamed the board from <a className="common-a-tag-css">{data.board_oldName}</a> to <a href={`/board/${(data.board_newName).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_newName}</a> in this workspace.</>;
+
             case "board_deleted": 
             return <>deleted the board <a className="common-a-tag-css">{data.board_name}</a> from this workspace.</>;
 

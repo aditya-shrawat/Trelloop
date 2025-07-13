@@ -7,12 +7,11 @@ import { BsPersonWorkspace } from "react-icons/bs";
 import { MdOutlineVisibility } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { RiLock2Line } from "react-icons/ri";
-import { MdPublic } from "react-icons/md";
-import { IoIosArrowBack } from "react-icons/io";
 import BoardActivity from './BoardActivity';
 import { IoPerson } from "react-icons/io5";
 import BoardMembers from './BoardMembers';
+import BoardVisibilityPopup from './BoardVisibilityPopup';
+import { FiEdit } from "react-icons/fi";
 
 const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
@@ -20,6 +19,7 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
     const [VisibilityPopup,setVisibilityPopup] = useState(false)
     const [showActivity,setShowActivity] = useState(false);
     const [showMembers,setShowMembers] = useState(false);
+    const [showRenamePopup,setShowRenamePopup] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -53,6 +53,15 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
                             <div className='text-[#ffc300]'><TbStarFilled /></div>
                         }</div> Star
                     </div>
+                    {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                    (<div className="pt-3 mt-3 border-t-[1px] border-gray-300 relative">
+                        <div onClick={()=>{setShowRenamePopup(true)}} className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                            <div className='mr-3 text-lg'><FiEdit/></div> Change Title
+                        </div>
+                        {
+                            showRenamePopup && <RenamePopup boardId={board._id} boardName={board.name} setShowRenamePopup={setShowRenamePopup} setBoard={setBoard} />
+                        }
+                    </div>)}
                     {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
                     (<div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                         <div className='mr-3 text-lg'><div className='h-4 w-4 bg-red-400 rounded-sm'></div></div>Change background
@@ -133,8 +142,8 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
 
 
     return (
-        <div ref={divref} className='bg-white h-fit w-[300px] sm:w-[360px] px-4 py-6 rounded-lg border-[1px] border-gray-300 
-                absolute bottom-12 -right-4 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+        <div ref={divref} className='bg-white h-fit w-[330px] sm:w-[400px] px-4 py-6 rounded-lg border-[1px] border-gray-300 
+                absolute bottom-12 -right-6 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
             <div className='w-full h-full  '>
                 <div className='w-full text-start'>
                     <h1 className='text-lg font-semibold text-gray-700'>Delete Board</h1>
@@ -159,69 +168,75 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
 }
 
 
-const BoardVisibilityPopup = ({board,setBoard,setVisibilityPopup})=>{
+const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
+    const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
+    const [newName,setNewName] = useState(boardName?boardName:"");
 
 
-    const changeBoardVisibility = async (newVisibility)=>{
-        if(newVisibility.trim()===''){
-            return ;
-        }
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+          if (divref.current && !divref.current.contains(e.target)) {
+            setShowRenamePopup(false);
+          }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+    
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleInput = (e)=>{
+        e.preventDefault();
+
+        setNewName(e.target.value)
+    }
+
+    const renameBoard = async (e)=>{
+        e.preventDefault();
 
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/board/${board._id}/visibility`,{newVisibility},
+            const response = await axios.patch(`${BackendURL}/board/${boardId}/re-name`,
+                {newName},
             {withCredentials: true}
             );
 
-            setBoard(response.data.board)
+            setBoard((prev) => ({ ...prev, name:newName }));
+            setShowRenamePopup(false)
         } catch (error) {
-            console.log("Error while changing board visibility - ",error)
+            console.log("Error while renaming board - ",error)
             setErrorMsg("Something went wrong!")
         }
     }
 
 
     return (
-        <div className='bg-white h-auto w-full p-4 rounded-lg '>
+        <div ref={divref} className='bg-white h-fit w-[330px] sm:w-[400px] px-4 py-6 rounded-lg border-[1px] border-gray-300 
+                absolute top-full -right-6 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
             <div className='w-full h-full  '>
-                <div className='w-full text-start mb-2'>
-                    <h1 className='text-lg font-semibold text-gray-700 flex items-center'>
-                        <span onClick={()=>setVisibilityPopup(false)} className='cursor-pointer p-1 mr-1'><IoIosArrowBack /></span> 
-                        Change visibility
-                    </h1>
+                <div className='w-full text-start'>
+                    <h1 className='text-lg font-semibold text-gray-700'>Rename Board</h1>
+                    <p className='text-sm mt-1 text-gray-600'>Only the board title will be updated. Board data will remain unchanged.</p>
                 </div>
-                <div className='w-full space-y-2'>
-                    <div onClick={()=>{changeBoardVisibility('Workspace')}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(board.visibility==='Workspace')?`border-2 border-[#49C5C5]`:`border-none`}`}>
-                        <div className='text-gray-700 font-semibold flex items-center'>
-                            <BsPersonWorkspace className='mr-2' />Workspace
-                        </div>
-                        <p className='text-gray-500 text-sm'>
-                            All the members of the <span className='font-semibold'>{board.workspace.name}</span> workspace can see and edit this board.
-                        </p>
-                    </div>
-                    <div onClick={()=>{changeBoardVisibility('Private')}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(board.visibility==='Private')?`border-2 border-[#49C5C5]`:`border-none`}`}>
-                        <div className='text-gray-700 font-semibold flex items-center'>
-                            <RiLock2Line className='mr-2' />Private
-                        </div>
-                        <p className='text-gray-500 text-sm'>
-                            Only board members and workspace admin can see and edit this board.
-                         </p>
-                    </div>
-                    <div onClick={()=>{changeBoardVisibility('Public')}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(board.visibility==='Public')?`border-2 border-[#49C5C5]`:`border-none`}`}>
-                        <div className='text-gray-700 font-semibold flex items-center'>
-                            <MdPublic className='mr-2' />Public
-                        </div>
-                        <p className='text-gray-500 text-sm'>
-                            Anyone on the internet can see this board. Only board members and workspace members can edit.
-                        </p>
-                    </div>
+                <div className='w-full text-start mt-4'>
+                    <label className='text-sm font-semibold text-gray-700' >New title</label>
+                    <input type="text"  onChange={handleInput} value={newName}
+                        placeholder='Enter list name'
+                        className='w-full px-2 py-1 mt-1 text-gray-700 border-[1px] border-gray-300 outline-none rounded-lg ' />
                 </div>
                 {   (errorMsg.trim()!=="") &&
                     <div className='text-red-600 text-sm mt-2'>
                     {errorMsg}
                     </div>
                 }
+                <div className='w-full flex justify-between md:justify-between items-center mt-6'>
+                    <button onClick={renameBoard} className='w-[45%] py-1 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer outline-none'>
+                        Rename
+                    </button>
+                    <button onClick={()=>{setShowRenamePopup(false)}} className='w-[45%] py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
     )
