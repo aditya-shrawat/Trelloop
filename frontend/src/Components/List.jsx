@@ -2,11 +2,13 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import Card from "./Card";
+import { BsThreeDots } from "react-icons/bs";
+import ListOptions from "./List Components/ListOptions";
 
-const List = ({list,boardId,UserRole}) => {
+const List = ({list,boardId,setLists,UserRole}) => {
     const [cards,setCards] = useState([]);
     const [loading,setLoading] = useState(true);
-
+    const [showListOptions,setShowListOptions] = useState(false)
 
     const fetchListCards = async ()=>{
         try {
@@ -33,8 +35,18 @@ const List = ({list,boardId,UserRole}) => {
     <div className="w-[270px] shrink-0 h-full mr-4">
 
     <div className="max-h-full h-auto py-2 flex flex-col border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
-      <div className="w-full px-3 pt-2 pb-1 break-words font-semibold text-gray-700">
-        {list.name}
+      <div className="w-full px-3 pt-2 pb-1 text-gray-700 flex items-center justify-between">
+        <div className="break-words font-semibold">
+            {list.name}
+        </div>
+        { (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) &&
+            <div className="w-auto h-auto relative">
+                <div onClick={()=>{setShowListOptions(true)}} className={`w-fit h-fit p-1 hover:bg-gray-200 ${(showListOptions)&&`bg-gray-200`} cursor-pointer rounded-md`}>
+                    <BsThreeDots />
+                </div>
+                { showListOptions && <ListOptions list={list} setLists={setLists} boardId={boardId} UserRole={UserRole} setShowListOptions={setShowListOptions} />}
+            </div>
+        }
       </div>
       <div className="w-full flex-1 px-3 overflow-x-hidden overflow-y-auto space-y-2">
         {

@@ -2,6 +2,7 @@ import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
+import Notification from "../models/notification.js";
 import StarredBoard from "../models/starredBoard.js";
 import User from "../models/user.js";
 import Workspace from "../models/workspace.js";
@@ -171,46 +172,38 @@ export const deleteBoard = async (req,res)=>{
     try {
         const {boardId} = req.params;
 
-        if (!req.canEdit) {
-            return res.status(403).json({ error: "You don't have permission to edit this board." });
-        }
+        if (!req.isBoardAdmin && !req.isWorkspaceAdmin) {
+            return res.status(403).json({ error: "You don't have permission to delete this board." });
+        } 
 
         const board = await Board.findById(boardId);
-        if(!board){
-            return res.status(404).json({error:"Board doesn't exist."})
-        }
-        await board.populate("workspace");
+        const boardName = board.name;
+        await board.populate('workspace');
         const workspace = board.workspace;
-
-        const userId = req.user.id ;
-        const isBoardAdmin = userId === board.admin?.toString()
-        const isWorkspaceAdmin = workspace.createdBy?.toString() === userId
-        if(!isBoardAdmin && !isWorkspaceAdmin){
-            return res.status(403).json({error:"Only workspace and board admin's can delete board."})
-        }
-
-        await Activity.create({
-            workspace:workspace._id,
-            board:board._id,
-            user:userId,
-            type:'board_deleted',
-            data:{
-                board_name:board.name,
-                workspace_name:workspace.name,
-                boardId:board._id
-            },
-            createdAt: new Date()
-        })
 
         const lists = await List.find({ board: boardId });
         const listIds = lists.map(list => list._id);
 
         await Card.deleteMany({ list: { $in: listIds } });
         await List.deleteMany({ board: boardId });
+        await StarredBoard.deleteMany({ board: boardId });
+        await Notification.deleteMany({ boardId: boardId, isRead: false });
 
         await Board.findByIdAndDelete(boardId);
 
-        return res.status(200).json({message:`${board.name} is deleted successfully.`})
+        const userId = req.user.id ;
+        await Activity.create({
+            workspace:workspace._id,
+            user:userId,
+            type:'board_deleted',
+            data:{
+                board_name:boardName,
+                workspace_name:workspace.name,
+            },
+            createdAt: new Date()
+        })
+
+        return res.status(200).json({message:`Board is deleted successfully.`})
     } catch (error) {
         return res.status(500).json({error:"Internal server error."})
     }

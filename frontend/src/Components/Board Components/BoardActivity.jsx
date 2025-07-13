@@ -76,13 +76,19 @@ const BoardActivityItem = ({activity})=>{
 
         switch (type) {
             case "board_created": 
-            return <>created this board.</>;
+            return <>created the board.</>;
 
             case "board_visibility_updated":
-            return <>changed visibility of the board from "{data.prevVisibility}" to "{data.newVisibility}".</>;
+            return <>changed the visibility of the board from "{data.prevVisibility}" to "{data.newVisibility}".</>;
 
             case "list_created":
-            return <>added the list "{data.list_name}" to this board.</>;
+            return <>added the list "{data.list_name}" to the board.</>;
+
+            case "list_deleted":
+            return <>deleted the list "{data.list_name}" from the board.</>;
+
+            case "list_updated":
+            return <>renamed the list from "{data.list_oldName}" to "{data.list_newName}".</>;
 
             case "card_created":
             return <>added the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> to the list "{data.list_name}".</>;
@@ -91,30 +97,30 @@ const BoardActivityItem = ({activity})=>{
             return <>renamed the card from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a>.</>;
 
             case "card_newInfo":
-            return <>updated the card name "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a> and updated description.</>;
+            return <>updated the card name from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a> and updated description.</>;
 
             case "card_newDesc":
-            return <>updated <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> card description.</>;
+            return <>updated the description of the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
 
             case "card_marked":
-            return <>marked <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> as {(data.isCompleted)?"complete":"incomplete"}.</>
+            return <>marked the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> as {(data.isCompleted)?"complete":"incomplete"}.</>
 
             case "card_attachment":
                 if(data.actionType==='added'){
-                    return <>attached <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> to <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> card.</>; 
+                    return <>attached <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> to the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
                 }
                 else if(data.actionType==='updated'){
-                    return <>updated attachment <a href={data.oldAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.oldAttachment}</a> to <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> on <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> card.</>; 
+                    return <>updated attachment <a href={data.oldAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.oldAttachment}</a> to <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> on the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
                 }
                 else if(data.actionType==='deleted'){
-                    return <>deleted attachment <a href={data.removedAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.removedAttachment}</a> from <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> card.</>; 
+                    return <>deleted attachment <a href={data.removedAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.removedAttachment}</a> from the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
                 }
                 else {
-                    return <>performed attachment action on <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> card.</>;
+                    return <>performed an attachment action on the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
                 }
 
             default:
-            return `performed an action. ${type}`;
+            return `performed an action : ${type}`;
         }
     }
 

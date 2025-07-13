@@ -257,7 +257,7 @@ const Board = () => {
                 <>
                     { (board && board._id)&&
                     lists.map((list)=>(
-                        <List key={list._id} list={list} boardId={board._id} UserRole={UserRole} />
+                        <List key={list._id} list={list} boardId={board._id} setLists={setLists} UserRole={UserRole} />
                     ))
                     }
                 </>

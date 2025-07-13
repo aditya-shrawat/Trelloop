@@ -2,7 +2,7 @@
 import express from 'express';
 import checkAuthentication from '../middlewares/authentication.js';
 import { addNewMembers, allJoinedWorkspacesAndBoards, changeVisibility, deleteBoard, fetchBoardMembers, getBoardActivies, getBoardData, getBoardStarStatus, getStarredBoards, joinMemberInBoard, leaveBoard, removeBoardMember, toggleBoardStarStatus } from '../controllers/board.js';
-import { creatingNewList } from '../controllers/list.js';
+import { creatingNewList, deleteList, updateList } from '../controllers/list.js';
 import checkBoardAccess from '../middlewares/checkBoardAccess.js';
 import { fetchAllLists } from '../controllers/list.js';
 import { creatingNewCard, fetchListCards } from '../controllers/card.js';
@@ -27,6 +27,8 @@ router.post("/:boardId/newList",checkAuthentication,checkBoardAccess,creatingNew
 router.get("/:boardId/lists",checkAuthentication,checkBoardAccess,fetchAllLists)
 router.post("/:boardId/list/:listId/newCard",checkAuthentication,checkBoardAccess,creatingNewCard)
 router.get("/:boardId/list/:listId/cards",checkAuthentication,checkBoardAccess,fetchListCards)
+router.patch("/:boardId/list/:listId/update",checkAuthentication,checkBoardAccess,updateList)
+router.delete("/:boardId/list/:listId/delete",checkAuthentication,checkBoardAccess,deleteList)
 
 router.get("/:name/:boardId",checkAuthentication,checkBoardAccess,getBoardData)
 export default router;
