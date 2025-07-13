@@ -96,6 +96,9 @@ const BoardActivityItem = ({activity})=>{
             case "card_created":
             return <>added the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> to the list "{data.list_name}".</>;
 
+            case "card_deleted":
+            return <>deleted the card <a className='common-a-tag-css'>{data.card_name}</a> from the board.</>;
+
             case "card_renamed":
             return <>renamed the card from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a>.</>;
 

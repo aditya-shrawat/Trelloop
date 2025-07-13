@@ -11,13 +11,15 @@ import { TbListDetails } from "react-icons/tb";
 import { BiEdit } from "react-icons/bi";
 import { AiTwotoneCloseCircle } from "react-icons/ai";
 import axios from 'axios';
-import AddAttachments from './CardFunctionalities/AddAttachments';
-import AttachmentContainer from './CardFunctionalities/AttachmentContainer';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useUser } from '../Contexts/UserContext';
+import AddAttachments from './CardFunctionalities/Attachment/AddAttachments';
+import AttachmentContainer from './CardFunctionalities/Attachment/AttachmentContainer';
+import DeleteCard from './CardFunctionalities/Delete card/DeleteCard';
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 dayjs.extend(relativeTime);
 
@@ -235,7 +237,6 @@ const CardDetailsModel = () => {
                             </div>
                             :
                             <div className='flex items-center'>
-                                {/* <div><IoCloseSharp className='text-gray-600 cursor-pointer text-2xl mr-2' /></div> */}
                                 <div onClick={(e)=>{cancelUpdatingCard(e)}}
                                     className='mr-4 bg-gray-50 text-gray-700 border-[1px] border-gray-300 px-2 py-0.5 cursor-pointer rounded-lg flex items-center '>
                                     Cancel
@@ -370,6 +371,20 @@ const CardDetailsModel = () => {
                     Cover
                 </button>
                 </>)}
+
+                {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                    <div className='h-auto w-auto relative'>
+                        <button onClick={()=>{setCardFunctionality("delete")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                            flex items-center text-gray-700 hover:text-red-600">
+                            <div className='w-auto h-auto'><RiDeleteBin6Line className="text-lg mr-3" /></div>
+                            Delete card
+                        </button>
+                        {
+                        (cardFunctionality==='delete') &&
+                        <DeleteCard setCardFunctionality={setCardFunctionality} cardId={id} />
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>

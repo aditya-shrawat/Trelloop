@@ -401,3 +401,51 @@ export const deleteAttachment = async (req, res) => {
         return res.status(500).json({ message: "Internal server error." });
     }
   }
+
+
+export const deleteCard = async (req,res)=>{
+    try {
+        const {cardId} = req.params;
+
+        const card = req.card
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name members createdBy'
+            }
+        });
+        const board = list.board
+        const workspace = board.workspace ;
+        const userId = req.user.id;
+
+        const isBoardAdmin = board.admin?.toString() === userId;
+        const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
+
+        if (!isBoardAdmin && !isWorkspaceAdmin) {
+            return res.status(403).json({ error: "You don't have permission to delete this card." });
+        }
+
+        const cardName = card.name;
+        await Card.findByIdAndDelete(cardId);
+
+        await Activity.create({
+            workspace: workspace._id,
+            board: board._id,
+            user: userId,
+            type: "card_deleted",
+            data: {
+                card_name: cardName,
+                boardId: list.board._id,
+                board_name:list.board.name
+            },
+            createdAt: new Date()
+        });
+
+        return res.status(200).json({message:"Card deleted successfully."})
+    } catch (error) {
+        console.log("Error while deleteing card - ",error)
+        return res.status(500).json({error:"Internal server error."})
+    }
+}

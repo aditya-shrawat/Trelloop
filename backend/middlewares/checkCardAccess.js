@@ -29,7 +29,7 @@ const checkCardAccess = async (req, res, next) => {
       return res.status(403).json({ error: "Access denied to this card" });
     }
 
-    if (board.visibility === 'Private' && !isBoardMember && !isBoardAdmin) {
+    if (board.visibility === 'Private' && !isBoardMember && !isBoardAdmin && !isWorkspaceAdmin) {
       return res.status(403).json({ error: "Access denied to this card" });
     }
 
