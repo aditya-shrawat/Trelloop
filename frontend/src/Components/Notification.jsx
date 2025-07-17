@@ -47,7 +47,7 @@ const Notification = ({setShowNotifications}) => {
                         Notifications
                     </h3>
                 </div>
-                <div className='w-full p-2 space-y-4 h-auto flex flex-col'>
+                <div className='w-full p-2 space-y-4 max-h-96 overflow-auto flex flex-col'>
                     {
                     (loadingNotifications)?
                     <div>Loading notifications...</div>
@@ -251,7 +251,22 @@ const NotificationItem = ({notif,setNotifications})=>{
                 </button>
             </div>
         </div>
-        )
+        ) :
+        (notif.type === 'card_deadline') ?
+            (
+            <div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)] '>
+                <div className="w-full flex ">
+                    <p className='text-base text-gray-500'>
+                        {notif.message}
+                    </p>
+                </div>
+                <div className='w-full mt-4 flex justify-end '>
+                    <button onClick={closeNotification} className=' px-6 py-1 rounded-lg cursor-pointer outline-none border-[1px] border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50'>
+                        {closing ? "Closing..." : "Close"}
+                    </button>
+                </div>
+            </div>
+            )
         : (notif.type === 'board_request') ?
         (<div className='w-full h-auto p-3 bg-white rounded-lg shadow-[0px_0px_4px_rgba(12,12,13,0.2)]'>
             <div className="w-full flex ">

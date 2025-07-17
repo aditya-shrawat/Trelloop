@@ -8,7 +8,7 @@ const notificationSchema = new mongoose.Schema({
     senderId: {
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
-        required:true,
+        // required:true,
     },
     type:{ 
         type:String, 
@@ -21,6 +21,10 @@ const notificationSchema = new mongoose.Schema({
     boardId:{ 
         type:mongoose.Schema.Types.ObjectId, 
         ref:"Board" 
+    },
+    cardId:{ 
+        type:mongoose.Schema.Types.ObjectId, 
+        ref:"Card" 
     },
     message:{ 
         type:String, 

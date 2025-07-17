@@ -17,6 +17,7 @@ import checkAuthentication from './middlewares/authentication.js';
 import { fetchUserInfo } from './controllers/userInfo.js';
 import NotificationRouter from './routes/notification.js'
 import { boardSocket } from './socket/boardSocket.js';
+import startReminderScheduler from './cron/deadlineReminder.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -55,6 +56,7 @@ io.on('connection', (socket) => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
 });
+startReminderScheduler(io);
 
 app.get("/user-info",checkAuthentication,fetchUserInfo);
 app.use('/user',UserRouter);
