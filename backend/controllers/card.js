@@ -83,6 +83,7 @@ export const fetchCardData = async (req,res)=>{
         const {cardId} = req.params;
         
         const card = req.card;
+        await card.populate({ path: 'members', select: 'name' });
         const list = await List.findById(card.list).select('name board')
 
         const board = await Board.findById(list.board).select("name workspace admin members visibility").populate("admin",'name')
@@ -496,5 +497,46 @@ export const updateDeadline = async (req,res)=>{
     } catch (error) {
         console.log("Error while updating deadline - ",error)
         return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const addNewCardMembers = async (req,res)=>{
+    try {
+        const {selectedMembersIds} = req.body;
+        
+        if (!selectedMembersIds) {
+            return res.status(400).json({ error: "New members are not selected." });
+        }
+
+        await req.list.populate({
+            path: "board",
+            populate: {
+                path: "workspace",
+                select: "createdBy",
+            },
+        });
+
+        const board = req.list.board;
+        const workspaceAdminId = board.workspace?.createdBy?.toString();
+        const boardAdminId = board.admin?.toString();
+        const requesterId = req.user.id?.toString();
+
+        if (requesterId !== workspaceAdminId && requesterId !== boardAdminId) {
+            return res.status(403).json({ error: "You don't have permission to edit this board." });
+        }
+         
+        const card = req.card
+        
+        selectedMembersIds.forEach((userId) => {
+            if( !card.members.some(id => id.toString()===(userId).toString()) ){
+                card.members.push(userId);
+            }
+        });
+        await card.save();
+
+        return res.status(200).json({message:"Members are added successfully."});
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."});
     }
 }

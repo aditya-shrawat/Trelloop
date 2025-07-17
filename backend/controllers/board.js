@@ -320,15 +320,19 @@ export const addNewMembers = async (req,res)=>{
     try {
         const {boardId} = req.params;
         const {selectedUsers} = req.body;
+
+        if(!selectedUsers) return res.status(400).json({error:"Users are not selected."})
         
         if (!req.isWorkspaceAdmin && !req.isBoardAdmin) {
             return res.status(403).json({ error: "You don't have permission to edit this board." });
         }
          
-        const board = await Board.findById(boardId)
+        const board = await Board.findById(boardId).populate({ path: "workspace", select: "createdBy" });
+        const workspaceAdminId = board.workspace.createdBy?.toString();
+        const boardAdminId = board.admin?.toString();
         
-        selectedUsers.forEach((userId) => {
-            if(!board.members.some(id => id.toString()===(userId).toString()) && req.isWorkspaceAdmin!==(userId).toString() && req.isBoardAdmin!==(userId).toString() ){
+        selectedUsers?.forEach((userId) => {
+            if(!board.members?.some(id => id?.toString()===userId) && workspaceAdminId!==userId && boardAdminId !==userId ){
                 board.members.push(userId);
             }
         });

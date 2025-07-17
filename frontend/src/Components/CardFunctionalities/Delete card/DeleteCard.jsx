@@ -42,7 +42,7 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
 
 
     return (
-    <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
+    <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
             absolute bottom-[130%] sm:top-[130%] right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] '>
         <div className='w-full h-full  '>
             <div className='w-full text-start'>

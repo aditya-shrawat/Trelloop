@@ -27,7 +27,10 @@ const cardSchema = mongoose.Schema({
     ],
     deadline:{
         type:Date,
-    }
+    },
+    members:[
+        {type:mongoose.Schema.Types.ObjectId, ref:'User' }
+    ],
 },{timestamps:true,})
 
 

@@ -21,6 +21,9 @@ import AttachmentContainer from './CardFunctionalities/Attachment/AttachmentCont
 import DeleteCard from './CardFunctionalities/Delete card/DeleteCard';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import DatePicker from './CardFunctionalities/Date/DatePicker';
+import MembersList from './CardFunctionalities/Members/MembersList';
+import AddMemberToCard from './CardFunctionalities/Members/AddMemberToCard';
+import { RiAddLargeFill } from "react-icons/ri";
 
 dayjs.extend(relativeTime);
 
@@ -42,12 +45,12 @@ const CardDetailsModel = () => {
     const [board,setBoard] = useState()
     const {user} = useUser()
     const [UserRole,setUserRole] = useState({
+                                isCardMember:undefined,
                                 isBoardMember: undefined,
                                 isWorkspaceMember: undefined,
                                 isBoardAdmin: undefined,
                                 isWorkspaceAdmin: undefined
                             });
-    const [isDatePickerOpen,setIsDatePickerOpen] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -105,23 +108,25 @@ const CardDetailsModel = () => {
     },[])
 
     useEffect(() => {
-        if (board && user) {
+        if (board && user && card) {
             const workspace = board.workspace;
             const userId = user.id?.toString();
 
             const isBoardMember = board.members?.some(id => id.toString() === userId);
             const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
-            const isBoardAdmin = board.admin?.toString() === userId;
+            const isBoardAdmin = board.admin._id?.toString() === userId;
             const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
+            const isCardMember = card.members?.some(user => user._id?.toString() === userId);
 
             setUserRole({
+                    isCardMember,
                     isBoardMember,
                     isWorkspaceMember,
                     isBoardAdmin,
                     isWorkspaceAdmin
                 });
         }
-    }, [board,user]);
+    }, [board,user,card]);
 
 
     const handleInput = (e)=>{
@@ -366,29 +371,47 @@ const CardDetailsModel = () => {
             {/* Sidebar */}
             <div className="sm:w-52 mt-4 sm:mt-none p-6 sm:pr-6 sm:p-2
                     space-y-4 grid grid-cols-2 gap-x-4 sm:flex sm:flex-col ">
-                {/* {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
-                (<button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-700">
-                    <IoPersonAdd className="text-lg mr-3" />
-                    Add member
-                </button>)
+                {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                    (<div className='relative'>
+                        <button onClick={()=>{setCardFunctionality("addMember")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                            flex items-center text-gray-700">
+                            <RiAddLargeFill className="text-lg mr-3" />
+                            Add member
+                        </button>
+
+                        { (board && card && cardFunctionality==='addMember' )&& 
+                            <AddMemberToCard onClose={() => setCardFunctionality(null)} cardId={card._id} cardMembers={card.members} boardId={board._id} />
+                        }
+                    </div>)
                 }
 
-                <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-700">
-                    <IoPerson className="text-lg mr-3" />
-                    Members
-                </button> */}
+                { (board && ((UserRole.isBoardMember || UserRole.isBoardAdmin ||UserRole.isWorkspaceAdmin ||UserRole.isWorkspaceMember) && !UserRole.isCardMember) ) && 
+                    <button onClick={()=>{setCardFunctionality("addMember")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                        flex items-center text-gray-700">
+                        <IoPersonAdd className="text-lg mr-3" />
+                        Join
+                    </button>
+                }
+
+                <div className='relative'>
+                    <button onClick={()=>{setCardFunctionality("members")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                        flex items-center text-gray-700">
+                        <IoPerson className="text-lg mr-3" />
+                        Members
+                    </button>
+
+                    { (card && cardFunctionality==='members' )&& <MembersList onClose={() => setCardFunctionality(null)} members={card.members} />}
+                </div>
 
                 {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
                     <div className='relative'>
-                        <button onClick={()=>{setIsDatePickerOpen(true)}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                        <button onClick={()=>{setCardFunctionality("datePicker")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                             flex items-center text-gray-700">
                             <FaRegCalendarAlt className="text-lg mr-3" />
                             Dates
                         </button>
 
-                        { (card && isDatePickerOpen )&& <DatePicker onClose={() => setIsDatePickerOpen(false)} cardId={card._id} setCard={setCard} />}
+                        { (card && cardFunctionality==='datePicker' )&& <DatePicker onClose={() => setCardFunctionality(null)} cardId={card._id} setCard={setCard} />}
                     </div>
                 }
 
