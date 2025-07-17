@@ -201,6 +201,27 @@ const CardDetailsModel = () => {
         }
     }
 
+    const joinCard = async ()=>{
+        if(UserRole.isCardMember){
+            console.log("You are already a member of card.")
+            return;
+        }
+        if(!card) return;
+
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.patch(`${BackendURL}/card/${card._id}/join`,
+                {},
+            {withCredentials: true}
+            );
+
+            console.log(response.data.message)
+            setUserRole((prev)=>({...prev,isCardMember:true}));
+        } catch (error) {
+            console.log("Error in joining card - ",error)
+        }
+    }
+
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
         <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full py-6
@@ -386,7 +407,7 @@ const CardDetailsModel = () => {
                 }
 
                 { (board && ((UserRole.isBoardMember || UserRole.isBoardAdmin ||UserRole.isWorkspaceAdmin ||UserRole.isWorkspaceMember) && !UserRole.isCardMember) ) && 
-                    <button onClick={()=>{setCardFunctionality("addMember")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                    <button onClick={joinCard} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
                         <IoPersonAdd className="text-lg mr-3" />
                         Join
@@ -400,7 +421,7 @@ const CardDetailsModel = () => {
                         Members
                     </button>
 
-                    { (card && cardFunctionality==='members' )&& <MembersList onClose={() => setCardFunctionality(null)} members={card.members} />}
+                    { (card && cardFunctionality==='members' )&& <MembersList onClose={() => setCardFunctionality(null)} members={card.members} cardId={card._id} UserRole={UserRole} setCard={setCard} />}
                 </div>
 
                 {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&

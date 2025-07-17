@@ -523,7 +523,7 @@ export const addNewCardMembers = async (req,res)=>{
         const requesterId = req.user.id?.toString();
 
         if (requesterId !== workspaceAdminId && requesterId !== boardAdminId) {
-            return res.status(403).json({ error: "You don't have permission to edit this board." });
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
         }
          
         const card = req.card
@@ -538,5 +538,80 @@ export const addNewCardMembers = async (req,res)=>{
         return res.status(200).json({message:"Members are added successfully."});
     } catch (error) {
         return res.status(500).json({error:"Internal server error."});
+    }
+}
+
+export const joinCard = async (req,res)=>{
+    try {
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
+
+        const card = req.card ;
+        const isMember = (card.members)?.some((id)=>id?.toString()=== (req.user.id).toString());
+
+        if(isMember) return res.status(400).json({error:"User is already card member."})
+
+        card.members.push(req.user.id);
+        await card.save();
+
+        return res.status(200).json({message:"User joined card successfully."});
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+export const removeCardMember = async (req,res)=>{
+    try {
+        const {userId} = req.body;
+        if(!userId) return res.status(400).json({error:"User id is not provided."})
+
+        await req.list.populate({
+            path: "board",
+            populate: {
+                path: "workspace",
+                select: "createdBy",
+            },
+        });
+
+        const board = req.list.board;
+        const workspaceAdminId = board.workspace?.createdBy?.toString();
+        const boardAdminId = board.admin?.toString();
+        const requesterId = req.user.id?.toString();
+
+        if (requesterId !== workspaceAdminId && requesterId !== boardAdminId) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
+
+        const card = req.card;
+
+        card.members = (card.members)?.filter((id)=>id?.toString()!==userId?.toString());
+        await card.save();
+
+        return res.status(200).json({message:"Member removed successfully."})
+    } catch (error) {
+        console.log("error - ",error)
+        return res.status(500).json("Internal server error.")
+    }
+}
+
+
+export const leaveCard = async (req,res)=>{
+    try {
+        const {userId} = req.body;
+        if(!userId) return res.status(400).json({error:"User id is not provided."})
+
+        if ( (req.user.id)?.toString() !== userId?.toString() ) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
+
+        const card = req.card;
+
+        card.members = (card.members)?.filter((id)=>id?.toString()!==userId?.toString());
+        await card.save();
+
+        return res.status(200).json({message:"Member left the card successfully."})
+    } catch (error) {
+        return res.status(500).json("Internal server error.")
     }
 }

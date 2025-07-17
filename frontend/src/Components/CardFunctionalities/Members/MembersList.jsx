@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
+import { useUser } from '../../../Contexts/UserContext';
+import { RxExit } from "react-icons/rx";
+import axios from 'axios';
 
-const MembersList = ({onClose,members}) => {
+const MembersList = ({onClose,members,cardId,UserRole,setCard}) => {
     const divref = useRef();
+    const [isAdmin,setIsAdmin] = useState(false);
+    const {user} = useUser()
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -15,6 +20,11 @@ const MembersList = ({onClose,members}) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    useEffect(()=>{
+        if(UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin){
+            setIsAdmin(true);
+        }
+    },[UserRole])
 
   return (
     <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
@@ -23,26 +33,12 @@ const MembersList = ({onClose,members}) => {
             <h3 className='pb-2 text-gray-700 font-semibold border-b-[1px] border-gray-300'>Card members</h3>
             <div className='w-full max-h-80 overflow-auto'>
                 {
-                (members.length ===0) ?
+                (members.length ===0 || !user) ?
                 <div className='w-full py-5 text-center text-gray-500 font-semibold'>NO members !!</div> 
                 :
                 members?.map((member)=>(
-                    <div key={member._id} className="w-full py-2 border-b-[1px] border-gray-300 flex items-center">
-                        <div className=" mr-3">
-                            <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center">
-                                {(member.name) && (member.name[0].toUpperCase())}
-                            </div>
-                        </div>
-                        <div className="w-full h-auto flex justify-between items-center">
-                            <div className="w-full h-auto">
-                                <h2 className="font-semibold text-gray-700 flex items-baseline">{`${member.name}`}</h2>
-                                <h2 className="text-gray-500 text-xs">@username</h2>
-                            </div>
-                            <div className="w-auto h-auto inline-block ">
-                                <div className="text-base p-1 flex items-center justify-center cursor-pointer "><RxCross2 /></div>
-                            </div>
-                        </div>
-                    </div>
+                    <MembersItem key={member._id} member={member} isAdmin={isAdmin} isSelf={(member._id).toString() === (user.id).toString()} 
+                        cardId={cardId} setCard={setCard} />
                 ))
                 }
             </div>
@@ -52,3 +48,75 @@ const MembersList = ({onClose,members}) => {
 }
 
 export default MembersList
+
+const MembersItem = ({member,isAdmin,isSelf,cardId,setCard})=>{
+    const removeMember = async ()=>{
+        if(!isAdmin) return;
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.patch(`${BackendURL}/card/${cardId}/remove-member`,
+                {userId:member._id},
+                {withCredentials: true}
+            );
+
+            console.log(response.data.message)
+            setCard(prevCard => ({
+                ...prevCard,
+                members: prevCard.members?.filter(m => (m._id).toString() !== (member._id).toString())
+            }));
+        } catch (error) {
+            console.log("Error while removeing card member - ",error)
+        }
+    }
+
+    const leaveCard = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.patch(`${BackendURL}/card/${cardId}/leave`,
+                {userId:member._id},
+                {withCredentials: true}
+            );
+
+            console.log(response.data.message)
+            setCard(prevCard => ({
+                ...prevCard,
+                members: prevCard.members?.filter(m => (m._id).toString() !== (member._id).toString())
+            }));
+        } catch (error) {
+            console.log("Error while leaving card - ",error)
+        }
+    }
+
+  return (
+    <div
+      className="w-full px-1 py-2 border-b-[1px] border-gray-300 flex items-center">
+      <div className=" mr-2">
+        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center">
+          {(member.name) && (member.name[0].toUpperCase())}
+        </div>
+      </div>
+      <div className="w-full h-auto flex justify-between items-center">
+        <div className="w-full h-auto">
+          <h2 className="font-semibold text-gray-700 flex items-baseline line-clamp-1">{`${member.name}`} 
+            {isSelf && <span className="text-sm text-gray-500 ml-2">(You)</span>}
+          </h2>
+          <h2 className="text-gray-500 text-xs line-clamp-1">@username</h2>
+        </div>
+        <div className="w-auto h-auto inline-block ">
+          {
+          (isAdmin && !isSelf)?
+            <div className='w-auto h-auto ml-2'>
+                <div onClick={removeMember} className="text-base text-gray-700 p-1 flex items-center justify-center cursor-pointer "><RxCross2 /></div>
+            </div>
+          :
+          (isSelf )?
+            <div className='w-auto h-auto ml-2'>
+                <div onClick={leaveCard} className="text-base text-red-500 p-1 flex items-center justify-center cursor-pointer "><RxExit /></div>
+            </div>
+          :null
+          }
+        </div>
+      </div>
+    </div>
+  )
+}

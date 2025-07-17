@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import { RxCross2 } from "react-icons/rx";
+import { RxExit } from "react-icons/rx";
 
 const BoardMembers = ({boardId,setShowMembers}) => {
     const [members,setMembers] = useState([]);
@@ -81,10 +83,10 @@ const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,boardId,setMembe
       </div>
       <div className="w-full h-auto flex justify-between items-center">
         <div className="w-full h-auto">
-          <h2 className="font-semibold text-gray-700 flex items-baseline">{`${member.name}`} 
+          <h2 className="font-semibold text-gray-700 flex items-baseline line-clamp-1">{`${member.name}`} 
             {isSelf && <span className="text-sm text-gray-500 ml-2">(You)</span>}
           </h2>
-          <h2 className="text-gray-500 text-xs">@username</h2>
+          <h2 className="text-gray-500 text-xs line-clamp-1">@username</h2>
         </div>
         <div className="w-auto h-auto inline-block ">
           {
@@ -97,9 +99,12 @@ const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,boardId,setMembe
           :
           (isCurrentUserAdmin && !isAdmin)?
           <div className='relative inline-block'>
-            <div onClick={()=>{setRemovePopup(true)}}
+            {/* <div onClick={()=>{setRemovePopup(true)}}
               className="px-2 py-1 rounded-md cursor-pointer border-[1px] border-gray-300 hover:text-gray-700 text-gray-500 text-sm font-semibold flex items-center ">
               Remove
+            </div> */}
+            <div onClick={()=>{setRemovePopup(true)}} className="text-base p-1 hover:bg-gray-200 rounded-md text-gray-700 flex items-center justify-center cursor-pointer ">
+              <RxCross2 />
             </div>
             {
             (removePopup) && <RemoveMemberPopup setRemovePopup={setRemovePopup} userId={member._id} boardId={boardId} setMembers={setMembers} />
@@ -108,9 +113,12 @@ const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,boardId,setMembe
           :
           (isSelf && !isAdmin)?
           <div className='relative inline-block'>
-            <div onClick={()=>{setLeavePopup(true)}}
+            {/* <div onClick={()=>{setLeavePopup(true)}}
               className="px-2 py-1 rounded-md cursor-pointer border-[1px] border-red-500 text-red-500 text-sm font-semibold flex items-center ">
               Leave
+            </div> */}
+            <div onClick={()=>{setLeavePopup(true)}} className="text-base p-1 hover:bg-gray-200 rounded-md text-red-500 flex items-center justify-center cursor-pointer ">
+              <RxExit />
             </div>
             {
             (leavePopup) && <LeaveBoardPopup setLeavePopup={setLeavePopup} userId={member._id} boardId={boardId} setMembers={setMembers} />

@@ -1,6 +1,6 @@
 import express from 'express'
 import checkAuthentication from '../middlewares/authentication.js'
-import { addAttachment, addNewCardMembers, deleteAttachment, deleteCard, fetchCardActivity, fetchCardData, updateAttachment, updateCard, updateCardStatus, updateDeadline } from '../controllers/card.js';
+import { addAttachment, addNewCardMembers, deleteAttachment, deleteCard, fetchCardActivity, fetchCardData, joinCard, leaveCard, removeCardMember, updateAttachment, updateCard, updateCardStatus, updateDeadline } from '../controllers/card.js';
 import checkCardAccess from '../middlewares/checkCardAccess.js';
 
 
@@ -17,6 +17,9 @@ router.delete("/:cardId/delete",checkAuthentication,checkCardAccess,deleteCard)
 router.patch("/:cardId/isCompleted",checkAuthentication,checkCardAccess,updateCardStatus) 
 router.patch("/:cardId/deadline",checkAuthentication,checkCardAccess,updateDeadline)
 router.patch("/:cardId/add-members",checkAuthentication,checkCardAccess,addNewCardMembers)
+router.patch("/:cardId/join",checkAuthentication,checkCardAccess,joinCard)
+router.patch("/:cardId/remove-member",checkAuthentication,checkCardAccess,removeCardMember)
+router.patch("/:cardId/leave",checkAuthentication,checkCardAccess,leaveCard)
 
 router.patch("/:cardId/attachments",checkAuthentication,checkCardAccess,addAttachment)
 router.patch("/:cardId/update/attachment",checkAuthentication,checkCardAccess,updateAttachment)
