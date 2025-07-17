@@ -42,7 +42,7 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
 
 
     return (
-    <div ref={divref} className='bg-white h-fit w-64 md:w-72 lg:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
+    <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-6 rounded-lg border-[1px] border-gray-300 
             absolute bottom-[130%] sm:top-[130%] right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] '>
         <div className='w-full h-full  '>
             <div className='w-full text-start'>
@@ -54,12 +54,12 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
                 {errorMsg}
                 </div>
             }
-            <div className='w-full flex justify-between items-center mt-4'>
-                <button onClick={deletingCard} className='w-[45%] py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer outline-none border-none '>
-                    Delete
-                </button>
-                <button onClick={()=>{setCardFunctionality(null)}} className='w-[45%] py-1 rounded-lg text-gray-700 hover:bg-gray-100 border-[1px] border-gray-300 cursor-pointer outline-none'>
+            <div className='w-full flex gap-4 mt-4'>
+                <button onClick={()=>{setCardFunctionality(null)}} className='flex-1 py-1 rounded-lg text-gray-700 hover:bg-gray-100 border-[1px] border-gray-300 cursor-pointer outline-none'>
                     Cancel
+                </button>
+                <button onClick={deletingCard} className='flex-1 py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer outline-none border-none '>
+                    Delete
                 </button>
             </div>
         </div>

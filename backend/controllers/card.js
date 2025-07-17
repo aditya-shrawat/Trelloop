@@ -449,3 +449,52 @@ export const deleteCard = async (req,res)=>{
         return res.status(500).json({error:"Internal server error."})
     }
 }
+
+
+export const updateDeadline = async (req,res)=>{
+    try {
+        const {newDeadline} = req.body
+
+        if(!newDeadline) return res.status(400).json({error:"New deadline is required."})
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to edit this card." });
+        }
+
+        const card = req.card
+        const list = req.list;
+        await list.populate({
+            path: 'board',
+            populate: {
+                path: 'workspace',
+                select: '_id name '
+            }
+        });
+        const board = list.board
+        const workspace = board.workspace ;
+        const userId = req.user.id;
+
+        card.deadline = new Date(newDeadline);
+        await card.save()
+
+        await Activity.create({
+            workspace: workspace._id,
+            board: board._id,
+            card:card._id,
+            user: userId,
+            type: "card_deadline_changed",
+            data: {
+                card_name: card.name,
+                cardId:card._id,
+                boardId: board._id,
+                board_name:board.name
+            },
+            createdAt: new Date()
+        });
+
+        return res.status(200).json({message:"Card deadline changed successfully."})
+    } catch (error) {
+        console.log("Error while updating deadline - ",error)
+        return res.status(500).json({error:"Internal server error."})
+    }
+}

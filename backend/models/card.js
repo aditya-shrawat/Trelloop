@@ -24,7 +24,10 @@ const cardSchema = mongoose.Schema({
     },
     attachments:[
         String
-    ]
+    ],
+    deadline:{
+        type:Date,
+    }
 },{timestamps:true,})
 
 

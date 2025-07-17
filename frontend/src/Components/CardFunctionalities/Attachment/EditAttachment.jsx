@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
     const divref = useRef();
@@ -74,7 +76,7 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
 
 
     return (
-    <div ref={divref} className='w-60 px-1 py-3 h-auto border-[1px] rounded-lg z-10 bg-white shadow-[0px_0px_12px_rgba(12,12,13,0.3)]
+    <div ref={divref} className='w-72 px-3 py-4 h-auto border-[1px] rounded-lg z-10 bg-white shadow-[0px_0px_12px_rgba(12,12,13,0.3)]
          border-gray-300 absolute top-[130%] right-0 '>
         {
           (editingAttachment && !deletingAttachment)?
@@ -92,12 +94,12 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
                         {errorMsg}
                         </div>
                     }
-                    <div className='w-full flex justify-between items-center mt-4'>
-                        <button onClick={updateAttachment} className='w-[45%] py-0.5 bg-[#49C5C5] outline-none rounded-lg text-white font-semibold cursor-pointer '>
-                            Update
-                        </button>
-                        <button onClick={()=>{setEditAttachment(false)}} className='w-[45%] py-0.5 outline-none rounded-lg hover:bg-gray-100 text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
+                    <div className='w-full flex gap-4 mt-4'>
+                        <button onClick={()=>{setEditAttachment(false)}} className='flex-1 py-0.5 outline-none rounded-lg hover:bg-gray-100 text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
                             Cancel
+                        </button>
+                        <button onClick={updateAttachment} className='flex-1 py-0.5 bg-[#49C5C5] outline-none rounded-lg text-white font-semibold cursor-pointer '>
+                            Update
                         </button>
                     </div>
                 </div> :
@@ -107,18 +109,18 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
                     <h1 className='text-gray-700 font-semibold'>Delete attachment?</h1>
                     <p className='text-gray-500 text-sm'>Delete this attachment? There is no undo.</p>
                     <div className='w-full flex items-center mt-6'>
-                        <div onClick={deleteAttachment} className='w-full py-0.5 text-center bg-red-500 rounded-lg text-white font-semibold cursor-pointer '>
+                        <div onClick={deleteAttachment} className='w-full py-1 text-center bg-red-500 rounded-lg text-white font-semibold cursor-pointer '>
                             Delete
                         </div>
                     </div>
                 </div>
             :
             <div className='w-full'>
-                <div onClick={()=>{setEditingAttachment(true)}} className='text-gray-500 hover:text-gray-700 font-semibold rounded-lg px-2 py-1 cursor-pointer '>
-                    Edit
+                <div onClick={()=>{setEditingAttachment(true)}} className='text-gray-700 hover:bg-gray-100 font-semibold rounded-lg px-2 py-1 cursor-pointer flex items-center'>
+                    <div className='mr-3'><FiEdit/></div> Edit
                 </div>
-                <div onClick={()=>{setDeletingAttachment(true)}} className='text-gray-500 hover:text-gray-700 font-semibold rounded-lg px-2 py-1 mt-1 cursor-pointer'>
-                    Delete
+                <div onClick={()=>{setDeletingAttachment(true)}} className='text-gray-700 hover:bg-gray-100 hover:text-red-600 font-semibold rounded-lg px-2 py-1 mt-1 cursor-pointer flex items-center'>
+                    <div className='mr-3'><RiDeleteBin6Line/></div> Delete
                 </div>
             </div>
         }

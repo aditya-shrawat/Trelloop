@@ -20,6 +20,7 @@ import AddAttachments from './CardFunctionalities/Attachment/AddAttachments';
 import AttachmentContainer from './CardFunctionalities/Attachment/AttachmentContainer';
 import DeleteCard from './CardFunctionalities/Delete card/DeleteCard';
 import { RiDeleteBin6Line } from "react-icons/ri";
+import DatePicker from './CardFunctionalities/Date/DatePicker';
 
 dayjs.extend(relativeTime);
 
@@ -46,7 +47,7 @@ const CardDetailsModel = () => {
                                 isBoardAdmin: undefined,
                                 isWorkspaceAdmin: undefined
                             });
-
+    const [isDatePickerOpen,setIsDatePickerOpen] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -177,6 +178,24 @@ const CardDetailsModel = () => {
         }
     }
 
+    const deadlineStatusMessage = (cardDeadline)=>{
+        const today = new Date();
+        const deadline = new Date(cardDeadline);
+
+        today.setHours(0, 0, 0, 0);
+        deadline.setHours(0, 0, 0, 0);
+
+        const diffDays = (deadline - today) / (1000 * 60 * 60 * 24);
+
+        if (diffDays < 0) {
+            return <span className="bg-red-500 text-white ml-2 text-xs px-1 rounded-sm">Overdue</span>;
+        } else if (diffDays === 0 || diffDays === 1) {
+            return <span className="bg-orange-500 text-white ml-2 text-xs px-1 rounded-sm">Due Soon</span>;
+        } else {
+            return null;
+        }
+    }
+
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
         <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full py-6
@@ -250,6 +269,22 @@ const CardDetailsModel = () => {
                         </div>)}
                     </div>
                 </div>
+
+                { (card && card.deadline) &&
+                    <div className='pl-9 my-6 w-full'>
+                        <div className='w-full'>
+                            <h3 className="text-sm text-gray-500 ">Deadline</h3>
+                            <div className='text-gray-700 font-medium text-base flex items-center'>
+                                {new Date(card.deadline).toLocaleDateString("en-GB", {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric"
+                                })}
+                                {deadlineStatusMessage(card.deadline)}
+                            </div>
+                        </div>
+                    </div>
+                }
 
                 {/* Description */}
                 <div className="flex my-6 ">
@@ -331,7 +366,7 @@ const CardDetailsModel = () => {
             {/* Sidebar */}
             <div className="sm:w-52 mt-4 sm:mt-none p-6 sm:pr-6 sm:p-2
                     space-y-4 grid grid-cols-2 gap-x-4 sm:flex sm:flex-col ">
-                {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                {/* {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
                 (<button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                      flex items-center text-gray-700">
                     <IoPersonAdd className="text-lg mr-3" />
@@ -343,15 +378,21 @@ const CardDetailsModel = () => {
                      flex items-center text-gray-700">
                     <IoPerson className="text-lg mr-3" />
                     Members
-                </button>
-
-                <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-700">
-                    <FaRegCalendarAlt className="text-lg mr-3" />
-                    Dates
-                </button>
+                </button> */}
 
                 {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                    <div className='relative'>
+                        <button onClick={()=>{setIsDatePickerOpen(true)}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                            flex items-center text-gray-700">
+                            <FaRegCalendarAlt className="text-lg mr-3" />
+                            Dates
+                        </button>
+
+                        { (card && isDatePickerOpen )&& <DatePicker onClose={() => setIsDatePickerOpen(false)} cardId={card._id} setCard={setCard} />}
+                    </div>
+                }
+
+                {(board && card && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
                 (<>
                 <div className='h-auto w-auto relative'>
                     <button onClick={()=>{setCardFunctionality("attachment")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
@@ -372,7 +413,7 @@ const CardDetailsModel = () => {
                 </button>
                 </>)}
 
-                {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
+                {(board && card && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
                     <div className='h-auto w-auto relative'>
                         <button onClick={()=>{setCardFunctionality("delete")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                             flex items-center text-gray-700 hover:text-red-600">
@@ -406,19 +447,22 @@ const ActivityItem = ({activity})=>{
 
         switch (type) {
             case "card_created":
-            return `added this card to list "${data.list_name}"`;
+            return `added the card to list "${data.list_name}"`;
 
             case "card_renamed":
-            return `renamed this card from "${data.card_oldName}" to "${data.card_newName}".`;
+            return `renamed the card from "${data.card_oldName}" to "${data.card_newName}".`;
 
             case "card_newInfo":
-            return `updated this card name "${data.card_oldName}" to "${data.card_newName}" and updated description.`;
+            return `updated the card name "${data.card_oldName}" to "${data.card_newName}" and updated description.`;
 
             case "card_newDesc":
-            return `updated this card description.`;
+            return `updated the card description.`;
+
+            case "card_deadline_changed":
+            return `updated the card deadline.`;
 
             case "card_marked":
-            return `marked this card as ${(data.isCompleted)?`complete`:`incomplete`}.`
+            return `marked the card as ${(data.isCompleted)?`complete`:`incomplete`}.`
 
             case "card_attachment":
                 if(data.actionType==='added'){
