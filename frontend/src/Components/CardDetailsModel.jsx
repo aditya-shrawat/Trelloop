@@ -24,6 +24,7 @@ import DatePicker from './CardFunctionalities/Date/DatePicker';
 import MembersList from './CardFunctionalities/Members/MembersList';
 import AddMemberToCard from './CardFunctionalities/Members/AddMemberToCard';
 import { RiAddLargeFill } from "react-icons/ri";
+import CardCover from './CardFunctionalities/Cover/CardCover';
 
 dayjs.extend(relativeTime);
 
@@ -51,6 +52,7 @@ const CardDetailsModel = () => {
                                 isBoardAdmin: undefined,
                                 isWorkspaceAdmin: undefined
                             });
+    const [cardCover,setCardCover] = useState(null);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -72,6 +74,7 @@ const CardDetailsModel = () => {
             );
 
             setCard(response.data.card)
+            setCardCover(response.data.card.cover)
             setList(response.data.list)
             setNewCardInfo({name:response.data.card.name , description:response.data.card.description});
             setIsCompleted(response.data.card.isCompleted);
@@ -224,13 +227,17 @@ const CardDetailsModel = () => {
 
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
-        <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full py-6
-                mx-auto my-10 md:my-20 sm:flex bg-white rounded-xl border-[1px] border-gray-300 relative">
-            
+        <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full mx-auto my-10 md:my-20  rounded-2xl relative ">
             <div onClick={()=>{navigate(-1)}} className=' rounded-full absolute text-gray-700 top-2 right-2 cursor-pointer'>
-                <AiTwotoneCloseCircle className='text-2xl ' />
+                <AiTwotoneCloseCircle className='text-xl' />
             </div>
+            {/* card cover */}
+            {
+                (cardCover) && <div className='w-full h-28 rounded-t-2xl'style={{ backgroundColor: cardCover }}></div> 
+            }
+
             {/* Main content */}
+            <div className={`w-full py-3 sm:flex bg-white rounded-b-2xl ${(!cardCover)&&`rounded-t-2xl`}`}>
             <div className="flex-1 p-6 ">
                 {/* Header */}
                 <div className="flex items-start ">
@@ -450,11 +457,17 @@ const CardDetailsModel = () => {
                     }
                 </div>
 
-                <button className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                     flex items-center text-gray-700">
-                    <BsLayersFill className="text-lg mr-3" />
-                    Cover
-                </button>
+                <div className='relative'>
+                    <button onClick={()=>{setCardFunctionality("cover")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                        flex items-center text-gray-700">
+                        <BsLayersFill className="text-lg mr-3" />
+                        Cover
+                    </button>
+                    {
+                     (cardFunctionality==='cover') &&
+                     <CardCover onClose={() => setCardFunctionality(null)} cardId={card._id} setCardCover={setCardCover} currentColor={cardCover} />
+                    }
+                </div>
                 </>)}
 
                 {(board && card && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
@@ -471,6 +484,8 @@ const CardDetailsModel = () => {
                     </div>
                 }
             </div>
+            </div>
+
         </div>
     </div>
   )

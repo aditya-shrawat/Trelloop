@@ -23,7 +23,7 @@ const cardSchema = mongoose.Schema({
         default:false
     },
     attachments:[
-        String
+        {type:String}
     ],
     deadline:{
         type:Date,
@@ -31,6 +31,9 @@ const cardSchema = mongoose.Schema({
     members:[
         {type:mongoose.Schema.Types.ObjectId, ref:'User' }
     ],
+    cover:{
+        type:String,default:null,
+    }
 },{timestamps:true,})
 
 

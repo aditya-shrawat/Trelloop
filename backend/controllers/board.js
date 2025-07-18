@@ -372,23 +372,22 @@ export const removeBoardMember = async (req,res)=>{
 }
 
 
-
 export const leaveBoard = async (req,res)=>{
     try {
         const {boardId} = req.params
         const userId = req.user.id
 
-        if (!req.canEdit) {
-            return res.status(403).json({ error: "You don't have permission to edit this board." });
-        }
-
-        const board = await Board.findById(boardId);
         const user = await User.findById(userId);
         if(!user){
             return res.status(404).json({error:"user not found."})
         }
 
-        board.members = board.members.filter((user)=> user._id.toString() !== userId);
+        const board = await Board.findById(boardId);
+        const isMember = board.members?.some((id) => id?.toString() === userId?.toString());
+        if (!isMember) {
+            return res.status(400).json({ error: "User is not a member of this board." });
+        }
+        board.members = board.members.filter((id) => id.toString() !== userId);
         await board.save();
 
         await board.populate("members", "name _id");

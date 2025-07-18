@@ -286,22 +286,22 @@ export const removeWorkspaceMember = async (req,res)=>{
 
 export const leaveWorkspace = async (req,res)=>{
     try {
-        const {id} = req.params
         const userId = req.user.id
-
-        const workspace = req.workspace;
-
-        if (workspace.createdBy.toString() === userId) {
-            return res.status(403).json({error:"Admin cannot leave the workspace." });
-        }
-
         const user = await User.findById(userId);
-
         if(!user){
             return res.status(404).json({error:"user doesn't exist."})
         }
 
-        workspace.members = workspace.members.filter((user)=> user._id.toString() !== userId);
+        const workspace = req.workspace;
+        if (workspace.createdBy.toString() === userId) {
+            return res.status(403).json({error:"Admin cannot leave the workspace." });
+        }
+
+        const isMember = workspace.members?.some((id) => id?.toString() === userId?.toString());
+        if (!isMember) {
+            return res.status(400).json({ error: "User is not a member of this workspace." });
+        }
+        workspace.members = workspace.members?.filter((id)=> id?.toString() !== userId?.toString());
         await workspace.save();
 
         const notifyMembers = async (senderId,receiverId)=>{
@@ -316,14 +316,13 @@ export const leaveWorkspace = async (req,res)=>{
 
         await notifyMembers(userId,workspace.createdBy) // notify admin
 
+        await workspace.populate("members", "name _id");
         // notify other members
         await Promise.all(
             workspace.members.map((member) =>
                 notifyMembers(userId, member._id)
             )
         );
-
-        await workspace.populate("members", "name _id");
 
         return res.status(200).json({message:"User left workspace successfully.",members:workspace.members})
     } catch (error) {

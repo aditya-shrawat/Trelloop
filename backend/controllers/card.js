@@ -2,6 +2,7 @@ import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
+import User from "../models/user.js";
 
 
 export const creatingNewCard = async (req,res)=>{
@@ -68,7 +69,7 @@ export const fetchListCards = async (req,res)=>{
             return res.status(404).json({error:"List doesn't exist."})
         }
 
-        const cards = await Card.find({list:listId}).select("name isCompleted");
+        const cards = await Card.find({list:listId}).select("name isCompleted deadline cover");
 
         return res.status(200).json({message:"Cards fetched successfully.",cards})
     } catch (error) {
@@ -591,7 +592,7 @@ export const removeCardMember = async (req,res)=>{
         return res.status(200).json({message:"Member removed successfully."})
     } catch (error) {
         console.log("error - ",error)
-        return res.status(500).json("Internal server error.")
+        res.status(500).json({ error: "Internal server error." })
     }
 }
 
@@ -602,16 +603,64 @@ export const leaveCard = async (req,res)=>{
         if(!userId) return res.status(400).json({error:"User id is not provided."})
 
         if ( (req.user.id)?.toString() !== userId?.toString() ) {
-            return res.status(403).json({ error: "You don't have permission to edit this card." });
+            return res.status(403).json({ error: "You don't have permission to perform this action." });
+        }
+
+        const user = await User.findById(userId);
+        if(!user){
+            return res.status(404).json({error:"user not found."})
         }
 
         const card = req.card;
+        const isMember = card.members?.some((id) => id?.toString() === userId?.toString());
+        if (!isMember) {
+            return res.status(400).json({ error: "User is not a member of this card." });
+        }
 
         card.members = (card.members)?.filter((id)=>id?.toString()!==userId?.toString());
         await card.save();
 
         return res.status(200).json({message:"Member left the card successfully."})
     } catch (error) {
-        return res.status(500).json("Internal server error.")
+        res.status(500).json({ error: "Internal server error." })
+    }
+}
+
+export const changeCardCover = async (req,res)=>{
+    try {
+        const {newCover} = req.body;
+        if (!newCover || newCover.trim() === "") {
+            return res.status(400).json({ error: "New cover is not selected." });
+        }
+        const isHexColor = /^#[0-9A-F]{6}$/i.test(newCover);
+        if (!isHexColor) return res.status(400).json({ error: "Invalid cover color format." });
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to perform this action." });
+        }
+
+        const card = req.card;
+        card.cover = newCover
+        await card.save();
+
+        return res.status(200).json({message:"Card cover changed successfully."});
+    } catch (error) {
+        return res.status(500).json({ error: "Internal server error." })
+    }
+}
+
+export const removeCardCover = async (req,res)=>{
+    try {
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to perform this action." });
+        }
+
+        const card = req.card;
+        card.cover = null
+        await card.save();
+
+        return res.status(200).json({message:"Card cover removed successfully."});
+    } catch (error) {
+        return res.status(500).json({ error: "Internal server error." })
     }
 }

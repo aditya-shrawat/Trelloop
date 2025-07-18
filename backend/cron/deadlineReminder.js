@@ -24,7 +24,7 @@ const notificationMessage = (cardDeadline,cardName)=>{
 }
 
 const startReminderScheduler = (io) => {
-  cron.schedule('0 0 * * * *', async () => {
+  cron.schedule('0 0 0 * * *', async () => {
     try {
         const start = new Date();
         start.setHours(0, 0, 0, 0); // today 
