@@ -172,7 +172,8 @@ const WorkspaceNavigators = ({workspace})=>{
 
 const BoardItem = ({board})=>{
     return (
-        <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} className="min-w-24 w-full lg:max-w-56 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative bg-green-400 ">
+        <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} style={{background:board.background || '#000'}}
+            className="min-w-24 w-full lg:max-w-56 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative">
             <h3 className="font-bold text-white line-clamp-2">{board.name}</h3>
             {/* <div className="inline-block text-xl absolute bottom-3 right-3 ">
                 {

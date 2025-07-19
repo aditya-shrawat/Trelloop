@@ -4,3 +4,20 @@
 .common-a-tag-css {
   @apply text-blue-700 font-semibold hover:underline cursor-pointer;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2); 
+  border-radius: 10px;
+  height: 6px;
+  margin: 3px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+}

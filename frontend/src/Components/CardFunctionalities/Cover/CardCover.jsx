@@ -22,6 +22,7 @@ const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
     }, []);
 
     const handleColorChange = async (color) => {
+        if(!color) return;
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
             const response = await axios.patch(`${BackendURL}/card/${cardId}/set-cover`,

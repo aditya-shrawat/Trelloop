@@ -28,6 +28,9 @@ const boardSchema = mongoose.Schema({
         type:String, 
         default:'Workspace' 
     },
+    background:{
+        type:String,default:'#2980b9'
+    }
 },{timestamps:true,})
 
 

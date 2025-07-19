@@ -1,6 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
+
+const colorOptions = ['#2980b9',  '#cd5a91', '#1abc9c', '#8e44ad', 'linear-gradient(to top, lightgrey 0%, lightgrey 1%, #e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%)', 
+  'linear-gradient(-60deg, #ff5858 0%, #f09819 100%)', 'linear-gradient(to top, #09203f 0%, #537895 100%)', 'linear-gradient( 359.5deg,  rgba(115,122,205,1) 8.8%, rgba(186,191,248,1) 77.4% )', 
+   'linear-gradient(60deg, #29323c 0%, #485563 100%)', 'linear-gradient( 179.1deg,  rgba(0,98,133,1) -1.9%, rgba(0,165,198,1) 91.8% )'];
+
 const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
   const divref = useRef(null);
   const [boardName,setBoardName] = useState('');
@@ -8,6 +13,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
   const [loading,setLoading] = useState(true);
   const [workspaceId,setWorkspaceId] = useState(null)
   const [errorMsg,setErrorMsg] = useState("");
+  const [selectedColor, setSelectedColor] = useState(colorOptions[0]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -46,7 +52,6 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
     }
   },[])
 
-
   const createBoard = async (e)=>{
     e.preventDefault();
 
@@ -54,11 +59,15 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       setErrorMsg("Board name is required!");
       return ;
     }
+    if(!workspaceId) {
+      setErrorMsg("Select a workspace.");
+      return ;
+    }
 
     try {
       const BackendURL = import.meta.env.VITE_BackendURL;
       const response = await axios.post(`${BackendURL}/workspace/${workspaceId}/newBoard`,
-        {boardName,workspaceId},
+        {boardName,workspaceId,background:selectedColor},
         {withCredentials: true}
       );
 
@@ -74,41 +83,57 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
     setBoardName(e.target.value) ;
   }
 
+  const handleColorChange = async (color) => {
+    setSelectedColor(color)
+  };
+
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
       <div
         ref={divref}
         className=" max-w-[95%] sm:max-w-md md:max-w-lg w-full 
-                absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-8 py-12 bg-white rounded-xl border-[1px] border-gray-300 "
+              bg-white  absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-8 py-8 rounded-xl"
       >
         <div className="w-full h-auto">
           <h1 className="text-xl font-semibold text-gray-700 ">Create Board</h1>
-          <h3 className=" text-gray-500 mt-2 ">
+          <h3 className=" text-gray-500">
           Boards help you divide tasks, track progress, and keep your team aligned.
           </h3>
         </div>
-        <div className="flex flex-col mt-8">
-          <label className="mb-1 font-semibold text-gray-700">Board name</label>
+
+        <div className="w-full mt-4">
+          <h3 className="mb-2 text-sm font-semibold text-gray-500">Background</h3>
+          <div className='w-full grid grid-cols-4 sm:grid-cols-5 gap-3'>
+            {colorOptions.map((color) => (
+              <div key={color} onClick={() => handleColorChange(color)} style={{ background: color }}
+                className={`max-w-24 w-full h-12 rounded-sm cursor-pointer ${selectedColor === color ? 'border-3 border-gray-700' : 'border-[1px] border-gray-300'}`}>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col mt-6">
+          <label className="mb-1 text-sm font-semibold text-gray-500">Board title</label>
           <input
             type="text" name="boardName" value={boardName} onChange={handleInput}
-            className="mb-4 h-10 p-1 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none"
+            className="h-10 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none"
           />
         </div>
-        <div className="flex flex-col mt-4">
-          <label className="mb-1 font-semibold text-gray-700">Workspace</label>
+        <div className="flex flex-col mt-6">
+          <label className="mb-1 text-sm font-semibold text-gray-500">Workspace</label>
           { (loading)?
-            <div className="mb-4 h-10 p-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none">
+            <div className="mb-2 h-10 py-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none">
               Loading...
             </div> 
             :
             (workspaceName)?
-            <div className="mb-4 h-10 p-1 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none">
+            <div className="mb-1 h-10 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none">
               {workspaceName}
             </div> 
             :
             <select name="workspaceName" 
             onChange={(e) => setWorkspaceId(e.target.value)}
-              className="mb-4 h-10 p-1 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none" >
+              className="mb-1 h-10 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none" >
               {workspaces.map((workspace)=>(
                 <option key={workspace._id} value={workspace._id}>
                   {workspace.name}

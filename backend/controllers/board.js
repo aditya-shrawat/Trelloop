@@ -11,7 +11,7 @@ import Workspace from "../models/workspace.js";
 
 export const createBoard = async (req,res)=>{
     try {
-        const {workspaceId,boardName} = req.body
+        const {workspaceId,boardName,background} = req.body
 
         if (!req.canEdit) {
             return res.status(403).json({ error: "You are not allowed to create board." });
@@ -26,7 +26,8 @@ export const createBoard = async (req,res)=>{
         const board = await Board.create({
             name:boardName,
             workspace:workspace._id,
-            admin:req.user.id
+            admin:req.user.id,
+            background
         });
 
         await Activity.create({
@@ -53,7 +54,7 @@ export const fetcheBoards = async (req,res)=>{
     try {
         const {id} = req.params
 
-        const boards = await Board.find({workspace:id}) ;
+        const boards = await Board.find({workspace:id}).select('name background') ;
 
         return res.status(200).json({message:"Boards fetched successfully.",boards});
     } catch (error) {
@@ -66,7 +67,7 @@ export const getBoardData = async (req,res)=>{
     try {
         const {boardId} = req.params ;
 
-        const board = await Board.findById(boardId).select("name workspace admin members pendingRequests visibility").populate("admin",'name')
+        const board = await Board.findById(boardId).select("name workspace admin members pendingRequests visibility background").populate("admin",'name')
         .populate({path: "workspace",select: "name members createdBy"});
         if(!board){
             return res.status(404).json({error:"Board not found."})
@@ -154,7 +155,7 @@ export const allJoinedWorkspacesAndBoards = async(req,res)=>{
 
         const workspacesWithBoards = await Promise.all(
             workspaces.map(async (workspace) => {
-                const boards = await Board.find({ workspace:workspace._id }).select('_id name').lean();
+                const boards = await Board.find({ workspace:workspace._id }).select('_id name background').lean();
 
                 return {...workspace,boards,};
             })
@@ -431,5 +432,33 @@ export const renameBoard = async (req,res)=>{
         return res.status(200).json({message:"Board renamed successfully."});
     } catch (error) {
         return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+
+export const changeBoardBackground = async (req,res)=>{
+    try {
+        const {boardId} = req.params
+        const {newBackground} = req.body;
+        if (!newBackground || newBackground.trim() === "") {
+            return res.status(400).json({ error: "New background is not selected." });
+        }
+        const isHexColor = /^#([0-9A-F]{3}){1,2}$/i.test(newBackground);
+        const isGradient = /^linear-gradient\([\s\S]+?\)$/i.test(newBackground);
+        if (!isHexColor && !isGradient) {
+        return res.status(400).json({ error: "Invalid background format." });
+        }
+
+        if (!req.canEdit) {
+            return res.status(403).json({ error: "You don't have permission to perform this action." });
+        }
+
+        const board = await Board.findById(boardId);
+        board.background = newBackground
+        await board.save();
+
+        return res.status(200).json({message:"Board background changed successfully."});
+    } catch (error) {
+        return res.status(500).json({ error: "Internal server error." })
     }
 }

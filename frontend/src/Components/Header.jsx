@@ -13,7 +13,7 @@ import Notification from "./Notification.jsx";
 import { cleanupNotificationListener, registerUserSocket, setupNotificationListener } from "../Socket/socketService.js";
 import socket from "../Socket/socket.js";
 
-const Header = () => {
+const Header = ({onBoard}) => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const [openProfileNav,setOpenProfileNav] = useState(false)
@@ -61,16 +61,16 @@ const Header = () => {
     },[])
 
   return (
-    <header className="w-full h-auto ">
-        <div className="w-full h-14 px-6 bg-white flex items-center justify-between border-b-[1px] border-gray-300 ">
+    <header className={`w-full z-20 h-auto shadow-sm ${(onBoard)?`backdrop-blur-md bg-white/20`:`bg-white`}`} >
+        <div className="w-full h-14 px-6 flex items-center justify-between ">
             <div className="w-full h-full flex items-center ">
-                <div className=" inline-block font-bold text-[#49C5C5] text-2xl mr-6">
+                <div className={`inline-block font-bold ${(onBoard)?`text-white`:`text-[#49C5C5]`} text-2xl mr-6`}>
                     Trelloop
                 </div>
-                <div className="w-full h-auto">
+                <div className={`w-full h-auto ${(onBoard)?`text-white`:`text-gray-500`}`}>
                     <div className="w-auto h-auto inline-block relative ">
                         <div onClick={()=>setOpenDropdown(openDropdown === "workspace" ? null : "workspace")}
-                         className="px-2 py-1 text-gray-500 hover:text-gray-700 cursor-pointer rounded-lg 
+                         className="px-2 py-1 hover:text-gray-700 cursor-pointer rounded-lg 
                          flex items-center font-semibold">
                             Workspaces
                             <IoMdArrowDropdown className={`ml-1 text-2xl ${(openDropdown === "workspace")?
@@ -86,7 +86,7 @@ const Header = () => {
                     </div>
                     <div className="w-auto h-auto inline-block relative">
                         <div onClick={()=>setOpenDropdown(openDropdown === "starred" ? null : "starred")}
-                            className="px-2 py-1 ml-3 text-gray-500 hover:text-gray-700 cursor-pointer rounded-lg 
+                            className="px-2 py-1 ml-3 hover:text-gray-700 cursor-pointer rounded-lg 
                             flex items-center font-semibold">
                             Starred <IoMdArrowDropdown className={`ml-1 text-2xl ${(openDropdown === "starred")?
                                 `rotate-180 transition-transform duration-300`:`rotate-0 transition-transform duration-300`} `}
@@ -101,8 +101,8 @@ const Header = () => {
                     </div>
                     <div className="w-auto h-auto inline-block relative">
                         <div onClick={()=>setOpenDropdown(openDropdown === "create" ? null : "create")}
-                            className="px-2 py-1 ml-3 text-white bg-[#49C5C5] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] 
-                            cursor-pointer rounded-lg flex items-center font-semibold">
+                            className={`px-2 py-1 ml-3 text-white ${(onBoard)?`border-[1px] border-white hover:text-gray-700`:`bg-[#49C5C5]`} shadow-sm hover:shadow-lg
+                            cursor-pointer rounded-lg flex items-center font-semibold`}>
                             Create <FaPlus className="ml-2 text-lg" />
                         </div>
 
@@ -117,7 +117,7 @@ const Header = () => {
 
             <div className="w-auto h-full flex items-center">
                 <div className="relative">
-                    <div onClick={()=>{setShowNotifications(true)}} className="w-auto h-auto text-2xl cursor-pointer text-gray-500 hover:text-gray-700">
+                    <div onClick={()=>{setShowNotifications(true)}} className={`w-auto h-auto text-2xl cursor-pointer ${(onBoard)?`text-white`:`text-gray-500`} hover:text-gray-700`}>
                         <IoNotifications />
                         {unreadCount>0  && (
                             <div className="absolute -top-1 -right-1 bg-red-500 text-white text-sm font-semibold h-[18px] w-[18px] flex justify-center items-center rounded-full">

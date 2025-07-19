@@ -34,7 +34,7 @@ const List = ({list,boardId,setLists,UserRole}) => {
   return (
     <div className="w-[270px] shrink-0 h-full mr-4">
 
-    <div className="max-h-full h-auto py-2 flex flex-col border-[1px] border-gray-300 rounded-xl shadow-[0px_2px_4px_rgba(12,12,13,0.2)] ">
+    <div className="max-h-full h-auto py-2 flex flex-col bg-white rounded-xl shadow-[0px_4px_8px_rgba(12,12,13,0.2)]">
       <div className="w-full px-3 pt-2 pb-1 text-gray-700 flex items-center justify-between">
         <div className="break-words font-semibold">
             {list.name}
@@ -146,14 +146,14 @@ const AddNewCard = ({listId,boardId,setCards})=>{
                 (errMsg.trim()!=="") &&
                 <div className='text-red-500 text-[14px] mt-1'>{errMsg}</div>
                 }
-                <div className='w-full flex justify-between mt-3'>
-                    <button onClick={createCard} className='font-semibold text-white text-[14px] bg-[#49C5C5] w-[45%] py-1 outline-none cursor-pointer rounded-lg '>
-                        Add card
-                    </button>
+                <div className='w-full flex justify-between mt-3 gap-4'>
                     <button onClick={()=>{setCreatingNewCard(false)}} 
-                        className='border-[1px] border-gray-300 w-[45%] py-1 outline-none cursor-pointer  text-[14px]
+                        className='border-[1px] border-gray-300 flex-1 py-1 outline-none cursor-pointer  text-[14px]
                          text-gray-700 font-semibold rounded-lg hover:bg-gray-100'>
                         Cancel
+                    </button>
+                    <button onClick={createCard} className='font-semibold text-white text-[14px] bg-[#49C5C5] flex-1 py-1 outline-none cursor-pointer rounded-lg shadow-md'>
+                        Add card
                     </button>
                 </div>
             </div>

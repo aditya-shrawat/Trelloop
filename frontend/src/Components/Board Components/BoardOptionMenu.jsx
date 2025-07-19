@@ -12,14 +12,16 @@ import { IoPerson } from "react-icons/io5";
 import BoardMembers from './BoardMembers';
 import BoardVisibilityPopup from './BoardVisibilityPopup';
 import { FiEdit } from "react-icons/fi";
+import ChangeBoardBg from './ChangeBoardBg';
 
-const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoardOptions,UserRole})=>{
+const BoardOptionMenu = ({board,setBoard,starStatus,setBoardBg,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
     const [DeletePopup,setDeletePopup] = useState(false)
     const [VisibilityPopup,setVisibilityPopup] = useState(false)
     const [showActivity,setShowActivity] = useState(false);
     const [showMembers,setShowMembers] = useState(false);
     const [showRenamePopup,setShowRenamePopup] = useState(false)
+    const [isChangingBg,setIsChangingBg] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -43,6 +45,9 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
             (showMembers)?
             (<BoardMembers boardId={board._id} setShowMembers={setShowMembers} />)
             :
+            (isChangingBg)?
+            (<ChangeBoardBg boardId={board._id} currentBg={board.background} setBoardBg={setBoardBg} setIsChangingBg={setIsChangingBg} />)
+            :
             (<div className=" w-full h-auto px-3 py-4 ">
                 <div className="w-full space-y-1 ">
                     <div onClick={toggleStarStatus} className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center ">
@@ -63,8 +68,9 @@ const BoardOptionMenu = ({board,setBoard,starStatus,toggleStarStatus,setShowBoar
                         }
                     </div>)}
                     {(board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
-                    (<div className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
-                        <div className='mr-3 text-lg'><div className='h-4 w-4 bg-red-400 rounded-sm'></div></div>Change background
+                    (<div onClick={()=>{setIsChangingBg(true)}}
+                            className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                        <div className='mr-3 text-lg'><div className='h-4 w-4 rounded-sm' style={{background:board.background}}></div></div>Change background
                     </div>)}
                     <div  onClick={()=>{setShowMembers(true)}}
                             className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
@@ -154,12 +160,12 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
                     {errorMsg}
                     </div>
                 }
-                <div className='w-full flex justify-between md:justify-between items-center mt-6'>
-                    <button onClick={deleteBoard} className='w-[45%] py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer outline-none'>
-                        Delete
-                    </button>
-                    <button onClick={()=>{setDeletePopup(false)}} className='w-[45%] py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                <div className='w-full flex justify-between md:justify-between items-center mt-6 gap-4'>
+                    <button onClick={()=>{setDeletePopup(false)}} className='flex-1 py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
                         Cancel
+                    </button>
+                    <button onClick={deleteBoard} className='flex-1 py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer outline-none'>
+                        Delete
                     </button>
                 </div>
             </div>
@@ -229,12 +235,12 @@ const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
                     {errorMsg}
                     </div>
                 }
-                <div className='w-full flex justify-between md:justify-between items-center mt-6'>
-                    <button onClick={renameBoard} className='w-[45%] py-1 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer outline-none'>
-                        Rename
-                    </button>
-                    <button onClick={()=>{setShowRenamePopup(false)}} className='w-[45%] py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                <div className='w-full flex justify-between md:justify-between items-center mt-6 gap-4'>
+                    <button onClick={()=>{setShowRenamePopup(false)}} className='flex-1 py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
                         Cancel
+                    </button>
+                    <button onClick={renameBoard} className='flex-1 py-1 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer outline-none'>
+                        Rename
                     </button>
                 </div>
             </div>

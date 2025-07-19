@@ -29,6 +29,7 @@ const Board = () => {
                         });
     const [isJoining,setIsJoining] = useState(false);
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false);
+    const [boardBg,setBoardBg] = useState('#fff');
 
     const {user} = useUser();
 
@@ -40,6 +41,7 @@ const Board = () => {
                 );
 
                 setBoard(response.data.board)
+                setBoardBg(response.data.board.background)
             } catch (error) {
                 console.log("Error while fetching board - ",error)
             }
@@ -165,21 +167,21 @@ const Board = () => {
     }
 
   return (
-    <div className='w-full h-screen flex flex-col '>
-        <Header  />
+    <div className='w-full h-screen flex flex-col ' style={{background:boardBg}}>
+        <Header onBoard={true} />
 
     <div className='w-full pb-2 flex flex-1 min-h-0 flex-col'>
-        <div className="z-10 w-full h-14 px-4 py-1 border-b-[1px] border-gray-300 sticky left-0 bg-white ">
+        <div className="z-10 w-full h-14 px-4 py-1 sticky left-0 backdrop-blur-md bg-white/10 shadow-sm" >
             <div className="w-full sm:px-2 py-2 flex justify-between items-center ">
-                <div className='w-auto flex items-center'>
+                <div className='w-auto flex items-center text-white'>
                     {
-                    (board) && <h3 className='inline-block font-bold text-gray-700 text-xl'>{board.name}</h3>
+                    (board) && <h3 className='inline-block font-bold text-xl'>{board.name}</h3>
                     }
                     <div onClick={toggleStarStatus} 
                           className="inline-block ml-3 cursor-pointer text-xl ">
                         {
                         (!starStatus)?
-                        <div className='text-gray-700 hover:scale-115 hover:text-[#ffc300]'>
+                        <div className='hover:scale-115 hover:text-[#ffc300]'>
                           <TbStar />
                         </div>
                         :
@@ -205,7 +207,7 @@ const Board = () => {
                                     (
                                     <div className='relative '>
                                         <div onClick={()=>{setIsAddingNewMembers(true)}} className='w-auto h-auto'>
-                                            <div className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
+                                            <div className='px-4 py-1 ml-3 border-[1px] border-white hover:text-gray-700 shadow-sm hover:shadow-lg rounded-md cursor-pointer text-white font-semibold'>
                                                 Add
                                             </div>
                                         </div>
@@ -215,21 +217,21 @@ const Board = () => {
                                 :
                                 (!UserRole.isBoardMember && UserRole.isWorkspaceMember && (board.visibility==='Workspace' || board.visibility==='Public')) ?
                                     (<div onClick={joinMember} className='w-auto h-auto'>
-                                        <div className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
+                                        <div className='px-4 py-1 ml-3 border-[1px] border-white hover:text-gray-700 shadow-sm hover:shadow-lg rounded-md cursor-pointer text-white font-semibold'>
                                             {(isJoining)?"...":"Join"}
                                         </div>
                                     </div>)
                                 :
                                 (board.visibility==='Public' && (!UserRole.isBoardMember && !UserRole.isWorkspaceMember && !UserRole.isBoardAdmin && !UserRole.isWorkspaceAdmin && !UserRole.joinRequestSent) ) ? 
                                     (<div className='w-auto h-auto'>
-                                        <div onClick={sendRequestToJoinBoard} className='px-4 py-1 ml-3 bg-[#49C5C5] rounded-md cursor-pointer text-white font-semibold'>
+                                        <div onClick={sendRequestToJoinBoard} className='px-4 py-1 ml-3 border-[1px] border-white hover:text-gray-700 shadow-sm hover:shadow-lg rounded-md cursor-pointer text-white font-semibold'>
                                             Send Request
                                         </div>
                                     </div>)
                                 :
                                 (board.visibility==='Public' && UserRole.joinRequestSent)?
                                     (<div className='w-auto h-auto'>
-                                        <div className='px-4 py-1 ml-3 bg-gray-100 border-[1px] border-gray-300 rounded-md cursor-pointer text-gray-500 font-semibold'>
+                                        <div className='px-4 py-1 ml-3 border-[1px] border-white hover:text-gray-700 shadow-sm hover:shadow-lg rounded-md cursor-pointer text-white font-semibold'>
                                             Pending...
                                         </div>
                                     </div>)
@@ -239,18 +241,18 @@ const Board = () => {
                     </div>
                     }
                     <div className='w-auto'>
-                        <div onClick={()=>{setShowBoardOptions(true)}} className='w-auto h-auto p-2 text-xl cursor-pointer hover:bg-gray-100 rounded-lg'>
+                        <div onClick={()=>{setShowBoardOptions(true)}} className='w-auto h-auto p-1.5 text-xl cursor-pointer text-white hover:text-gray-700 rounded-lg'>
                             <FaBarsStaggered  />
                         </div>
                         {
-                            (showBoardOptions && board) && <BoardOptionMenu board={board} setBoard={setBoard} starStatus={starStatus} toggleStarStatus={toggleStarStatus} 
+                            (showBoardOptions && board) && <BoardOptionMenu board={board} setBoard={setBoard} starStatus={starStatus} setBoardBg={setBoardBg} toggleStarStatus={toggleStarStatus} 
                             setShowBoardOptions={setShowBoardOptions} UserRole={UserRole} />
                         }
                     </div>
                 </div>
             </div>
         </div>
-        <div className='p-4 pb-8 flex flex-1 min-h-0 overflow-y-hidden overflow-x-auto'>
+        <div className='p-4 pb-8 flex flex-1 min-h-0 overflow-y-hidden overflow-x-auto custom-scrollbar'>
                 { (loadingLists)?
                 <div>Loading lists ...</div>
                 :
@@ -328,30 +330,30 @@ const AddNewList = ({boardId,setLists})=>{
 
 
     return (
-    <div ref={divRef} className={`min-w-60 h-fit hover:border-[3px] border-[2px] ${creatingNewList &&`border-[3px]`} border-[#49C5C5] rounded-xl 
+    <div ref={divRef} className={`min-w-60 h-fit backdrop-blur-md bg-white/20 rounded-xl border-3 border-white/20
         cursor-pointer shadow-[0px_4px_8px_rgba(12,12,13,0.2)]`}>
         <div className='w-full h-auto '>
             { (!creatingNewList)?
-            <div onClick={()=>setCreatingNewList(true)} className='w-full p-3 flex items-center font-semibold text-gray-700'>
+            <div onClick={()=>setCreatingNewList(true)} className='w-full p-3 flex items-center font-semibold text-white'>
                 <IoMdAdd className='mr-3 text-xl' /> Add new list
             </div>
             :
             <div className='w-full h-auto p-3'>
-                <input type="text" placeholder='List name' onChange={handleInput} value={listName}
-                    className='w-full px-2 py-1 rounded-lg text-gray-700 border-[1px] border-gray-300 outline-none ' 
+                <input type="text" placeholder='List title' onChange={handleInput} value={listName}
+                    className='w-full px-2 py-1 rounded-lg text-white border-[1px] border-white outline-none ' 
                 />
                 {
                 (errMsg.trim()!=="") &&
                 <div className='text-red-500 text-[14px] mt-1'>{errMsg}</div>
                 }
-                <div className='w-full flex justify-between mt-3'>
-                    <button onClick={createList} className='w-[45%] font-semibold text-white text-[14px] bg-[#49C5C5] py-1 outline-none cursor-pointer rounded-lg '>
-                        Add List
-                    </button>
+                <div className='w-full justify-between mt-3 flex gap-4'>
                     <button onClick={()=>{setCreatingNewList(false)}} 
-                        className='border-[1px] border-gray-300 w-[45%] py-1 outline-none cursor-pointer text-[14px]
-                         text-gray-700 font-semibold rounded-lg hover:bg-gray-100 '>
+                        className='border-[1px] border-white flex-1 py-1 outline-none cursor-pointer text-[14px]
+                         text-white font-semibold rounded-lg '>
                         Cancel
+                    </button>
+                    <button onClick={createList} className='flex-1 font-semibold text-white text-[14px] bg-[#49C5C5] py-1 outline-none cursor-pointer rounded-lg shadow-lg'>
+                        Add List
                     </button>
                 </div>
             </div>
