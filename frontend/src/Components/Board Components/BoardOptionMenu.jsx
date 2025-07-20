@@ -35,7 +35,7 @@ const BoardOptionMenu = ({board,setBoard,starStatus,setBoardBg,toggleStarStatus,
 
 
     return (
-        <div ref={navRef} className="w-full max-w-[300px] sm:max-w-[370px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6  ">
+        <div ref={navRef} className="w-full max-w-[300px] sm:max-w-[370px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6 z-40 ">
             {(VisibilityPopup )?
             (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
             :

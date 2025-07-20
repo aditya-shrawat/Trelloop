@@ -18,6 +18,8 @@ import { fetchUserInfo } from './controllers/userInfo.js';
 import NotificationRouter from './routes/notification.js'
 import { boardSocket } from './socket/boardSocket.js';
 import startReminderScheduler from './cron/deadlineReminder.js';
+import { handleCommentSocket } from './socket/commentSocket.js';
+import { getMainFeed } from './controllers/home.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -51,6 +53,7 @@ io.on('connection', (socket) => {
   
   workspaceSocketHandler(io, socket);
   boardSocket(io,socket);
+  handleCommentSocket(io,socket)
 
   socket.on('disconnect', ()=>{
     console.log(`Socket disconnected: ${socket.id}`);
@@ -59,6 +62,7 @@ io.on('connection', (socket) => {
 startReminderScheduler(io);
 
 app.get("/user-info",checkAuthentication,fetchUserInfo);
+app.get('/api/home',checkAuthentication,getMainFeed)
 app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
 app.use('/board',BoardRouter);

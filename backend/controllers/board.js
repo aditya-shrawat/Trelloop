@@ -361,6 +361,14 @@ export const removeBoardMember = async (req,res)=>{
             return res.status(404).json({error:"user not found."})
         }
 
+        // remove from cards also
+        const lists = await List.find({ board: boardId }).select('_id');
+        const listIds = lists.map(list => list._id);
+        await Card.updateMany(
+            { list: { $in: listIds } },
+            { $pull: { members: userId } }
+        );
+
         board.members = board.members.filter(memberId => memberId.toString() !== userId);
         await board.save();
 
@@ -388,6 +396,15 @@ export const leaveBoard = async (req,res)=>{
         if (!isMember) {
             return res.status(400).json({ error: "User is not a member of this board." });
         }
+
+        // remove from cards also
+        const lists = await List.find({ board: boardId }).select('_id');
+        const listIds = lists.map(list => list._id);
+        await Card.updateMany(
+            { list: { $in: listIds } },
+            { $pull: { members: userId } }
+        );
+
         board.members = board.members.filter((id) => id.toString() !== userId);
         await board.save();
 

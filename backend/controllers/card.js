@@ -2,6 +2,7 @@ import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
+import Notification from "../models/notification.js";
 import User from "../models/user.js";
 
 
@@ -429,6 +430,7 @@ export const deleteCard = async (req,res)=>{
             return res.status(403).json({ error: "You don't have permission to delete this card." });
         }
 
+        await Notification.deleteMany({ cardId: cardId, isRead: false });
         const cardName = card.name;
         await Card.findByIdAndDelete(cardId);
 
@@ -545,15 +547,26 @@ export const addNewCardMembers = async (req,res)=>{
 export const joinCard = async (req,res)=>{
     try {
         if (!req.canEdit) {
-            return res.status(403).json({ error: "You don't have permission to edit this card." });
+            return res.status(403).json({ error: "You don't have permission to perform this action." });
         }
+        const userId = req.user.id;
 
         const card = req.card ;
-        const isMember = (card.members)?.some((id)=>id?.toString()=== (req.user.id).toString());
+        const isCardMember = card.members?.some((id)=>id?.toString()=== userId?.toString());
+        if(isCardMember) return res.status(400).json({error:"User is already card member."})
 
-        if(isMember) return res.status(400).json({error:"User is already card member."})
+        const list = req.list;
+        await list.populate('board');
+        const board = list.board;
+        const isBoardMember = board.members?.some((id)=>id?.toString()=== userId?.toString());
 
-        card.members.push(req.user.id);
+        // only board members can join card, if not a board member then user must get added to board 
+        if(!isBoardMember){
+            board.members.push(userId);
+            await board.save();
+        }
+
+        card.members.push(userId);
         await card.save();
 
         return res.status(200).json({message:"User joined card successfully."});
