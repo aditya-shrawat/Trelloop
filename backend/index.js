@@ -20,6 +20,7 @@ import { boardSocket } from './socket/boardSocket.js';
 import startReminderScheduler from './cron/deadlineReminder.js';
 import { handleCommentSocket } from './socket/commentSocket.js';
 import { getMainFeed } from './controllers/home.js';
+import CommentRouter from './routes/comment.js'
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -67,6 +68,7 @@ app.use('/board',BoardRouter);
 app.use('/card',CardRouter)
 app.use('/search',searchRouter);
 app.use('/notification',NotificationRouter)
+app.use('/api/comment',CommentRouter);
 
 server.listen(PORT,()=>console.log(`Server is running on port ${PORT}...`))
 
