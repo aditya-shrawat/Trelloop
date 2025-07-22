@@ -1,6 +1,7 @@
 import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
 import Card from "../models/card.js";
+import Comment from "../models/Comment.js";
 import List from "../models/list.js";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
@@ -104,14 +105,25 @@ export const fetchCardData = async (req,res)=>{
 
 export const fetchCardActivity = async (req,res)=>{
     try {
-        const {cardId} = req.params;
+        const card = req.card;
 
-        const cardActivities = await Activity.find({card:cardId})
-        .select("user type data createdAt").populate("user",'_id name')
+        const activities = await Activity.find({card:card._id})
+        .select("user type data createdAt").populate("user",'_id name').sort({ createdAt: -1 }).lean();
 
-        const activities = cardActivities.sort((a, b) => b.createdAt - a.createdAt);
+        const comments = await Comment.find({ card: card._id }).select('card sender receiver content createdAt parentComment').populate([
+            { path: 'card', select: 'name' },
+            { path: 'sender', select: 'name' },
+            { path: 'receiver', select: 'name' }
+        ]).sort({ createdAt: -1 }).lean();
 
-        return res.status(200).json({message:"Card activities fetched succssfully.",activities})
+        const taggedActivities = activities.map(act => ({ ...act, _type: 'activity' }));
+        const taggedComments = comments.map(com => ({ ...com, _type: 'comment' }));
+
+        const allActivities = [...taggedActivities, ...taggedComments].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        return res.status(200).json({message:"Card activities fetched succssfully.",allActivities})
     } catch (error) {
         console.log("Error while fetching card activities - ",error)
         return res.status(500).json({error:"Internal server error."})

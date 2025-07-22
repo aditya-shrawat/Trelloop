@@ -2,6 +2,7 @@ import express from 'express'
 import checkAuthentication from '../middlewares/authentication.js'
 import { addAttachment, addNewCardMembers, changeCardCover, deleteAttachment, deleteCard, fetchCardActivity, fetchCardData, joinCard, leaveCard, removeCardCover, removeCardMember, updateAttachment, updateCard, updateCardStatus, updateDeadline } from '../controllers/card.js';
 import checkCardAccess from '../middlewares/checkCardAccess.js';
+import { postCommentReply } from '../controllers/comment.js';
 
 
 const router = express.Router()
@@ -27,6 +28,7 @@ router.patch("/:cardId/attachments",checkAuthentication,checkCardAccess,addAttac
 router.patch("/:cardId/update/attachment",checkAuthentication,checkCardAccess,updateAttachment)
 router.patch("/:cardId/delete/attachment", checkAuthentication,checkCardAccess,deleteAttachment);
   
+router.post("/:cardId/comment/:commentId/reply",checkAuthentication,checkCardAccess,postCommentReply);
 
 
 export default router

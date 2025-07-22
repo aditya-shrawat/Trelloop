@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import ActivityItem from './ActivityItem'
 import { IoIosSend } from "react-icons/io";
 import socket from '../../../Socket/socket'
+import CommentItem from './CommentItem'
 
 const ActivityContainer = ({UserRole,currentUser}) => {
     const {id} = useParams();
@@ -20,7 +21,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
             {withCredentials: true}
             );
 
-            setCardActivities(response.data.activities)
+            setCardActivities(response.data.allActivities)
         } catch (error) {
             console.log("Error while fetching card activities - ",error)
         }
@@ -83,9 +84,16 @@ const ActivityContainer = ({UserRole,currentUser}) => {
         }
         { (loadingCardActivities) ?
             <div>Loading activity</div> :
-            (cardActivities.map((activity)=>(
-                <ActivityItem key={activity._id} activity={activity}  />
-            )))
+            (cardActivities?.map((item)=>{
+                if(item._type==='activity'){
+                    return <ActivityItem key={item._id} activity={item}  />
+                }
+                else if(item._type==='comment'){
+                    return <CommentItem key={item._id} comment={item}  />
+                }
+                else 
+                    return null;
+            }))
         }
     </div>
   )

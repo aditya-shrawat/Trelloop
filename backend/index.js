@@ -45,8 +45,6 @@ app.use(cors({
 app.use(express.json())
 
 io.on('connection', (socket) => {
-  console.log(`Socket connected: ${socket.id}`);
-
   socket.on('register_user_socket', ({userId })=> {
     socket.join(`user_${userId}`);
   });

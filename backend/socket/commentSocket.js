@@ -35,6 +35,15 @@ export const handleCommentSocket = (io, socket) => {
             if(!isBoardAdmin && !isBoardMember && !isWorkspaceAdmin && !isWorkspaceMember) 
                 return socket.emit('error',{message:"User doesn't have permission to perform this action."})
 
+            await Comment.create({
+                workspace: workspace._id,
+                board: board._id,
+                card: card._id,
+                sender: senderId,
+                receiver: senderId,
+                content: content.trim(),
+            });
+
             const notifyBoardMembers = async (memberId)=>{
                 if(senderId?.toString() === memberId?.toString()) return;
 
@@ -54,8 +63,9 @@ export const handleCommentSocket = (io, socket) => {
                 });
             }
 
+            const notifyList = [...new Set([...board.members, board.admin])];
             await Promise.all(
-                board.members?.map((memberId) => 
+                notifyList?.map((memberId) => 
                     notifyBoardMembers(memberId)
                 )
             );

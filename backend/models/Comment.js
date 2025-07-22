@@ -31,6 +31,11 @@ const CommentSchema = mongoose.Schema({
     createdAt:{ 
         type: Date, 
         default: Date.now 
+    },
+    parentComment: { // !== null , its a reply , === null its a parent comment
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: null
     }
 },{timestamps:true,}) 
 

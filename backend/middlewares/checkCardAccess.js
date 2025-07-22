@@ -6,6 +6,7 @@ import List from "../models/list.js";
 const checkCardAccess = async (req, res, next) => {
   try {
     const { cardId } = req.params;
+    if(!cardId) return res.status(400).json({ error: "Card ID is required." });
 
     const card = await Card.findById(cardId);
     if (!card) return res.status(404).json({ error: "Card not found" });
