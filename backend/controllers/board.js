@@ -132,11 +132,32 @@ export const getStarredBoards = async (req,res)=>{
 
         const starredBoards = await Promise.all(
             starredBoardsIds.map(async (obj) => {
-                return await Board.findById(obj.board).select("name workspace").populate("workspace", "name");
+                return await Board.findById(obj.board).select("name background workspace").populate("workspace", "name");
             })
         );
 
         return res.status(200).json({message:"Starred boards fetched successfully.",starredBoards})
+    } catch (error) {
+        return res.status(500).json({error:"Internal server error."})
+    }
+}
+
+export const getSharedBoards = async (req,res)=>{
+    try {
+        const userId = req.user.id ;
+
+        const boards = await Board.find({ members: userId }).select('name background workspace')
+            .populate({
+                path: 'workspace',
+                select: 'members name', 
+            }).sort({createdAt:-1});
+
+        const sharedBoards = boards.filter(board => {
+            const workspaceMembers = board.workspace?.members || [];
+            return !workspaceMembers.includes(userId);
+        });
+
+        return res.status(200).json({message: "Shared boards fetched successfully.",sharedBoards});
     } catch (error) {
         return res.status(500).json({error:"Internal server error."})
     }

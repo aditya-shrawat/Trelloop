@@ -1,7 +1,7 @@
 
 import express from 'express';
 import checkAuthentication from '../middlewares/authentication.js';
-import { addNewMembers, allJoinedWorkspacesAndBoards, changeBoardBackground, changeVisibility, deleteBoard, fetchBoardMembers, getBoardActivies, getBoardData, getBoardStarStatus, getStarredBoards, joinMemberInBoard, leaveBoard, removeBoardMember, renameBoard, toggleBoardStarStatus } from '../controllers/board.js';
+import { addNewMembers, allJoinedWorkspacesAndBoards, changeBoardBackground, changeVisibility, deleteBoard, fetchBoardMembers, getBoardActivies, getBoardData, getBoardStarStatus, getSharedBoards, getStarredBoards, joinMemberInBoard, leaveBoard, removeBoardMember, renameBoard, toggleBoardStarStatus } from '../controllers/board.js';
 import { creatingNewList, deleteList, updateList } from '../controllers/list.js';
 import checkBoardAccess from '../middlewares/checkBoardAccess.js';
 import { fetchAllLists } from '../controllers/list.js';
@@ -9,8 +9,9 @@ import { creatingNewCard, fetchListCards } from '../controllers/card.js';
 
 const router = express.Router();
 
-router.get("/starred",checkAuthentication,getStarredBoards)
-router.get("/myBoards",checkAuthentication,allJoinedWorkspacesAndBoards)
+router.get("/starred-boards",checkAuthentication,getStarredBoards)
+router.get("/shared-boards",checkAuthentication,getSharedBoards)
+router.get("/joined-workspaces-boards",checkAuthentication,allJoinedWorkspacesAndBoards)
 
 router.post("/:boardId/visibility",checkAuthentication,checkBoardAccess,changeVisibility)
 router.get("/:boardId/starred",checkAuthentication,getBoardStarStatus)

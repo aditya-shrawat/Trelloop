@@ -203,7 +203,7 @@ const StarredDropDown = ()=>{
     const fetchStarredBoards = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/starred`,
+            const response = await axios.get(`${BackendURL}/board/starred-boards`,
                 {withCredentials: true}
             );
 

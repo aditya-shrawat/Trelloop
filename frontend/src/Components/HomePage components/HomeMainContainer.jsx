@@ -7,11 +7,12 @@ import HomeContent from "./HomeContent";
 const HomeMainContainer = () => {
   const [starredBoards, setStarredBoards] = useState([]);
   const [loadingStarredBoards, setLoadingStarredBoards] = useState(true);
+  const [sharedBoards,setSharedBoards] = useState([]);
 
   const fetchStarredBoards = async () => {
     try {
       const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/board/starred`, {
+      const response = await axios.get(`${BackendURL}/board/starred-boards`, {
         withCredentials: true,
       });
 
@@ -23,8 +24,22 @@ const HomeMainContainer = () => {
     }
   };
 
+  const fetchSharedBoards = async ()=>{
+    try {
+      const BackendURL = import.meta.env.VITE_BackendURL;
+      const response = await axios.get(`${BackendURL}/board/shared-boards`,
+        {withCredentials: true}
+      );
+
+      setSharedBoards(response.data.sharedBoards)
+    } catch (error) {
+      console.log("Error while fetching joined boards ",error)
+    }
+  }
+
   useEffect(() => {
     fetchStarredBoards();
+    fetchSharedBoards()
   }, []);
 
   return (
@@ -35,67 +50,59 @@ const HomeMainContainer = () => {
 
       <div className="hidden lg:block w-full max-w-[280px] h-full px-4">
         { (starredBoards.length !==0) &&
-        <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
-          <h3 className="text-gray-500 font-semibold text-[14px] px-2">
-            Starred
-          </h3>
-          <div className="w-full h-full mt-4 ">
-            {loadingStarredBoards ? (
-              <div>loading starred boards</div>
-            ) : (
-              (starredBoards) && starredBoards?.map((board) => (
-                <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
-                  className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
-                >
-                  <div className="w-auto h-auto inline-block mr-4">
-                    <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                      {board.name[0].toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="w-full ">
-                    <h1 className="font-semibold text-[14px]">{board.name}</h1>
-                    <h3 className="text-[12px] text-gray-500 ">
-                      {board.workspace.name}
-                    </h3>
-                  </div>
-                </Link>
-              ))
-            )}
+          <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
+            <h3 className="text-gray-500 font-semibold text-[14px] px-2">
+              Starred
+            </h3>
+            <div className="w-full h-full mt-1 ">
+              {loadingStarredBoards ? (
+                <div>loading starred boards</div>
+              ) : (
+                (starredBoards) && starredBoards?.map((board) => (
+                  <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
+                    className="w-full px-2 py-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
+                  >
+                    <div className="w-auto h-auto inline-block mr-4">
+                      <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                        {board.name[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="w-full ">
+                      <h1 className="font-semibold text-[14px]">{board.name}</h1>
+                      <h3 className="text-[12px] text-gray-500 ">
+                        {board.workspace.name}
+                      </h3>
+                    </div>
+                  </Link>
+                ))
+              )}
+            </div>
           </div>
-        </div>
         }
-
-        <div className="w-full h-auto py-4 ">
-          <h3 className="text-gray-500 font-semibold text-[14px] px-2">
-            Joined Boards
-          </h3>
-          <div className="w-full h-full mt-4 ">
-            {[...Array(3)].map((_, index) => (
-              <div key={index}
-                className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
-                <div className="w-auto h-auto inline-block mr-4">
-                  <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                    W
-                  </span>
-                </div>
-                <div className="w-full ">
-                  <h1 className="font-semibold text-[14px]">Board name</h1>
-                  <h3 className="text-[12px] text-gray-500 ">Workspace 1</h3>
-                </div>
-              </div>
-            ))}
+        { (sharedBoards && sharedBoards.length !==0) &&
+          <div className="w-full h-auto py-4">
+            <h3 className="text-gray-500 font-semibold text-[14px] px-2">
+              Shared boards
+            </h3>
+            <div className="w-full h-full mt-1">
+              {
+                sharedBoards?.map((board) => (
+                  <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
+                    className="w-full px-2 py-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
+                    <div className="w-auto h-auto inline-block mr-4">
+                      <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                        {board.name[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="w-full ">
+                      <h1 className="font-semibold text-[14px]">{board.name}</h1>
+                    </div>
+                  </Link>
+                ))
+              }
+            </div>
           </div>
-        </div>
-
-        {/* <div className="w-full px-2 py-2 mt-6 hover:bg-gray-100 border-[1px] border-gray-300 rounded-lg flex items-center cursor-pointer ">
-                <div className="w-8 h-8 mr-4 text-xl flex items-center justify-center text-gray-500">
-                  <FaPlus  />
-                </div>
-                <div className="w-full text-gray-500 font-semibold ">
-                  Create Board
-                </div>
-            </div> 
-        */}
+        }
       </div>
     </div>
   );

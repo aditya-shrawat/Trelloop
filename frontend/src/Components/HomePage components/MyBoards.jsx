@@ -14,11 +14,13 @@ import { Link } from 'react-router-dom';
 const MyBoards = () => {
     const [workspaces,setWorkspaces] = useState([]);
     const [loading,setLoading]= useState(true)
+    const [starredBoards,setStarredBoards] = useState([]);
+    const [sharedBoards,setSharedBoards] = useState([]);
 
     const fetchAllJoinedWorkspaces = async ()=>{
         try {
             const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/myBoards`, {
+            const response = await axios.get(`${BackendURL}/board/joined-workspaces-boards`, {
                 withCredentials: true,
             });
 
@@ -31,17 +33,79 @@ const MyBoards = () => {
         }
     }
 
+    const fetchStarredBoards = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/board/starred-boards`,
+                {withCredentials: true}
+            );
+
+            setStarredBoards(response.data.starredBoards)
+        } catch (error) {
+            console.log("Error while fetching starred boards ",error)
+        }
+    }
+
+    const fetchSharedBoards = async ()=>{
+        try {
+            const BackendURL = import.meta.env.VITE_BackendURL;
+            const response = await axios.get(`${BackendURL}/board/shared-boards`,
+                {withCredentials: true}
+            );
+
+            setSharedBoards(response.data.sharedBoards)
+        } catch (error) {
+            console.log("Error while fetching joined boards ",error)
+        }
+    }
+
     useEffect(()=>{
         fetchAllJoinedWorkspaces()
+        fetchStarredBoards();
+        fetchSharedBoards();
     },[])
 
   return (
     <div className='w-full p-4 md:pl-8 mt-4 sm:mt-8 '>
-        <div className='w-full h-full'>
-            <div className='w-full mb-7'>
-                <h1 className='text-base font-bold text-gray-700'>YOUR WORKSPACES</h1>
-            </div>
+        {
+        (starredBoards && starredBoards.length!==0)&&
+            (<div className='w-full h-auto mb-6'>
+                <div className='w-full'>
+                    <h3 className='text-base font-semibold text-gray-700'>STARRED BOARDS</h3>
+                    <h3 className='text-gray-500 text-sm'>Your favorite boards marked for quick access.</h3>
+                </div>
+                <div className="w-full h-auto mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4 ">
+                    {
+                        starredBoards?.map((board) => (
+                            <BoardItem key={board._id} board={board} /> 
+                        ))
+                    }
+                </div>
+            </div>)
+        }
 
+        {
+        (sharedBoards && sharedBoards.length!==0)&&
+            (<div className='w-full h-auto mb-6'>
+                <div className='w-full'>
+                    <h3 className='text-base font-semibold text-gray-700'>SHARED BOARDS</h3>
+                    <h3 className='text-gray-500 text-sm'>Boards you're a member of, but not part of their workspace.</h3>
+                </div>
+                <div className="w-full h-auto mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4 ">
+                    {
+                        sharedBoards?.map((board) => (
+                            <BoardItem key={board._id} board={board} /> 
+                        ))
+                    }
+                </div>
+            </div>)
+        }
+
+        <div className='w-full h-auto'>
+            <div className='w-full mb-4'>
+                <h3 className='text-base font-semibold text-gray-700'>YOUR WORKSPACES</h3>
+                <h3 className='text-gray-500 text-sm'>All workspaces you're part of, including created and joined ones.</h3>
+            </div>
             <div className='w-full h-auto space-y-8 '>
             {
             (loading)?
@@ -81,10 +145,13 @@ const MyBoards = () => {
             ))
             )
             :
-            (<div>Nothing here !!!</div>)
+            (<div className='w-full'>
+                <div className='w-[70%] m-auto text-center mt-10 text-gray-500 font-semibold'>
+                    No workspaces found. You're not a member and haven't created any yet. Create one to get started!
+                </div>
+            </div>)
             }
             </div>
-
         </div>
     </div>
   )

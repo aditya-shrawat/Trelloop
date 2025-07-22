@@ -63,23 +63,30 @@ const HomePage = () => {
 
               <div className="w-full h-full mt-4 py-4 ">
                 <h3 className="text-gray-500 font-semibold text-[14px] px-2">Workspaces</h3>
-                <div className="w-full h-auto mt-4">
+                <div className="w-full h-auto mt-2">
                   {
                     (loadingWorkspaces)?
-                    <div>loadingWorkspaces</div>:
-                    workspaces.map((workspace)=>(
-                      <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
-                        className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
-                        <div className="w-auto h-auto inline-block mr-3">
-                          <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                            {workspace.name[0].toUpperCase()}
-                          </span>
+                      (<div>loadingWorkspaces</div>):
+                    (workspaces && workspaces.length!==0)?
+                      workspaces.map((workspace)=>(
+                        (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
+                          className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
+                          <div className="w-auto h-auto inline-block mr-3">
+                            <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                              {workspace.name[0].toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="w-full font-semibold flex items-center justify-between">
+                            <div className="line-clamp-2 break-words">{workspace.name}</div> <div><IoMdArrowDropright className="ml-1 text-2xl"/></div>
+                          </div>
+                        </Link>)
+                      ))
+                    :
+                      (<div className='w-full px-2'>
+                        <div className='text-gray-500 text-sm'>
+                          Create or join a workspace to get started.
                         </div>
-                        <div className="w-full font-semibold flex items-center justify-between">
-                          <div className="line-clamp-2 break-words">{workspace.name}</div> <div><IoMdArrowDropright className="ml-1 text-2xl"/></div>
-                        </div>
-                      </Link>
-                    ))
+                      </div>)
                   }
                 </div>
               </div>
