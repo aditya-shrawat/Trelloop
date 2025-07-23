@@ -36,7 +36,7 @@ export const postCommentReply = async (req,res)=>{
             board: board._id,
             card: card._id,
             sender: req.user.id,
-            receiver: comment.sender,
+            replyTo: comment.sender,
             content: replyContent.trim(),
             parentComment:comment._id
         });

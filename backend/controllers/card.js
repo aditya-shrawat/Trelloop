@@ -113,7 +113,7 @@ export const fetchCardActivity = async (req,res)=>{
         const comments = await Comment.find({ card: card._id }).select('card sender receiver content createdAt parentComment').populate([
             { path: 'card', select: 'name' },
             { path: 'sender', select: 'name' },
-            { path: 'receiver', select: 'name' }
+            { path: 'replyTo', select: 'name' }
         ]).sort({ createdAt: -1 }).lean();
 
         const taggedActivities = activities.map(act => ({ ...act, _type: 'activity' }));

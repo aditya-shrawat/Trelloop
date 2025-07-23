@@ -36,39 +36,24 @@ export const handleCommentSocket = (io, socket) => {
                 return socket.emit('error',{message:"User doesn't have permission to perform this action."})
 
             await Comment.create({
-                workspace: workspace._id,
-                board: board._id,
-                card: card._id,
-                sender: senderId,
-                receiver: senderId,
-                content: content.trim(),
+                workspace:workspace._id,
+                board:board._id,
+                card:card._id,
+                sender:senderId,
+                content:content.trim(),
+            })
+
+            const notifyList = new Set([...board.members.map(id => id.toString()),board.admin?.toString()]);
+
+            notifyList.forEach(memberId => {
+                if (memberId && memberId !== senderId.toString()) {
+                    io.to(`user_${memberId}`).emit("new_comment", {
+                        cardId,
+                        type: "comment",
+                        message: `New comment on the card "${card.name}"`,
+                    });
+                }
             });
-
-            const notifyBoardMembers = async (memberId)=>{
-                if(senderId?.toString() === memberId?.toString()) return;
-
-                await Comment.create({
-                    workspace:workspace._id,
-                    board:board._id,
-                    card:card._id,
-                    sender:senderId,
-                    receiver:memberId,
-                    content:content.trim(),
-                })
-
-                io.to(`user_${memberId}`).emit("new_comment", {
-                    cardId,
-                    type: "comment",
-                    message: `You have a new comment on the card ${card.name}`,
-                });
-            }
-
-            const notifyList = [...new Set([...board.members, board.admin])];
-            await Promise.all(
-                notifyList?.map((memberId) => 
-                    notifyBoardMembers(memberId)
-                )
-            );
 
             socket.emit('comment_added',{cardId,content});
         } catch (error) {

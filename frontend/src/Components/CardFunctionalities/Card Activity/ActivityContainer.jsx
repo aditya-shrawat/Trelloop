@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import ActivityItem from './ActivityItem'
 import { IoIosSend } from "react-icons/io";
 import socket from '../../../Socket/socket'
-import CommentItem from './CommentItem'
+import { CommentItem } from './CommentItem'
 
 const ActivityContainer = ({UserRole,currentUser}) => {
     const {id} = useParams();

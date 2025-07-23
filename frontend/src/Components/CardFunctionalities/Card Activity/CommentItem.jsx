@@ -11,7 +11,7 @@ import axios from 'axios';
 import { useRef } from 'react';
 dayjs.extend(relativeTime);
 
-const CommentItem = ({comment}) => {
+export const CommentItem = ({comment}) => {
     const createdAt = dayjs(comment.createdAt);
     const now = dayjs();
     const diffInHours = now.diff(createdAt, 'hour');
@@ -56,7 +56,7 @@ const CommentItem = ({comment}) => {
                         {
                         (comment && comment.parentComment) &&
                             <span className="text-xs px-2 py-0.5 h-fit text-white bg-[#49C5C5] rounded-lg mr-1 cursor-pointer inline-block shrink-0">
-                                @{comment.receiver.name}
+                                @{comment.replyTo.name}
                             </span>
                         }
                         {
@@ -85,8 +85,6 @@ const CommentItem = ({comment}) => {
         </div>
     )
 }
-
-export default CommentItem
 
 
 const ReplyContainer = ({commentId,onClose})=>{
@@ -137,7 +135,7 @@ const ReplyContainer = ({commentId,onClose})=>{
 }
 
 
-const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
+export const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
     const divref = useRef();
     const [deletingComment,setDeletingComment] = useState(false)
     const [errorMsg,setErrorMsg] = useState("")
@@ -197,7 +195,7 @@ const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
     )
 }
 
-const EditCommentContent = ({closeEditing,commentId,currentContent})=>{
+export const EditCommentContent = ({closeEditing,commentId,currentContent})=>{
     const divref = useRef();
     const [newContent,setNewContent] = useState(currentContent);
 

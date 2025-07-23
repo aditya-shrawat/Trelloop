@@ -20,10 +20,10 @@ const CommentSchema = mongoose.Schema({
         ref:'User',
         required:true,
     },
-    receiver:{ 
+    replyTo:{  // !== null  its a reply(stors parentComment sender) , === null its a parent comment (not get replied)
         type:mongoose.Schema.Types.ObjectId,
         ref:'User', 
-        required:true 
+        default:null
     },
     content: {
         type:String,require:true,
