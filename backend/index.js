@@ -21,6 +21,7 @@ import startReminderScheduler from './cron/deadlineReminder.js';
 import { handleCommentSocket } from './socket/commentSocket.js';
 import { getMainFeed } from './controllers/home.js';
 import CommentRouter from './routes/comment.js'
+import { getAllDeadlines } from './controllers/deadlines.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -62,6 +63,7 @@ startReminderScheduler(io);
 
 app.get("/user-info",checkAuthentication,fetchUserInfo);
 app.get('/api/home',checkAuthentication,getMainFeed)
+app.get('/api/deadlines',checkAuthentication,getAllDeadlines)
 app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
 app.use('/board',BoardRouter);

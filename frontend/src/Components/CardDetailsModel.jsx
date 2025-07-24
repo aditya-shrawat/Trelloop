@@ -163,7 +163,9 @@ const CardDetailsModel = () => {
         }
     }
 
-    const deadlineStatusMessage = (cardDeadline)=>{
+    const deadlineStatusMessage = (cardDeadline,isCompleted)=>{
+        if(!cardDeadline || isCompleted) return;
+
         const today = new Date();
         const deadline = new Date(cardDeadline);
 
@@ -287,10 +289,10 @@ const CardDetailsModel = () => {
                             <div className='text-gray-700 font-medium text-base flex items-center'>
                                 {new Date(card.deadline).toLocaleDateString("en-GB", {
                                     day: "numeric",
-                                    month: "long",
+                                    month: "short",
                                     year: "numeric"
                                 })}
-                                {deadlineStatusMessage(card.deadline)}
+                                {deadlineStatusMessage(card.deadline,card.isCompleted)}
                             </div>
                         </div>
                     </div>

@@ -7,6 +7,8 @@ import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import HomeMainContainer from "../Components/HomePage components/HomeMainContainer";
 import MyBoards from "../Components/HomePage components/MyBoards";
+import TrackDeadlines from "../Components/HomePage components/TrackDeadlines";
+import { TbCalendarClock } from "react-icons/tb";
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
@@ -59,6 +61,11 @@ const HomePage = () => {
                        text-lg font-semibold rounded-lg cursor-pointer`}>
                   <TbLayoutDashboardFilled className="mr-3" /> Boards
                 </Link>
+                <Link to={`/deadlines`} className={`w-full px-2 py-2 mt-3 flex items-center 
+                      ${(route==='/deadlines')?`text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-700 hover:bg-gray-100`}
+                       text-lg font-semibold rounded-lg cursor-pointer`}>
+                  <TbCalendarClock className="mr-3" />Deadlines
+                </Link>
               </div>
 
               <div className="w-full h-full mt-4 py-4 ">
@@ -94,6 +101,7 @@ const HomePage = () => {
 
             {route === "/home" && <HomeMainContainer />}
             {route === "/myBoards" && <MyBoards />}
+            {route === "/deadlines" && <TrackDeadlines />}
 
           </div>
         </div>

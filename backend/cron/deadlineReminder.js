@@ -34,7 +34,8 @@ const startReminderScheduler = (io) => {
         end.setHours(23, 59, 59, 999); // tomorrow end
 
         const cardsDueSoon = await Card.find({
-            deadline: { $gte: start, $lte: end }
+            deadline: { $gte: start, $lte: end, $ne: null },
+            isCompleted: false
         });
 
         for (const card of cardsDueSoon) {
