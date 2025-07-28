@@ -206,23 +206,23 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
       <div className="w-full h-auto" >
         <div className="w-full flex ">
             <div onClick={()=>{setSelectFrom("Workspace")}} 
-                className={`cursor-pointer py-1 w-[50%] text-center ${(selectFrom==="Workspace")?`bg-gray-100 border-b-3 border-[#49C5C5] text-gray-700 font-bold`:
-                `bg-transpersent text-gray-500 font-semibold`}`}>
+                className={`cursor-pointer py-1 w-[50%] text-center ${(selectFrom==="Workspace")?`bg-gray-100 border-b-3 border-teal-500 text-gray-700`:
+                `bg-transpersent text-gray-500`} font-semibold`}>
                 Workspace
             </div>
             <div onClick={()=>{setSelectFrom("All")}} 
-                className={`font-bold cursor-pointer py-1 w-[50%] text-center ${(selectFrom==="All")?`bg-gray-100 border-b-3 border-[#49C5C5] text-gray-700 font-bold`:
-                `bg-transpersent text-gray-500 font-semibold`}`}>
+                className={`font-bold cursor-pointer py-1 w-[50%] text-center ${(selectFrom==="All")?`bg-gray-100 border-b-3 border-teal-500 text-gray-700 font-bold`:
+                `bg-transpersent text-gray-500`} font-semibold`}>
                 All
             </div>
         </div>
         <div className="w-full h-auto mt-4">
           {  (selectFrom==='Workspace') ?
-            (<h3 className=" text-gray-500 text-sm">
+            (<h3 className="text-gray-400 text-sm">
                 Select and add members from workspace to this board.
             </h3>)
             :
-            (<h3 className=" text-gray-500 text-sm">
+            (<h3 className="text-gray-400 text-sm">
                 Search and invite users to your board.
             </h3>)
           }
@@ -230,11 +230,11 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
         <form className="w-full h-auto">
           <div className="w-full mt-2">
             <input type="text" name="name" value={inputString} onChange={search} placeholder="Enter name"
-              className="w-full h-10 py-2 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none"
+              className="w-full py-2 px-2 text-base text-gray-700 rounded-md border-[1px] border-gray-300 outline-none"
             />
           </div>
           {(selectedUsersInfo.length!==0) &&
-            <div className="mt-4 p-2 text-gray-500 border-[1px] border-[#49C5C5] rounded-lg flex gap-2 overflow-y-auto">
+            <div className="mt-4 p-2 text-gray-500 border-[1px] border-teal-500 rounded-md flex gap-2 overflow-y-auto">
                 {
                 selectedUsersInfo.map((user)=>{
                     return <SelectedUserItem key={user._id} user={user} onRemove={removeSelectedUser} />
@@ -257,7 +257,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
                 )
             :
             (searchedUsers.length!==0)?
-                <div className="flex flex-col p-2 mt-4 max-h-64 overflow-y-auto border-[1px] border-gray-300 rounded-lg ">
+                <div className="flex flex-col p-2 mt-4 max-h-64 overflow-y-auto border-[1px] border-gray-300 rounded-lg">
                     {
                     (searchedUsers && searchedUsers.length !== 0) &&
                     searchedUsers.map((user)=>{
@@ -269,7 +269,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
                 </div>
             : 
             (   (searchedUsers.length ===0 && inputString!=='') &&
-                <div className="mt-4 p-2 text-gray-500 border-[1px] border-gray-300 rounded-lg">
+                <div className="mt-4 p-2 text-gray-400 border-[1px] border-gray-300 rounded-lg">
                     Not found
                 </div>
             )
@@ -281,16 +281,16 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
             {
             (selectFrom === "Workspace")?
                 (<button onClick={addSelectedUsers}
-                className={`${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-[#49C5C5] hover:bg-[#5fcaca] 
-                    hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] cursor-pointer`:`bg-[#5fcaca] cursor-not-allowed`} 
-                    w-full py-2 font-semibold text-base text-white rounded-xl outline-none border-none `}>
+                className={`w-full py-2 ${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-lg hover:shadow-xl cursor-pointer`
+                :`bg-teal-500 cursor-not-allowed`} 
+                font-semibold text-white rounded-md outline-none border-none`}>
                 Add members
                 </button>)
             :
                 (<button onClick={inviteSelectedUsers}
-                className={`${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-[#49C5C5] hover:bg-[#5fcaca] 
-                    hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] cursor-pointer`:`bg-[#5fcaca] cursor-not-allowed`} 
-                    w-full py-2 font-semibold text-base text-white rounded-xl outline-none border-none `}>
+                className={`w-full py-2 ${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-lg hover:shadow-xl cursor-pointer`
+                :`bg-teal-500 cursor-not-allowed`} 
+                font-semibold text-white rounded-md outline-none border-none`}>
                 Send invite
                 </button>)
             }

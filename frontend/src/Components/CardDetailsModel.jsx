@@ -238,7 +238,7 @@ const CardDetailsModel = () => {
                                 :
                                 <input type="text" name="name" value={newCardInfo.name} onChange={handleInput}
                                 placeholder='Enter card name ...'
-                                className='w-full px-2 py-1 text-lg font-semibold text-gray-700 rounded-lg outline-none border-2 border-[#49C5C5]'
+                                className='w-full px-2 py-1 text-lg font-semibold text-gray-700 rounded-lg outline-none border-2 border-teal-500'
                                 />
                                 )
                             }
@@ -251,7 +251,7 @@ const CardDetailsModel = () => {
                                 }
                             </div>
                             { (errorMsg.trim()!=='') &&
-                            <div className='text-red-600'>
+                            <div className='text-red-600 text-sm'>
                                 {errorMsg}
                             </div>
                             }
@@ -269,11 +269,11 @@ const CardDetailsModel = () => {
                             :
                             <div className='flex items-center'>
                                 <div onClick={(e)=>{cancelUpdatingCard(e)}}
-                                    className='mr-4 bg-gray-50 text-gray-700 border-[1px] border-gray-300 px-2 py-0.5 cursor-pointer rounded-lg flex items-center '>
+                                    className='outline-button text-sm mr-3 px-2 py-0.5 flex items-center '>
                                     Cancel
                                 </div>
                                 <div onClick={updateCardInfo}
-                                    className='bg-[#49C5C5] text-white font-semibold px-2 py-0.5 cursor-pointer rounded-lg flex items-center '>
+                                    className='primary-button text-sm px-3 py-0.5 flex items-center '>
                                     Save
                                 </div>
                             </div>
@@ -320,7 +320,7 @@ const CardDetailsModel = () => {
                         :(
                             <textarea name='description' value={newCardInfo.description} onChange={handleInput}
                                 placeholder="Add description..."
-                                className="min-h-24 w-full p-2 border-2 border-[#49C5C5] outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
+                                className="min-h-24 w-full p-2 border-2 border-teal-500 outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
                             />
                         )
                         }
@@ -348,9 +348,9 @@ const CardDetailsModel = () => {
                 {/* Activity */}
                 <div className="">
                     <div className="flex items-center justify-between mb-4 ">
-                        <div className="flex items-center gap-2">
-                            <TbListDetails className="text-xl mr-2 text-gray-700" />
-                            <h3 className="text-base font-medium text-gray-700">Activity</h3>
+                        <div className="flex items-center gap-2 text-gray-700">
+                            <TbListDetails className="text-xl mr-2" />
+                            <h3 className="text-base font-medium">Activity</h3>
                         </div>
                     </div> 
                     <div className="w-full h-full">

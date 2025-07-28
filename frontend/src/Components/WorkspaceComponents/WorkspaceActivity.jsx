@@ -38,20 +38,22 @@ const WorkspaceActivity = () => {
     <div className="w-full h-auto ">
         <div className="pb-6 mb-4 border-b-[1px] border-gray-300 ">
           <h2 className="text-xl font-semibold text-gray-700">Workspace activity</h2>
-          <h2 className="text-base text-gray-500 ">
+          <h2 className="text-sm text-gray-400 ">
             Track all recent activities across your workspace.
           </h2>
         </div>
         <div className="w-full h-auto space-y-4 ">
-            { (loadingActivities) ?
-                <div>Loading workspace activities...</div> :
+            {   (loadingActivities) ?
+                    <div>Loading workspace activities...</div> 
+                :
                 (activities.length !==0)?
-                (activities.map((activity)=>(
-                    <WorkspaceActivityItem key={activity._id} activity={activity}  />
-                ))):
-                (
-                <div>No activity</div>
-                )
+                    (activities.map((activity)=>(
+                        <WorkspaceActivityItem key={activity._id} activity={activity}  />
+                    )))
+                :
+                    (<div className="text-center text-gray-400 py-10">
+                        <p className="text-lg font-medium">No activity yet!</p>
+                    </div>)
             }
         </div>
     </div>

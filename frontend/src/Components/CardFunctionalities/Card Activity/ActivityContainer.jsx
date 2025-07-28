@@ -77,7 +77,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
                 <input placeholder="Write a comment..." value={commentContent} onChange={handleInput} 
                     className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
                 />
-                <div onClick={handleCommentSubmit} className='w-fit px-2 py-1 bg-[#49C5C5] cursor-pointer rounded-md flex items-center justify-center ml-3'>
+                <div onClick={handleCommentSubmit} className='primary-button w-fit px-2 py-1 flex items-center justify-center ml-3'>
                     <IoIosSend className='text-xl text-white' />
                 </div>
             </div>)

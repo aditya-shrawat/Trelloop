@@ -40,7 +40,7 @@ const MembersSlide = () => {
       <div className="w-full h-auto">
         <div className="pb-6 border-b-[1px] border-gray-300 ">
           <h2 className="text-xl font-semibold text-gray-700">{`Workspace members (${(members||admin)?`${members.length+1}`:`0`})`}</h2>
-          <h2 className="text-base text-gray-500 ">
+          <h2 className="text-sm text-gray-400 ">
             Workspace members can view and join all Workspace visible boards and
             create new boards in the Workspace.
           </h2>
@@ -168,11 +168,11 @@ const RemoveMemberPopup = ({setRemovePopup,userId,workspaceId,setMembers})=>{
 
   return (
     <div ref={divref} className='bg-white h-fit w-72 p-4 rounded-lg border-[1px] border-gray-300 
-      absolute bottom-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+      absolute bottom-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10'>
       <div className='w-full h-full  '>
         <div className='w-full text-start'>
           <h1 className='text-lg font-semibold text-gray-700'>Remove member</h1>
-          <p className='text-sm mt-1 text-gray-600'>Once removed, this user won't be able to access this workspace or its boards.</p>
+          <p className='text-sm text-gray-400'>Once removed, this user won't be able to access this workspace or its boards.</p>
         </div>
         {   (errorMsg.trim()!=="") &&
           <div className='text-red-600 text-sm mt-2'>
@@ -180,7 +180,7 @@ const RemoveMemberPopup = ({setRemovePopup,userId,workspaceId,setMembers})=>{
           </div>
         }
         <div className='w-full flex justify-between md:justify-evenly items-center mt-6'>
-          <button onClick={removeMember} className='w-full py-1 bg-red-600 rounded-lg text-white font-semibold outline-none border-none cursor-pointer '>
+          <button onClick={removeMember} className='w-full py-1 bg-red-600 rounded-md text-white font-semibold outline-none border-none cursor-pointer '>
             {(removing)?'Removing...':"Remove"}
           </button>
         </div>
@@ -231,11 +231,11 @@ const LeaveWorkspacePopup = ({setLeavePopup,userId,workspaceId,setMembers})=>{
 
   return (
     <div ref={divref} className='bg-white h-fit w-72 p-4 rounded-lg border-[1px] border-gray-300 
-      absolute bottom-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+      absolute bottom-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10'>
       <div className='w-full h-full  '>
         <div className='w-full text-start'>
           <h1 className='text-lg font-semibold text-gray-700'>Leave workspace</h1>
-          <p className='text-sm mt-1 text-gray-600'>Once you leave, you won't be able to access this workspace or its boards.</p>
+          <p className='text-sm text-gray-400'>Once you leave, you won't be able to access this workspace or its boards.</p>
         </div>
         {   (errorMsg.trim()!=="") &&
           <div className='text-red-600 text-sm mt-2'>
@@ -243,7 +243,7 @@ const LeaveWorkspacePopup = ({setLeavePopup,userId,workspaceId,setMembers})=>{
           </div>
         }
         <div className='w-full flex justify-between md:justify-evenly items-center mt-6'>
-          <button onClick={leaveWorkspace} className='w-full py-1 bg-red-600 rounded-lg text-white font-semibold outline-none border-none cursor-pointer '>
+          <button onClick={leaveWorkspace} className='w-full py-1 bg-red-600 rounded-md text-white font-semibold outline-none border-none cursor-pointer '>
             {(leaving)?'...':"Leave"}
           </button>
         </div>

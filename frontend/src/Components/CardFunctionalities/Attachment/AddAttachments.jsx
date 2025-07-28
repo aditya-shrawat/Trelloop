@@ -51,16 +51,16 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
 
     return (
     <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
-            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10 '>
+            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10 '>
         <div className='w-full h-full  '>
             <div className='w-full text-start'>
-                <h1 className='text-lg font-semibold text-gray-700'>Add Attachment</h1>
-                <p className='text-sm mt-1 text-gray-600'>Add a link to any file, image, or document you want to attach to this card.</p>
+                <h1 className='font-semibold text-gray-700'>Add Attachment</h1>
+                <p className='text-sm text-gray-400'>Add a link to any file, image, or document you want to attach to this card.</p>
             </div>
             <div className='w-full text-start mt-4'>
                 <label className='text-base font-semibold text-gray-700' >Paste link</label>
                 <input type="text"  onChange={handleInput} value={inputLink}
-                    className='w-full px-2 py-1 mt-1 text-gray-700 border-[0.5px] border-gray-300 outline-none rounded-lg ' />
+                    className='w-full px-2 py-1 mt-1 text-gray-700 border-[0.5px] border-gray-300 outline-none rounded-md' />
             </div>
             {   (errorMsg.trim()!=="") &&
                 <div className='text-red-600 text-sm mt-2'>
@@ -68,10 +68,10 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
                 </div>
             }
             <div className='w-full flex gap-4 mt-6'>
-                <button onClick={()=>{setCardFunctionality(null)}} className='flex-1 py-1 rounded-lg text-gray-700 hover:bg-gray-100 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                <button onClick={()=>{setCardFunctionality(null)}} className='outline-button flex-1 py-1'>
                     Cancel
                 </button>
-                <button onClick={attachLink} className='flex-1 py-1 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer outline-none border-none '>
+                <button onClick={attachLink} className='primary-button flex-1 py-1'>
                     Add
                 </button>
             </div>

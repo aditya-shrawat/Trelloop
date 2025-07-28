@@ -37,12 +37,12 @@ const BoardSlide = ({isAdmin,isMember}) => {
   return (
     <div className="w-full h-auto ">
       <h2 className="text-xl font-semibold text-gray-700">Boards</h2>
-      <div className="w-full h-auto mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 ">
+      <div className="w-full h-auto mt-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {(isAdmin || isMember)&&
         (<div onClick={()=>{setCreatingBoard(true)}}
-          className="min-w-44 max-w-56 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] 
+          className="flex-1 max-w-72 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] 
                 cursor-pointer relative bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 flex justify-center items-center border-[1px] border-gray-300 ">
-          <h3 className="font-semibold ">Create board</h3>
+          <h3 className="font-semibold inline-block text-center">Create board</h3>
         </div>)}
         {(loading)?
         <div>Loading...</div>
@@ -100,7 +100,7 @@ const BoardCard = ({board})=>{
 
   return (
     <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id} style={{background:board.background}}
-        className="min-w-44 max-w-56 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative ">
+        className="flex-1 max-w-72 h-28 p-3 rounded-lg hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] cursor-pointer relative ">
       <h3 className="font-bold text-white">{board.name}</h3>
       <div onClick={toggleStarStatus} 
           className="inline-block text-xl absolute bottom-3 right-3 ">

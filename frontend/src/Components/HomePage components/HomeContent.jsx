@@ -145,7 +145,7 @@ const CommentItem = ({comment})=>{
                         <div className='w-full text-sm'>
                             {
                             (comment && comment.parentComment) &&
-                                <span className="text-xs px-2 py-0.5 h-fit text-white bg-[#49C5C5] rounded-lg mr-1 cursor-pointer inline-block shrink-0">
+                                <span className="text-xs px-2 py-0.5 h-fit text-white bg-teal-500 rounded-lg mr-1 cursor-pointer inline-block shrink-0">
                                     @{comment.replyTo.name}
                                 </span>
                             }
@@ -232,14 +232,14 @@ const ReplyComment = ({cardId,commentId,onClose,currentUser})=>{
                 </div>
                 <div className='w-full'>
                     <input ref={inputRef} type="text"  placeholder='Reply...' value={replyContent} onChange={handleInput}
-                        className='w-full px-2 py-1.5 rounded-md text-sm outline-none border-2 border-[#49C5C5] bg-transparent text-gray-700' />
+                        className='w-full px-2 py-1.5 rounded-md text-sm outline-none border-[1px] border-gray-300 bg-transparent text-gray-700' />
                 </div>
             </div>
             <div className='w-fit h-fit mt-3 flex'>
-                <button onClick={onClose} className='text-gray-500 px-4 py-1 rounded-md text-xs font-semibold border-[1px] border-gray-300 hover:bg-gray-100 outline-none mr-4 cursor-pointer'>
+                <button onClick={onClose} className='outline-button px-4 py-1 mr-4 text-sm'>
                     Cancel
                 </button>
-                <button onClick={replyComment} className='px-4 py-1 rounded-md text-xs text-white font-semibold bg-[#49C5C5] outline-none cursor-pointer'>
+                <button onClick={replyComment} className='primary-button px-4 py-1 text-sm'>
                     Reply
                 </button>
             </div>

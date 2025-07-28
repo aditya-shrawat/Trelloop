@@ -174,11 +174,11 @@ const RemoveMemberPopup = ({setRemovePopup,userId,boardId,setMembers})=>{
 
   return (
     <div ref={divref} className='bg-white h-fit w-64 sm:w-72 p-4 rounded-lg border-[1px] border-gray-300 
-      absolute top-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)]'>
+      absolute top-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)]'>
       <div className='w-full h-full  '>
         <div className='w-full text-start'>
-          <h1 className='text-lg font-semibold text-gray-700'>Remove member</h1>
-          <p className='text-sm mt-1 text-gray-600'>Once removed, this user won't be able to access this board and its card's.</p>
+          <h1 className='font-semibold text-gray-700'>Remove member</h1>
+          <p className='text-sm text-gray-400'>Once removed, this user won't be able to access this board and its card's.</p>
         </div>
         {   (errorMsg.trim()!=="") &&
           <div className='text-red-600 text-sm mt-2'>
@@ -186,7 +186,7 @@ const RemoveMemberPopup = ({setRemovePopup,userId,boardId,setMembers})=>{
           </div>
         }
         <div className='w-full flex justify-between md:justify-evenly items-center mt-6'>
-          <button onClick={removeMember} className='w-full py-1 bg-red-600 rounded-lg text-white font-semibold outline-none border-none cursor-pointer '>
+          <button onClick={removeMember} className='w-full py-1 bg-red-600 rounded-md text-white font-semibold outline-none border-none cursor-pointer '>
             {(removing)?'Removing...':"Remove"}
           </button>
         </div>
@@ -237,11 +237,11 @@ const LeaveBoardPopup = ({setLeavePopup,userId,boardId,setMembers})=>{
 
   return (
     <div ref={divref} className='bg-white h-fit w-64 sm:w-72 p-4 rounded-lg border-[1px] border-gray-300 
-      absolute top-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-40'>
+      absolute top-full right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-40'>
       <div className='w-full h-full  '>
         <div className='w-full text-start'>
-          <h1 className='text-lg font-semibold text-gray-700'>Leave board</h1>
-          <p className='text-sm mt-1 text-gray-600'>Once you leave, you won't be able to access this board and its card's.</p>
+          <h1 className='font-semibold text-gray-700'>Leave board</h1>
+          <p className='text-sm text-gray-400'>Once you leave, you won't be able to access this board and its card's.</p>
         </div>
         {   (errorMsg.trim()!=="") &&
           <div className='text-red-600 text-sm mt-2'>
@@ -249,7 +249,7 @@ const LeaveBoardPopup = ({setLeavePopup,userId,boardId,setMembers})=>{
           </div>
         }
         <div className='w-full flex justify-between md:justify-evenly items-center mt-6'>
-          <button onClick={leaveBoard} className='w-full py-1 bg-red-600 rounded-lg text-white font-semibold outline-none border-none cursor-pointer '>
+          <button onClick={leaveBoard} className='w-full py-1 bg-red-600 rounded-md text-white font-semibold outline-none border-none cursor-pointer '>
             {(leaving)?'...':"Leave"}
           </button>
         </div>

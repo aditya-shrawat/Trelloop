@@ -17,6 +17,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
   const [selectedUsersInfo,setSelectedUsersInfo] = useState([]);
   const [selectedUsersIds,setSelectedUsersIds] = useState([]);
   const [admin,setAdmin] = useState();
+  const [sendingInvite,setSendingInvite] = useState(false)
   
   // join workspace room
   useWorkspaceSocket (socket,workspace.id,{});
@@ -109,7 +110,10 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
 
   const sendInviteToSelectedUsers = (e)=>{
     e.preventDefault()
+    if(sendingInvite) return ;
     if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
+
+    setSendingInvite(true);
 
     try {
       socket.emit("send_workspace_invite", {
@@ -128,6 +132,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
         setSelectedUsersIds([])
         setSelectedUsersIds([])
         setIsAddingNewMembers(false)
+      setSendingInvite(false)
     }
   }
 
@@ -135,27 +140,27 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
       <div ref={divref}
-        className=" max-w-[95%] sm:max-w-md md:max-w-lg w-full 
-            absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-8 py-12 bg-white rounded-xl border-[1px] border-gray-300 ">
+        className="max-w-[95%] sm:max-w-md md:max-w-lg w-full 
+            absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 sm:px-6 py-6 sm:py-8 bg-white rounded-lg border-[1px] border-gray-300 ">
         <div className="w-full h-auto">
           <h1 className="text-xl font-semibold text-gray-700 ">
             Add Members to Your Workspace
           </h1>
-          <h3 className=" text-gray-500 mt-2 ">
+          <h3 className="text-gray-400 text-sm">
             Collaborate better by inviting teammates to your workspace and work together seamlessly.
           </h3>
         </div>
         <form className="w-full h-auto">
-          <div className="flex flex-col mt-8 ">
+          <div className="flex flex-col mt-4">
             <label className="mb-1 font-semibold text-gray-700">
               Invite members
             </label>
             <input type="text" name="name" value={inputString} onChange={searchUsers} placeholder="Enter name"
-              className=" h-10 py-2 px-2 text-base text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none"
+              className=" h-10 py-2 px-2 text-base text-gray-700 rounded-md border-[1px] border-gray-300 outline-none"
             />
           </div>
           {(selectedUsersInfo.length!==0) &&
-            <div className="mt-4 p-2 text-gray-500 border-[1px] border-[#49C5C5] rounded-lg flex gap-2 overflow-y-auto">
+            <div className="mt-4 p-2 text-gray-500 border-[1px] border-teal-600 rounded-md flex gap-2 overflow-y-auto">
                 {
                 selectedUsersInfo.map((user)=>{
                     return <SelectedUserItem key={user._id} user={user} onRemove={removeSelectedUser} />
@@ -164,13 +169,13 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
           }
           {
             (searchedUsers.length ===0 && inputString!=='') &&
-            <div className="mt-4 p-2 text-gray-500 border-[1px] border-gray-300 rounded-lg">
+            <div className="mt-4 p-2 text-gray-500 border-[1px] border-gray-300 rounded-md">
                 Not found
             </div>
           }         
           {
             (searchedUsers.length!==0) &&
-            <div className="flex flex-col p-2 mt-4 max-h-72 overflow-y-auto border-[1px] border-gray-300 rounded-lg ">
+            <div className="flex flex-col p-2 mt-4 max-h-64 overflow-y-auto border-[1px] border-gray-300 rounded-md">
                 {
                 (searchedUsers && searchedUsers.length !== 0) &&
                 searchedUsers.map((user)=>{
@@ -186,10 +191,10 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
           )}
           <div className="mt-6">
             <button onClick={sendInviteToSelectedUsers}
-              className={`${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-[#49C5C5] hover:bg-[#5fcaca] 
-                hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] cursor-pointer`:`bg-[#5fcaca] cursor-not-allowed`} 
-                w-full py-2 font-semibold text-lg text-white rounded-xl outline-none border-none `}>
-              Send invite
+              className={`w-full py-2  ${(selectedUsersIds.length!==0 && selectedUsersInfo.length!==0)?`bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-lg hover:shadow-xl cursor-pointer`
+                :`bg-teal-500 cursor-not-allowed`} 
+                font-semibold text-lg text-white rounded-md outline-none border-none`}>
+              {(sendingInvite)?"Inviting...":"Send invite"}
             </button>
           </div>
         </form>

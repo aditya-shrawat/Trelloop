@@ -128,19 +128,19 @@ const AddNewCard = ({listId,boardId,setCards})=>{
 
 
     return (
-    <div ref={divRef} className={`w-full h-fit ${creatingNewCard &&`border-[2px] border-[#49C5C5]`} rounded-lg 
+    <div ref={divRef} className={`w-full h-fit ${creatingNewCard &&`border-[2px] border-teal-500`} rounded-lg 
         cursor-pointer`}>
         <div className='w-full h-auto '>
             { (!creatingNewCard)?
             <div onClick={()=>setCreatingNewCard(true)} 
-                className='w-full px-1 py-2 hover:bg-gray-100 cursor-pointer rounded-xl flex items-center 
+                className='w-full px-1 py-2 hover:bg-gray-100 cursor-pointer rounded-lg flex items-center 
                 font-semibold text-gray-600 hover:text-gray-700'>
                 <IoMdAdd className='mr-2 text-xl' /> Add new Card
             </div>
             :
             <div className='w-full h-auto px-2 py-3'>
                 <input type="text" placeholder='Enter a title' onChange={handleInput} value={cardName}
-                    className='w-full px-2 py-1 rounded-lg border-[1px] text-gray-700 border-gray-300 outline-none ' 
+                    className='w-full px-2 py-1 rounded-md border-[1px] text-gray-700 border-gray-300 outline-none ' 
                 />
                 {
                 (errMsg.trim()!=="") &&
@@ -148,11 +148,10 @@ const AddNewCard = ({listId,boardId,setCards})=>{
                 }
                 <div className='w-full flex justify-between mt-3 gap-4'>
                     <button onClick={()=>{setCreatingNewCard(false)}} 
-                        className='border-[1px] border-gray-300 flex-1 py-1 outline-none cursor-pointer  text-[14px]
-                         text-gray-700 font-semibold rounded-lg hover:bg-gray-100'>
+                        className='outline-button flex-1 py-1 text-sm'>
                         Cancel
                     </button>
-                    <button onClick={createCard} className='font-semibold text-white text-[14px] bg-[#49C5C5] flex-1 py-1 outline-none cursor-pointer rounded-lg shadow-md'>
+                    <button onClick={createCard} className='primary-button flex-1 text-sm py-1'>
                         Add card
                     </button>
                 </div>

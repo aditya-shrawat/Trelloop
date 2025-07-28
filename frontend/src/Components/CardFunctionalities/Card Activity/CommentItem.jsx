@@ -55,7 +55,7 @@ export const CommentItem = ({comment}) => {
                     <div className='w-full px-1 text-sm text-gray-700'>
                         {
                         (comment && comment.parentComment) &&
-                            <span className="text-xs px-2 py-0.5 h-fit text-white bg-[#49C5C5] rounded-lg mr-1 cursor-pointer inline-block shrink-0">
+                            <span className="text-xs px-2 py-0.5 h-fit text-white bg-teal-500 rounded-lg mr-1 cursor-pointer inline-block shrink-0">
                                 @{comment.replyTo.name}
                             </span>
                         }
@@ -123,10 +123,10 @@ const ReplyContainer = ({commentId,onClose})=>{
                 </div>
             </div>
             <div className='w-fit h-fit mt-2 flex'>
-                <button onClick={onClose} className='text-gray-500 px-2 py-1 rounded-md text-xs font-semibold border-[1px] border-gray-300 hover:bg-gray-100 outline-none mr-4 cursor-pointer'>
+                <button onClick={onClose} className='outline-button px-3 py-1 text-sm mr-4'>
                     Cancel
                 </button>
-                <button onClick={replyComment} className='px-2 py-1 rounded-md text-xs text-white font-semibold bg-[#49C5C5] outline-none cursor-pointer'>
+                <button onClick={replyComment} className='primary-button text-sm px-3 py-1'>
                     Reply
                 </button>
             </div>
@@ -168,25 +168,25 @@ export const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
 
     return (
         
-        <div ref={divref} className='w-64 px-3 py-4 h-auto border-[1px] rounded-lg z-10 bg-white shadow-[0px_0px_12px_rgba(12,12,13,0.3)]
+        <div ref={divref} className='w-64 px-3 py-4 h-auto border-[1px] rounded-lg z-10 bg-white shadow-[0px_0px_12px_rgba(12,12,13,0.2)]
          border-gray-300 absolute top-[130%] right-0 '>
             {
             (deletingComment)?
-                <div className='w-full px-2'>
+                <div className='w-full px-1'>
                     <h1 className='text-gray-700 font-semibold'>Delete comment?</h1>
-                    <p className='text-gray-500 text-sm'>This comment will be permanently removed from the card and cannot be undone.</p>
+                    <p className='text-gray-400 text-sm'>This comment will be permanently removed from the card and cannot be undone.</p>
                     <div className='w-full flex items-center mt-6'>
-                        <div onClick={deleteComment} className='w-full py-1 text-center bg-red-500 rounded-lg text-white font-semibold cursor-pointer '>
+                        <div onClick={deleteComment} className='w-full py-1 text-center bg-red-500 rounded-md text-white font-semibold cursor-pointer '>
                             Delete
                         </div>
                     </div>
                 </div>
             :
-                <div className='w-full'>
-                    <div onClick={()=>{setEditComment(true);closeOptions()}} className='text-gray-700 hover:bg-gray-100 font-semibold rounded-lg px-2 py-1 cursor-pointer flex items-center'>
+                <div className='w-full space-y-1'>
+                    <div onClick={()=>{setEditComment(true);closeOptions()}} className='text-gray-700 hover:bg-gray-100 font-semibold rounded-md px-2 py-1 cursor-pointer flex items-center'>
                         <div className='mr-3'><FiEdit/></div> Edit
                     </div>
-                    <div onClick={()=>{setDeletingComment(true)}} className='text-gray-700 hover:bg-gray-100 hover:text-red-600 font-semibold rounded-lg px-2 py-1 mt-1 cursor-pointer flex items-center'>
+                    <div onClick={()=>{setDeletingComment(true)}} className='text-gray-700 hover:bg-gray-100 hover:text-red-600 font-semibold rounded-md px-2 py-1 cursor-pointer flex items-center'>
                         <div className='mr-3'><RiDeleteBin6Line/></div> Delete
                     </div>
                 </div>
@@ -235,14 +235,14 @@ export const EditCommentContent = ({closeEditing,commentId,currentContent})=>{
 
     return (
         <div ref={divref} className='w-full flex flex-col items-end'>
-            <div className='w-full mt-1 border-2 border-[#49C5C5] rounded-md'>
+            <div className='w-full mt-1 border-[1px] border-gray-300 rounded-md'>
                 <input type="text" value={newContent} onChange={handleInput} className='w-full px-1 py-1 outline-none border-none bg-transparent'/>
             </div>
             <div className='w-fit h-fit mt-2 flex'>
-                <button onClick={closeEditing} className='text-gray-500 px-2 py-1 rounded-md text-xs font-semibold border-[1px] border-gray-300 hover:bg-gray-100 outline-none mr-4 cursor-pointer'>
+                <button onClick={closeEditing} className='outline-button px-3 py-1 text-sm mr-4'>
                     Cancel
                 </button>
-                <button onClick={editComment} className='px-3 py-1 rounded-md text-xs text-white font-semibold bg-[#49C5C5] outline-none cursor-pointer'>
+                <button onClick={editComment} className='primary-button px-4 py-1 text-sm text-white'>
                     Save
                 </button>
             </div>

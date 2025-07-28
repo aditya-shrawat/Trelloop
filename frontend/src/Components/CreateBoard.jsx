@@ -14,6 +14,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
   const [workspaceId,setWorkspaceId] = useState(null)
   const [errorMsg,setErrorMsg] = useState("");
   const [selectedColor, setSelectedColor] = useState(colorOptions[0]);
+  const [isCreating,setIsCreating] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -54,6 +55,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
 
   const createBoard = async (e)=>{
     e.preventDefault();
+    if(isCreating) return;
 
     if(boardName.trim()===""){
       setErrorMsg("Board name is required!");
@@ -63,6 +65,8 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       setErrorMsg("Select a workspace.");
       return ;
     }
+
+    setIsCreating(true);
 
     try {
       const BackendURL = import.meta.env.VITE_BackendURL;
@@ -75,6 +79,9 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       setCreatingBoard(false)
     } catch (error) {
       console.log("Error while creating board - ",error)
+    }
+    finally{
+      setIsCreating(false)
     }
   }
 
@@ -92,16 +99,16 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       <div
         ref={divref}
         className=" max-w-[95%] sm:max-w-md md:max-w-lg w-full 
-              bg-white  absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-8 py-8 rounded-xl"
+              bg-white  absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 sm:px-6 py-6 sm:py-8 rounded-lg"
       >
         <div className="w-full h-auto">
           <h1 className="text-xl font-semibold text-gray-700 ">Create Board</h1>
-          <h3 className=" text-gray-500">
+          <h3 className="text-gray-400 text-sm">
           Boards help you divide tasks, track progress, and keep your team aligned.
           </h3>
         </div>
 
-        <div className="w-full mt-4">
+        <div className="w-full mt-6">
           <h3 className="mb-2 text-sm font-semibold text-gray-500">Background</h3>
           <div className='w-full grid grid-cols-4 sm:grid-cols-5 gap-3'>
             {colorOptions.map((color) => (
@@ -116,24 +123,24 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
           <label className="mb-1 text-sm font-semibold text-gray-500">Board title</label>
           <input
             type="text" name="boardName" value={boardName} onChange={handleInput}
-            className="h-10 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none"
+            className="py-1 px-2 text-gray-700 rounded-md border-[1px] border-gray-300 outline-none"
           />
         </div>
         <div className="flex flex-col mt-6">
           <label className="mb-1 text-sm font-semibold text-gray-500">Workspace</label>
           { (loading)?
-            <div className="mb-2 h-10 py-1 px-2 text-lg rounded-lg border-[1px] border-gray-300 outline-none">
+            <div className="mb-2 h-8 py-1 px-2 text-lg rounded-md border-[1px] border-gray-300 outline-none">
               Loading...
             </div> 
             :
             (workspaceName)?
-            <div className="mb-1 h-10 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none">
+            <div className="mb-1 h-8 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none">
               {workspaceName}
             </div> 
             :
             <select name="workspaceName" 
             onChange={(e) => setWorkspaceId(e.target.value)}
-              className="mb-1 h-10 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none" >
+              className="mb-1 h-8 py-1 px-2 text-gray-700 rounded-md border-[1px] border-gray-300 outline-none" >
               {workspaces.map((workspace)=>(
                 <option key={workspace._id} value={workspace._id}>
                   {workspace.name}
@@ -143,15 +150,14 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
           }
         </div>
         { (errorMsg!=="") &&
-          <div className="text-red-500 ">
+          <div className="text-red-500 text-sm">
             {errorMsg}
           </div>
         }
         <div onClick={createBoard}
           className="mt-6">
-          <button className="bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] w-full py-2 font-semibold text-lg text-white rounded-xl 
-          cursor-pointer outline-none border-none ">
-            Create board
+          <button className="primary-button w-full py-2 font-semibold">
+            {(isCreating)?"Creating...":"Create board"}
           </button>
         </div>
       </div>

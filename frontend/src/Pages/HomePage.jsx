@@ -43,26 +43,26 @@ const HomePage = () => {
 
 
   return (
-    <div className="w-full h-full min-h-screen overflow-y-auto">
+    <div className="w-full h-full pt-14 min-h-screen overflow-y-auto">
       <Header />
       <main className="w-full h-full ">
         <div className="w-full h-full ">
-          <div className="max-w-[1200px] w-full h-full m-auto flex flex-row ">
+          <div className="max-w-[800px] lg:max-w-7xl w-full h-full m-auto flex flex-row pt-4 sm:pt-8">
 
-            <div className="hidden w-full sm:block max-w-[280px] h-full px-4 mt-8 ">
-              <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
+            <div className="hidden w-full sm:block max-w-[240px] md:max-w-[300px] h-full px-4">
+              <div className="w-full h-auto py-4 border-b-[1px] border-gray-300 text-gray-700">
                 <Link to={`/home`} className={`w-full px-2 py-2 flex items-center 
-                      ${(route==='/home')?`text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-700 hover:bg-gray-100`} 
+                      ${(route==='/home')?`text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl`:` hover:bg-gray-100`} 
                       text-lg font-semibold rounded-lg cursor-pointer`}>
                   <IoHome className="mr-3" /> Home
                 </Link>
                 <Link to={`/myBoards`} className={`w-full px-2 py-2 mt-3 flex items-center 
-                      ${(route==='/myBoards')?`text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-700 hover:bg-gray-100`}
+                      ${(route==='/myBoards')?`text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl`:` hover:bg-gray-100`}
                        text-lg font-semibold rounded-lg cursor-pointer`}>
                   <TbLayoutDashboardFilled className="mr-3" /> Boards
                 </Link>
                 <Link to={`/deadlines`} className={`w-full px-2 py-2 mt-3 flex items-center 
-                      ${(route==='/deadlines')?`text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl`:`text-gray-700 hover:bg-gray-100`}
+                      ${(route==='/deadlines')?`text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl`:` hover:bg-gray-100`}
                        text-lg font-semibold rounded-lg cursor-pointer`}>
                   <TbCalendarClock className="mr-3" />Deadlines
                 </Link>
@@ -90,7 +90,7 @@ const HomePage = () => {
                       ))
                     :
                       (<div className='w-full px-2'>
-                        <div className='text-gray-500 text-sm'>
+                        <div className='text-gray-400 text-sm'>
                           Create or join a workspace to get started.
                         </div>
                       </div>)

@@ -37,7 +37,7 @@ const ChangeBoardBg = ({boardId,currentBg,setBoardBg,setIsChangingBg}) => {
                     <span onClick={()=>setIsChangingBg(false)} className='cursor-pointer mr-1'><IoIosArrowBack /></span> 
                     Change background
                 </h1>
-                <h3 className='text-gray-500 text-sm px-1'>Choose a background to refresh your view.</h3>
+                <h3 className='text-gray-400 text-sm px-1'>Choose a background to refresh your view.</h3>
             </div>
             <div className='w-full grid grid-cols-3 sm:grid-cols-5 gap-3 mt-4'>
                 {colorOptions.map((color) => (

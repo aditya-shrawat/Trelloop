@@ -23,6 +23,7 @@ const Workspace = () => {
     const contentType = location.pathname.split("/").pop() ; //last segment of the URL path
     const { id, name } = useParams();
     const [workspace,setWorkspace] = useState();
+    const [showSideBar,setShowSideBar] = useState(false)
 
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false)
     const {user} = useUser();
@@ -82,10 +83,11 @@ const Workspace = () => {
 
   return (
     <main className="w-full h-full ">
-        <div className="w-full h-full  flex ">
+        <div className="w-full h-full flex relative">
             {/* Side nav bar */}
-            <div className="w-full px-4 hidden sm:block max-w-[280px] lg:max-w-80 h-full border-r-[1px] border-gray-300 ">
-                <div className="w-full min-h-14 ">
+            <div className={`w-full bg-white z-10 px-4 max-w-[270px] lg:max-w-80 h-full sm:border-r-[1px] border-gray-300 absolute ${showSideBar ? `left-0`:`-left-full`} sm:relative top-0 sm:left-0 transition-all duration-500 flex`}>
+                <div className="w-full relative">
+                    <div className="w-full min-h-14 ">
                     <div className="px-1 py-2 text-gray-700 text-sm font-semibold">Workspace</div>
                     <div className="w-full h-auto flex items-center rounded-md border-[1px] border-gray-300">
                         <div className="w-full px-2 py-2 flex items-center  ">
@@ -103,45 +105,59 @@ const Workspace = () => {
                         </div>
                         <div className="text-gray-700 text-lg p-2 "><IoIosArrowDown /></div>
                     </div>
-                </div>
-                <div className="w-full h-auto mt-4 ">
-                    {workspace &&
-                    <> 
-                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} 
-                        className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                        ${(contentType==='home')?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
-                        "text-gray-700 hover:bg-gray-100"} `}>
-                        <TbLayoutDashboardFilled className="mr-3 text-xl"/> Boards
-                    </Link>
-                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/members`}
-                        className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                        ${isActive("members")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
-                        "text-gray-700 hover:bg-gray-100"} `}>
-                        <IoPerson className="mr-3 text-xl"/> Members
-                    </Link>
-                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/activity`} 
-                        className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                        ${isActive("activity")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
-                        "text-gray-700 hover:bg-gray-100"} `}>
-                        <TbListDetails className="mr-3 text-xl"/> Activity
-                    </Link>
-                    {(isAdmin || isMember) && 
-                        (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
+                    </div>
+                    <div className="w-full h-auto mt-4 ">
+                        {workspace &&
+                        <> 
+                        <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} 
                             className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                            ${isActive("settings")?"text-[#49C5C5] border-[1px] border-[#49C5C5] bg-[#49C5C5]/20 backdrop-blur-xl":
+                            ${(contentType==='home')?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
                             "text-gray-700 hover:bg-gray-100"} `}>
-                            <IoMdSettings className="mr-3 text-xl"/> Settings
-                        </Link>)
-                    }
-                    </>
-                    }
+                            <TbLayoutDashboardFilled className="mr-3 text-xl"/> Boards
+                        </Link>
+                        <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/members`}
+                            className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                            ${isActive("members")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                            "text-gray-700 hover:bg-gray-100"} `}>
+                            <IoPerson className="mr-3 text-xl"/> Members
+                        </Link>
+                        <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/activity`} 
+                            className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                            ${isActive("activity")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                            "text-gray-700 hover:bg-gray-100"} `}>
+                            <TbListDetails className="mr-3 text-xl"/> Activity
+                        </Link>
+                        {(isAdmin || isMember) && 
+                            (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
+                                className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                                ${isActive("settings")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                                "text-gray-700 hover:bg-gray-100"} `}>
+                                <IoMdSettings className="mr-3 text-xl"/> Settings
+                            </Link>)
+                        }
+                        </>
+                        }
+                    </div>
+
+                    <div onClick={()=>{setShowSideBar(false)}} className={`w-2.5 h-screen bg-gray-100 block absolute top-0 -right-6 border-x-[1px] border-gray-400 sm:hidden`}>
+                        <div className="w-full h-full absolute">
+                            <div className="absolute top-4 -left-[6.5px] bg-gray-100 h-3 w-3 rotate-45 border-b-[1px] border-l-[1px] border-gray-400">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div onClick={()=>{setShowSideBar(true)}} className={`bg-gray-100 w-3 h-full block sm:hidden relative top-0 left-0 border-r-[1px] border-gray-400`}>
+                <div className="absolute top-4 -right-[6.5px] bg-gray-100 h-3 w-3 rotate-45 border-t-[1px] border-r-[1px] border-gray-400">
+                </div>
+            </div>
+
             {/* Main content */}
             <div className="h-auto w-full px-4 sm:px-6 ">
                 <div className="w-full h-auto px-2 py-6 flex justify-center border-b-[1px] border-gray-300 ">
-                    <div className="w-full md:max-w-[85%] flex justify-between items-center ">
-                        <div className="w-auto flex flex-col">
+                    <div className="w-full md:max-w-[85%] flex flex-col md:flex-row md:justify-between items-center ">
+                        <div className="w-full md:w-auto flex flex-col">
                             <div className="flex items-center ">
                                 <div className="w-auto h-auto inline-block mr-4">
                                 {workspace && 
@@ -177,10 +193,9 @@ const Workspace = () => {
                         </div>
                         {
                         (isAdmin) &&
-                        <div className=" hidden md:block">
+                        <div className="w-full md:w-auto">  
                             <button onClick={()=>{setIsAddingNewMembers(true)}}
-                                className="px-4 py-1 ml-4 bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] rounded-lg cursor-pointer
-                                text-white font-semibold flex items-center">
+                                className="primary-button px-4 py-1 w-full mt-4 md:mt-0 md:ml-4 flex justify-center items-center">
                                 <div><IoPersonAdd className="mr-2 text-base" /></div> Invite members
                             </button>
                         </div>

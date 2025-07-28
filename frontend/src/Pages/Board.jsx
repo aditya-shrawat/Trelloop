@@ -170,7 +170,7 @@ const Board = () => {
     <div className='w-full h-screen flex flex-col ' style={{background:boardBg}}>
         <Header onBoard={true} />
 
-    <div className='w-full pb-2 flex flex-1 min-h-0 flex-col'>
+    <div className='w-full pb-2 flex flex-1 min-h-0 flex-col pt-14'>
         <div className="z-10 w-full h-14 px-4 py-1 sticky left-0 backdrop-blur-md bg-white/10 shadow-sm" >
             <div className="w-full sm:px-2 py-2 flex justify-between items-center ">
                 <div className='w-auto flex items-center text-white'>
@@ -194,7 +194,7 @@ const Board = () => {
                 <div className='w-auto flex' >
                     { (board) &&
                     <div className='flex items-center mr-3'>
-                        <div className='w-auto h-auto'> 
+                        <div className='w-auto h-auto hidden sm:block'> 
                             <div title='Admin' className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center cursor-pointer">
                                 <span className="font-semibold text-white text-lg ">
                                     {board.admin.name && board.admin.name[0].toUpperCase()} 
@@ -240,8 +240,8 @@ const Board = () => {
                         }
                     </div>
                     }
-                    <div className='w-auto'>
-                        <div onClick={()=>{setShowBoardOptions(true)}} className='w-auto h-auto p-1.5 text-xl cursor-pointer text-white hover:text-gray-700 rounded-lg'>
+                    <div className='w-auto relative'>
+                        <div onClick={()=>{setShowBoardOptions(true)}} className={`w-auto h-auto p-1.5 text-xl cursor-pointer ${(showBoardOptions) ? `text-gray-700 bg-white`:`text-white hover:text-gray-700`} rounded-md`} >
                             <FaBarsStaggered  />
                         </div>
                         {
@@ -340,19 +340,18 @@ const AddNewList = ({boardId,setLists})=>{
             :
             <div className='w-full h-auto p-3'>
                 <input type="text" placeholder='List title' onChange={handleInput} value={listName}
-                    className='w-full px-2 py-1 rounded-lg text-white border-[1px] border-white outline-none ' 
+                    className='w-full px-2 py-1 rounded-md text-white border-[1px] border-white outline-none ' 
                 />
                 {
                 (errMsg.trim()!=="") &&
-                <div className='text-red-500 text-[14px] mt-1'>{errMsg}</div>
+                <div className='text-red-500 text-sm mt-1'>{errMsg}</div>
                 }
                 <div className='w-full justify-between mt-3 flex gap-4'>
                     <button onClick={()=>{setCreatingNewList(false)}} 
-                        className='border-[1px] border-white flex-1 py-1 outline-none cursor-pointer text-[14px]
-                         text-white font-semibold rounded-lg '>
+                        className='outline-button border-[1px] hover:backdrop-blur-md hover:bg-white/10 border-white flex-1 py-1 text-sm text-white'>
                         Cancel
                     </button>
-                    <button onClick={createList} className='flex-1 font-semibold text-white text-[14px] bg-[#49C5C5] py-1 outline-none cursor-pointer rounded-lg shadow-lg'>
+                    <button onClick={createList} className='primary-button flex-1 text-sm py-1'>
                         Add List
                     </button>
                 </div>

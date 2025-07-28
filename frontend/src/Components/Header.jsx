@@ -12,6 +12,10 @@ import { useUser } from "../Contexts/UserContext.jsx";
 import Notification from "./Notification.jsx";
 import { cleanupNotificationListener, registerUserSocket, setupNotificationListener } from "../Socket/socketService.js";
 import socket from "../Socket/socket.js";
+import { TbStar } from "react-icons/tb";
+import { IoSettingsOutline } from "react-icons/io5";
+import { FiLogOut } from "react-icons/fi";
+import { MdOutlineLightMode } from "react-icons/md";
 
 const Header = ({onBoard}) => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -61,13 +65,13 @@ const Header = ({onBoard}) => {
     },[])
 
   return (
-    <header className={`w-full z-20 h-auto shadow-sm ${(onBoard)?`backdrop-blur-md bg-white/20`:`bg-white`}`} >
+    <header className={`w-full z-20 h-auto shadow-sm ${(onBoard)?`backdrop-blur-md bg-white/20`:`bg-white`} fixed top-0`} >
         <div className="w-full h-14 px-6 flex items-center justify-between ">
             <div className="w-full h-full flex items-center ">
-                <div className={`inline-block font-bold ${(onBoard)?`text-white`:`text-[#49C5C5]`} text-2xl mr-6`}>
+                <div className={`inline-block font-bold ${(onBoard)?`text-white`:`text-teal-600`} text-2xl mr-4`}>
                     Trelloop
                 </div>
-                <div className={`w-full h-auto ${(onBoard)?`text-white`:`text-gray-500`}`}>
+                <div className={`w-full h-auto ${(onBoard)?`text-white`:`text-gray-500`} hidden sm:block`}>
                     <div className="w-auto h-auto inline-block relative ">
                         <div onClick={()=>setOpenDropdown(openDropdown === "workspace" ? null : "workspace")}
                          className="px-2 py-1 hover:text-gray-700 cursor-pointer rounded-lg 
@@ -101,8 +105,7 @@ const Header = ({onBoard}) => {
                     </div>
                     <div className="w-auto h-auto inline-block relative">
                         <div onClick={()=>setOpenDropdown(openDropdown === "create" ? null : "create")}
-                            className={`px-2 py-1 ml-3 text-white ${(onBoard)?`border-[1px] border-white hover:text-gray-700`:`bg-[#49C5C5]`} shadow-sm hover:shadow-lg
-                            cursor-pointer rounded-lg flex items-center font-semibold`}>
+                            className={`px-2 py-1 ml-3 ${(onBoard)?`border-[1px] border-white hover:text-gray-700`:`primary-button`} rounded-md cursor-pointer flex items-center`}>
                             Create <FaPlus className="ml-2 text-lg" />
                         </div>
 
@@ -116,8 +119,8 @@ const Header = ({onBoard}) => {
             </div>
 
             <div className="w-auto h-full flex items-center">
-                <div className="relative">
-                    <div onClick={()=>{setShowNotifications(true)}} className={`w-auto h-auto text-2xl cursor-pointer ${(onBoard)?`text-white`:`text-gray-500`} hover:text-gray-700`}>
+                <div className="relative h-full flex items-center">
+                    <div onClick={()=>{setShowNotifications(true)}} className={`relative w-auto h-auto text-2xl cursor-pointer ${(onBoard)?`text-white`:`text-gray-500`} hover:text-gray-700`}>
                         <IoNotifications />
                         {unreadCount>0  && (
                             <div className="absolute -top-1 -right-1 bg-red-500 text-white text-sm font-semibold h-[18px] w-[18px] flex justify-center items-center rounded-full">
@@ -129,7 +132,7 @@ const Header = ({onBoard}) => {
                         (showNotifications) && <Notification setShowNotifications={setShowNotifications} />
                     }
                 </div>
-                <div className="w-auto h-auto ml-4 relative">
+                <div className="relative h-full flex items-center ml-4">
                     <div onClick={()=>setOpenProfileNav(true)} className="h-8 w-8 flex items-center justify-center 
                     bg-blue-500 text-white font-semibold text-lg rounded-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)]  ">
                     {(user)&&user.name[0].toUpperCase()}
@@ -172,14 +175,14 @@ const WorkspaceDropDown = () => {
 
 
   return (
-    <div className=" max-w-[320px] w-full h-auto rounded-md shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 bg-gray-50">
-        <div className="w-full h-full p-4 space-y-3 max-h-[50vh] overflow-y-auto  ">
+    <div className="max-w-[300px] w-full h-auto rounded-lg bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30">
+        <div className="w-full p-3 max-h-[90vh] overflow-y-auto">
         {
             (loading)?
             <div>Loading</div>:
             workspaces.map((workspace)=>(
                 <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
-                    className="w-full px-2 py-2 bg-white hover:scale-105 shadow-[0px_0px_4px_rgba(12,12,13,0.2)] rounded-lg flex items-center cursor-pointer ">
+                    className="w-full px-2 py-2 hover:bg-gray-100 rounded-md flex items-center cursor-pointer">
                     <div className="w-auto h-auto inline-block mr-4">
                     <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
                         {workspace.name[0].toUpperCase()}
@@ -221,18 +224,17 @@ const StarredDropDown = ()=>{
     },[])
 
     return(
-    <div className=" max-w-[300px] w-full h-auto rounded-md bg-gray-50 
-        shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 ">
-        <div className="w-full h-full p-4 space-y-3">
+    <div className="max-w-[300px] w-full h-auto rounded-lg bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30">
+        <div className="w-full p-3 max-h-[90vh] overflow-y-auto">
             {
                 (loadingStarredBoards)
                 ?
                 <div>loading starred boards</div>
                 :
                 starredBoards.map((board)=>(
-                    <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg flex items-center cursor-pointer ">
+                    <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 hover:bg-gray-100 rounded-md flex items-center cursor-pointer">
                         <div className="w-auto h-auto inline-block mr-4">
-                        <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                        <span className="w-8 h-8 font-bold text-white rounded-md flex items-center justify-center" style={{background:board.background}}>
                             {board.name[0].toUpperCase()}
                         </span>
                         </div>
@@ -253,19 +255,18 @@ const CreateDropDown = ()=>{
     const [creatingBoard,setCreatingBoard] = useState(false);
 
     return(
-    <div className=" max-w-[300px] w-full h-auto px-4 py-4 rounded-md bg-gray-50
-        shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30 space-y-4 ">
-        <div onClick={()=>{setCreatingBoard(true)}} className="text-gray-700 w-full px-2 py-2 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg cursor-pointer ">
+    <div className="max-w-[300px] w-full h-auto rounded-lg bg-white text-gray-700 p-3 shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-30">
+        <div onClick={()=>{setCreatingBoard(true)}} className="w-full px-2 py-2 hover:bg-gray-100 cursor-pointer rounded-md">
             <h1 className=" font-semibold text-[14px] flex items-center "> 
                 <TbLayoutDashboardFilled className="mr-2 text-base " />Create Board
             </h1>
-            <h3 className=" text-[12px] ">A board is made up of cards ordered on lists. Use it to manage and organize projects.</h3>
+            <h3 className="text-xs text-gray-500">A board is made up of cards ordered on lists. Use it to manage and organize projects.</h3>
         </div>
-        <div onClick={()=>{setCreatingworkspace(true)}} className="text-gray-700 w-full px-2 py-2 bg-white shadow-[0px_0px_4px_rgba(12,12,13,0.2)] hover:scale-105 rounded-lg cursor-pointer ">
+        <div onClick={()=>{setCreatingworkspace(true)}} className="w-full px-2 py-2 hover:bg-gray-100 cursor-pointer rounded-md">
             <h1 className=" font-semibold text-[14px] flex items-center ">
                 <RxDashboard className="mr-2 text-base " />Create Workspace
             </h1>
-            <h3 className="text-[12px] ">A workspace contains multiple boards and brings your team or projects together in one place.</h3>
+            <h3 className="text-xs text-gray-500">A workspace contains multiple boards and brings your team or projects together in one place.</h3>
         </div>
 
         {
@@ -292,7 +293,7 @@ const ProfilePicNavBar = ({setOpenProfileNav})=>{
     }, []);
 
     return (
-    <div ref={navRef} className="w-[350px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg z-40 absolute top-12 right-0  ">
+    <div ref={navRef} className="w-[90vw] h-[100vh] sm:w-[350px] sm:h-auto bg-white border-[1px] border-gray-300 shadow-[-2px_2px_10px_rgba(12,12,13,0.1)] rounded-lg z-40 absolute top-full -right-6">
         <div className=" w-full h-full px-3 py-4 ">
             <div className="w-full h-auto pb-6 border-b-[1px] border-gray-300 px-2">
                 <h2 className="font-semibold text-gray-700 ">Account</h2>
@@ -304,26 +305,29 @@ const ProfilePicNavBar = ({setOpenProfileNav})=>{
                     </div>
                     <div>
                         <h1 className="text-gray-700 font-semibold break-words">Name</h1>
-                        <h2 className="text-gray-500 break-words text-[14px]">email@gmail.com</h2>
+                        <h2 className="text-gray-500 break-words text-sm">email@gmail.com</h2>
                     </div>
                 </div>
             </div>
-            <div className="w-full h-full mt-6 ">
-                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
-                    Manage account
+            <div className="w-full h-full mt-2 space-y-2">
+                <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                    <FaPlus className="mr-3" />Create Workspace
                 </div>
-                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
-                    Create Workspace
+                {/* <div className="block sm:hidden px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
+                    Create Board
+                </div> */}
+                <div className="sm:hidden px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                    <TbStar className="mr-3" />Starred Board
                 </div>
-                <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
-                    Settings
+                <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                    <IoSettingsOutline className="mr-3" />Settings
                 </div>
-                <div className="mt-2 mb-4 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
-                    Theme
+                <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                    <MdOutlineLightMode className="mr-3" />Theme
                 </div>
                 <div className="pt-2 border-t-[1px] border-gray-300">
-                    <div className="my-2 px-2 py-2 font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
-                        Logout
+                    <div className="mt-2 px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                        <FiLogOut className="mr-3" />Logout
                     </div>
                 </div>
             </div>

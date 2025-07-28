@@ -28,9 +28,9 @@ const MembersList = ({onClose,members,cardId,UserRole,setCard}) => {
 
   return (
     <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
-            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10 '>
+            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10 '>
         <div className='w-full'>
-            <h3 className='pb-2 text-gray-700 font-semibold border-b-[1px] border-gray-300'>Card members</h3>
+            <h3 className='pb-2 text-gray-700 font-semibold border-b-[1px] border-gray-300'>Card Members</h3>
             <div className='w-full max-h-80 overflow-auto'>
                 {
                 (members.length ===0 || !user) ?

@@ -43,12 +43,12 @@ const HomeMainContainer = () => {
   }, []);
 
   return (
-    <div className="flex w-full  mt-8">
-      <div className=" flex-1 min-h-[400px] pl-4 md:pl-8 pr-4 lg:pr-8 ">
+    <div className="flex w-full">
+      <div className="flex-1 min-h-[400px] pl-4 md:pl-8 pr-4 lg:pr-8 ">
         <HomeContent />
       </div>
 
-      <div className="hidden lg:block w-full max-w-[280px] h-full px-4">
+      <div className="hidden lg:block w-full max-w-[300px] h-full px-4">
         { (starredBoards.length !==0) &&
           <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
             <h3 className="text-gray-500 font-semibold text-[14px] px-2">
@@ -63,7 +63,7 @@ const HomeMainContainer = () => {
                     className="w-full px-2 py-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
                   >
                     <div className="w-auto h-auto inline-block mr-4">
-                      <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                      <span className="w-8 h-8 font-bold text-white rounded-md flex items-center justify-center" style={{background:board.background}}>
                         {board.name[0].toUpperCase()}
                       </span>
                     </div>
@@ -90,7 +90,7 @@ const HomeMainContainer = () => {
                   <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
                     className="w-full px-2 py-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
                     <div className="w-auto h-auto inline-block mr-4">
-                      <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                      <span className="w-8 h-8 font-bold text-white rounded-md flex items-center justify-center" style={{background:board.background}}>
                         {board.name[0].toUpperCase()}
                       </span>
                     </div>

@@ -35,7 +35,7 @@ const BoardOptionMenu = ({board,setBoard,starStatus,setBoardBg,toggleStarStatus,
 
 
     return (
-        <div ref={navRef} className="w-full max-w-[300px] sm:max-w-[370px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-5 right-6 z-40 ">
+        <div ref={navRef} className="w-[300px] sm:w-[370px] h-auto bg-white shadow-[0px_0px_10px_rgba(12,12,13,0.3)] rounded-lg absolute top-11 right-0 z-40 ">
             {(VisibilityPopup )?
             (<BoardVisibilityPopup board={board} setBoard={setBoard} setVisibilityPopup={setVisibilityPopup} />)
             :
@@ -48,7 +48,7 @@ const BoardOptionMenu = ({board,setBoard,starStatus,setBoardBg,toggleStarStatus,
             (isChangingBg)?
             (<ChangeBoardBg boardId={board._id} currentBg={board.background} setBoardBg={setBoardBg} setIsChangingBg={setIsChangingBg} />)
             :
-            (<div className=" w-full h-auto px-3 py-4 ">
+            (<div className="w-full h-auto px-3 py-4 ">
                 <div className="w-full space-y-1 ">
                     <div onClick={toggleStarStatus} className="p-2 font-semibold text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center ">
                         <div className='mr-3 text-lg'>{
@@ -149,11 +149,11 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
 
     return (
         <div ref={divref} className='bg-white h-fit w-[330px] sm:w-[400px] px-4 py-6 rounded-lg border-[1px] border-gray-300 
-                absolute bottom-12 -right-6 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+                absolute bottom-12 -right-6 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10'>
             <div className='w-full h-full  '>
                 <div className='w-full text-start'>
                     <h1 className='text-lg font-semibold text-gray-700'>Delete Board</h1>
-                    <p className='text-sm mt-1 text-gray-600'>This will permanently delete the board and all its data. This action cannot be undone.</p>
+                    <p className='text-sm text-gray-400'>This will permanently delete the board and all its data. This action cannot be undone.</p>
                 </div>
                 {   (errorMsg.trim()!=="") &&
                     <div className='text-red-600 text-sm mt-2'>
@@ -161,10 +161,10 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
                     </div>
                 }
                 <div className='w-full flex justify-between md:justify-between items-center mt-6 gap-4'>
-                    <button onClick={()=>{setDeletePopup(false)}} className='flex-1 py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                    <button onClick={()=>{setDeletePopup(false)}} className='flex-1 py-1 outline-button'>
                         Cancel
                     </button>
-                    <button onClick={deleteBoard} className='flex-1 py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer outline-none'>
+                    <button onClick={deleteBoard} className='flex-1 py-1 bg-red-600 rounded-md text-white font-semibold cursor-pointer outline-none'>
                         Delete
                     </button>
                 </div>
@@ -218,17 +218,17 @@ const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
 
     return (
         <div ref={divref} className='bg-white h-fit w-[330px] sm:w-[400px] px-4 py-6 rounded-lg border-[1px] border-gray-300 
-                absolute top-full -right-6 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+                absolute top-full -right-6 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10'>
             <div className='w-full h-full  '>
                 <div className='w-full text-start'>
                     <h1 className='text-lg font-semibold text-gray-700'>Rename Board</h1>
-                    <p className='text-sm mt-1 text-gray-600'>Only the board title will be updated. Board data will remain unchanged.</p>
+                    <p className='text-sm text-gray-400'>Only the board title will be updated. Board data will remain unchanged.</p>
                 </div>
                 <div className='w-full text-start mt-4'>
                     <label className='text-sm font-semibold text-gray-700' >New title</label>
                     <input type="text"  onChange={handleInput} value={newName}
                         placeholder='Enter list name'
-                        className='w-full px-2 py-1 mt-1 text-gray-700 border-[1px] border-gray-300 outline-none rounded-lg ' />
+                        className='w-full px-2 py-1 mt-1 text-gray-700 border-[1px] border-gray-300 outline-none rounded-md' />
                 </div>
                 {   (errorMsg.trim()!=="") &&
                     <div className='text-red-600 text-sm mt-2'>
@@ -236,10 +236,10 @@ const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
                     </div>
                 }
                 <div className='w-full flex justify-between md:justify-between items-center mt-6 gap-4'>
-                    <button onClick={()=>{setShowRenamePopup(false)}} className='flex-1 py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                    <button onClick={()=>{setShowRenamePopup(false)}} className='flex-1 py-1 outline-button'>
                         Cancel
                     </button>
-                    <button onClick={renameBoard} className='flex-1 py-1 bg-[#49C5C5] rounded-lg text-white font-semibold cursor-pointer outline-none'>
+                    <button onClick={renameBoard} className='primary-button flex-1 py-1'>
                         Rename
                     </button>
                 </div>

@@ -9,11 +9,20 @@
   .card-status {
     @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200;
   }
+
+  .primary-button{
+    @apply bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-md shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer outline-none border-none
+  }
+
+  .outline-button{
+    @apply text-gray-700 rounded-md font-semibold border-[1px] border-gray-300 hover:bg-gray-100 outline-none cursor-pointer transition-all duration-300 
+  }
 }
 
 
 .custom-scrollbar::-webkit-scrollbar {
   height: 10px;
+  width:8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {

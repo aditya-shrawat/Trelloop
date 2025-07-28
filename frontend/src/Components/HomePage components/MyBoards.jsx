@@ -66,13 +66,13 @@ const MyBoards = () => {
     },[])
 
   return (
-    <div className='w-full p-4 md:pl-8 mt-4 sm:mt-8 '>
+    <div className='w-full p-4 md:pl-8'>
         {
         (starredBoards && starredBoards.length!==0)&&
-            (<div className='w-full h-auto mb-6'>
+            (<div className='w-full h-auto mb-8'>
                 <div className='w-full'>
                     <h3 className='text-base font-semibold text-gray-700'>STARRED BOARDS</h3>
-                    <h3 className='text-gray-500 text-sm'>Your favorite boards marked for quick access.</h3>
+                    <h3 className='text-gray-400 text-sm'>Your favorite boards marked for quick access.</h3>
                 </div>
                 <div className="w-full h-auto mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4 ">
                     {
@@ -86,10 +86,10 @@ const MyBoards = () => {
 
         {
         (sharedBoards && sharedBoards.length!==0)&&
-            (<div className='w-full h-auto mb-6'>
+            (<div className='w-full h-auto mb-8'>
                 <div className='w-full'>
                     <h3 className='text-base font-semibold text-gray-700'>SHARED BOARDS</h3>
-                    <h3 className='text-gray-500 text-sm'>Boards you're a member of, but not part of their workspace.</h3>
+                    <h3 className='text-gray-400 text-sm'>Boards you're a member of, but not part of their workspace.</h3>
                 </div>
                 <div className="w-full h-auto mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4 ">
                     {
@@ -103,8 +103,8 @@ const MyBoards = () => {
 
         <div className='w-full h-auto'>
             <div className='w-full mb-4'>
-                <h3 className='text-base font-semibold text-gray-700'>YOUR WORKSPACES</h3>
-                <h3 className='text-gray-500 text-sm'>All workspaces you're part of, including created and joined ones.</h3>
+                <h3 className='text-base font-semibold text-gray-700'>YOUR BOARDS</h3>
+                <h3 className='text-gray-400 text-sm'>All boards from workspaces you have created or joined.</h3>
             </div>
             <div className='w-full h-auto space-y-8 '>
             {
@@ -145,11 +145,11 @@ const MyBoards = () => {
             ))
             )
             :
-            (<div className='w-full'>
-                <div className='w-[70%] m-auto text-center mt-10 text-gray-500 font-semibold'>
-                    No workspaces found. You're not a member and haven't created any yet. Create one to get started!
-                </div>
-            </div>)
+            (
+                <div className="text-center text-gray-400 py-10">
+                    <p className="text-lg font-medium">No workspaces found!</p>
+                    <p className="text-sm">You're not a member and haven't created any workspace yet.</p>
+                </div>)
             }
             </div>
         </div>

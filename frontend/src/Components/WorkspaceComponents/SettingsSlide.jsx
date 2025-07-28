@@ -70,7 +70,7 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
                           :
                             <input value={workspaceData.name} onChange={handleInput} name='name'
                                 type="text" placeholder="Enter workspace name"
-                                className="p-2 mt-2 w-full lg:w-[70%] border-2 text-gray-700 border-[#49C5C5] rounded-lg outline-none"
+                                className="p-2 mt-2 w-full lg:w-[70%] border-2 text-gray-700 border-teal-500 rounded-md outline-none"
                             />
                         }
                     </div>
@@ -80,14 +80,14 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
                           (!editWorkspace)?
                             ((workspace && workspace.description.trim()!=='')?
                             <p className='text-gray-500 '>{workspace.description}</p>:
-                            <p onClick={()=>{setEditWorkspace(true)}} className='p-2 mt-2 w-full lg:w-[70%] outline-none border-2 border-[#49C5C5] rounded-md text-gray-400 cursor-text'>
-                                Enter workspace description
+                            <p onClick={()=>{setEditWorkspace(true)}} className='p-2 mt-2 w-full lg:w-[70%] outline-none border-[1px] border-gray-200 rounded-md text-gray-400 cursor-text'>
+                                Enter workspace description...
                             </p>
                           )
                           :
                             <textarea value={workspaceData.description} onChange={handleInput} name='description'
                                 placeholder="Enter workspace description"
-                                className="p-2 mt-2 w-full lg:w-[70%] border-2 text-gray-700 border-[#49C5C5] rounded-lg outline-none"
+                                className="p-2 mt-2 w-full lg:w-[70%] border-2 text-gray-700 border-teal-500 rounded-md outline-none"
                             />
                         }
                     </div>
@@ -99,20 +99,20 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
                     {(isAdmin || isMember) && (
                       (!editWorkspace)?
                         (<div className="w-full mt-8 flex ">
-                            <div onClick={()=>{setEditWorkspace(true)}} className="px-4 py-1 cursor-pointer bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] font-semibold text-white rounded-lg flex justify-center items-center">
+                            <div onClick={()=>{setEditWorkspace(true)}} className="primary-button px-4 py-1 flex justify-center items-center">
                                 <BiEdit className='mr-2 text-lg' />Edit workspace
                             </div>
                         </div>)
                       :
                         (<div className="w-full mt-8 flex ">
                             <div>
-                                <button onClick={updateWorkspace} className="px-6 py-1 cursor-pointer bg-[#49C5C5] hover:bg-[#5fcaca] hover:shadow-[0px_4px_8px_rgba(12,12,13,0.2)] font-semibold text-white rounded-lg">
-                                Update
+                                <button onClick={closeEditing} className="outline-button px-6 py-1">
+                                Cancel
                                 </button>
                             </div>
-                            <div className="ml-10">
-                                <button onClick={closeEditing} className="px-6 py-1 cursor-pointer border-[1px] text-gray-700 border-gray-300 hover:bg-gray-100 font-semibold rounded-lg">
-                                Cancel
+                            <div>
+                                <button onClick={updateWorkspace} className="primary-button px-6 py-1 ml-6">
+                                Update
                                 </button>
                             </div>
                         </div>)
@@ -145,8 +145,7 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
                             }
                             { (isAdmin) &&
                             <div className='w-fit h-auto relative inline-block '>
-                                <div onClick={()=>{setChangingVisibility(true)}} className='px-4 py-1 mt-4 md:ml-4 border-[1px] border-gray-300 cursor-pointer 
-                                    text-gray-700 font-semibold bg-gray-50 rounded-lg hover:bg-gray-200 '>
+                                <div onClick={()=>{setChangingVisibility(true)}} className='outline-button px-4 py-1 mt-4 md:ml-4'>
                                     Change
                                 </div>
                                 {
@@ -161,7 +160,7 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
     
             {(isAdmin) &&
                 <div className="mt-5 relative inline-block">
-                    <div onClick={()=>{setDeleteWorkspace(true)}} className=" inline-block px-3 py-2 border-[1px] border-red-500 text-red-500 cursor-pointer hover:font-semibold rounded-lg">
+                    <div onClick={()=>{setDeleteWorkspace(true)}} className=" inline-block px-3 py-2 border-[1px] border-red-500 text-red-500 cursor-pointer hover:border-2 rounded-md">
                         Delete this Workspace ?
                     </div>
                     {
@@ -216,7 +215,7 @@ const DeleteComponent = ({workspaceId,setDeleteWorkspace})=>{
 
     return (
         <div ref={divref} className='bg-white h-fit w-72 md:w-96 px-4 py-6 rounded-lg border-[1px] border-gray-300 
-                absolute bottom-[100%] left-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+                absolute bottom-[100%] left-0 shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-10'>
             <div className='w-full h-full  '>
                 <div className='w-full text-start'>
                     <h1 className='text-lg font-semibold text-gray-700'>Delete Workspace</h1>
@@ -228,11 +227,11 @@ const DeleteComponent = ({workspaceId,setDeleteWorkspace})=>{
                     </div>
                 }
                 <div className='w-full flex justify-between md:justify-evenly items-center mt-6'>
-                    <div onClick={deletingWorkspace} className='px-8 py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer '>
-                        Delete
-                    </div>
-                    <div onClick={()=>{setDeleteWorkspace(false)}} className='px-8 py-1 rounded-lg hover:bg-gray-50 text-gray-700 border-[1px] border-gray-300 cursor-pointer '>
+                    <div onClick={()=>{setDeleteWorkspace(false)}} className='outline-button px-8 py-1'>
                         Cancel
+                    </div>
+                    <div onClick={deletingWorkspace} className='px-8 py-1 bg-red-600 rounded-md text-white font-semibold cursor-pointer '>
+                        Delete
                     </div>
                 </div>
             </div>
@@ -275,10 +274,10 @@ const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility
 
     return (
         <div ref={divref} className='bg-white h-fit w-72 md:w-96 p-4 rounded-lg border-[1px] border-gray-300 
-                absolute bottom-full left-0 md:-left-72 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] z-10'>
+                absolute bottom-full left-0 md:-left-72 shadow-[0px_0px_10px_rgba(12,12,13,0.2)] z-10'>
             <div className='w-full h-full  '>
                 <div className='w-full space-y-2 '>
-                    <div onClick={()=>{changeWorkspaceVisibility(true)}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(workspace.isPrivate)?`border-2 border-[#49C5C5]`:`border-none`}`}>
+                    <div onClick={()=>{changeWorkspaceVisibility(true)}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(workspace.isPrivate)?`border-2 border-teal-500`:`border-none`}`}>
                         <div className='text-gray-700 font-semibold flex items-center'>
                             <RiLock2Line className='mr-2' />Private
                         </div>
@@ -286,7 +285,7 @@ const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility
                             Private workspace is only accessible by workspace members.
                         </p>
                     </div>
-                    <div onClick={()=>{changeWorkspaceVisibility(false)}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(!workspace.isPrivate)?`border-2 border-[#49C5C5]`:`border-none`}`}>
+                    <div onClick={()=>{changeWorkspaceVisibility(false)}} className={`w-full p-2 cursor-pointer hover:bg-gray-100 rounded-lg ${(!workspace.isPrivate)?`border-2 border-teal-500`:`border-none`}`}>
                         <div className='text-gray-700 font-semibold flex items-center'>
                             <MdPublic className='mr-2' />Public
                         </div>

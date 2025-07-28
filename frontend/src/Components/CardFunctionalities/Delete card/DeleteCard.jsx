@@ -43,11 +43,11 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
 
     return (
     <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
-            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.3)] '>
+            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] '>
         <div className='w-full h-full  '>
             <div className='w-full text-start'>
-                <h1 className='text-lg font-semibold text-gray-700'>Delete card</h1>
-                <p className='text-sm mt-1 text-gray-600'>Once deleted, you won’t be able to recover the card or its data.</p>
+                <h1 className='font-semibold text-gray-700'>Delete card</h1>
+                <p className='text-sm text-gray-400'>Once deleted, you won’t be able to recover the card or its data.</p>
             </div>
             {   (errorMsg.trim()!=="") &&
                 <div className='text-red-600 text-sm mt-2'>
@@ -55,10 +55,10 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
                 </div>
             }
             <div className='w-full flex gap-4 mt-4'>
-                <button onClick={()=>{setCardFunctionality(null)}} className='flex-1 py-1 rounded-lg text-gray-700 hover:bg-gray-100 border-[1px] border-gray-300 cursor-pointer outline-none'>
+                <button onClick={()=>{setCardFunctionality(null)}} className='outline-button flex-1 py-1'>
                     Cancel
                 </button>
-                <button onClick={deletingCard} className='flex-1 py-1 bg-red-600 rounded-lg text-white font-semibold cursor-pointer outline-none border-none '>
+                <button onClick={deletingCard} className='flex-1 py-1 bg-red-600 rounded-md text-white font-semibold cursor-pointer outline-none border-none'>
                     Delete
                 </button>
             </div>
