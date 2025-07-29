@@ -7,7 +7,7 @@ import { TbLayoutDashboardFilled } from "react-icons/tb";
 import CreateWorkspace from "./CreateWorkspace";
 import CreateBoard from "./CreateBoard";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../Contexts/UserContext.jsx";
 import Notification from "./Notification.jsx";
 import { cleanupNotificationListener, registerUserSocket, setupNotificationListener } from "../Socket/socketService.js";
@@ -17,12 +17,21 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
 import { MdOutlineLightMode } from "react-icons/md";
 
-const Header = ({onBoard}) => {
+const Header = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const [openProfileNav,setOpenProfileNav] = useState(false)
     const [unreadCount,setUnreadCount]= useState(0); 
     const [showNotifications,setShowNotifications] = useState(false);
+    const location = useLocation();
+    const contentType = location.pathname.split("/")[1] ;
+    const [isBoardPage,setIsBoardPage] = useState(false);
+
+    useEffect(()=>{
+        if(contentType==='board'){
+            setIsBoardPage(true)
+        }
+    },[contentType])
 
     const {user} = useUser();
 
@@ -65,13 +74,13 @@ const Header = ({onBoard}) => {
     },[])
 
   return (
-    <header className={`w-full z-20 h-auto shadow-sm ${(onBoard)?`backdrop-blur-md bg-white/20`:`bg-white`} fixed top-0`} >
-        <div className="w-full h-14 px-6 flex items-center justify-between ">
+    <header className={`w-full z-20 h-auto shadow-sm ${(isBoardPage)?`backdrop-blur-md bg-white/20`:`bg-white`} fixed top-0`} >
+        <div className="w-full h-14 px-4 sm:px-6 flex items-center justify-between ">
             <div className="w-full h-full flex items-center ">
-                <div className={`inline-block font-bold ${(onBoard)?`text-white`:`text-teal-600`} text-2xl mr-4`}>
+                <div className={`inline-block font-bold ${(isBoardPage)?`text-white`:`text-teal-600`} text-2xl mr-4`}>
                     Trelloop
                 </div>
-                <div className={`w-full h-auto ${(onBoard)?`text-white`:`text-gray-500`} hidden sm:block`}>
+                <div className={`w-full h-auto ${(isBoardPage)?`text-white`:`text-gray-500`} hidden sm:block`}>
                     <div className="w-auto h-auto inline-block relative ">
                         <div onClick={()=>setOpenDropdown(openDropdown === "workspace" ? null : "workspace")}
                          className="px-2 py-1 hover:text-gray-700 cursor-pointer rounded-lg 
@@ -105,7 +114,7 @@ const Header = ({onBoard}) => {
                     </div>
                     <div className="w-auto h-auto inline-block relative">
                         <div onClick={()=>setOpenDropdown(openDropdown === "create" ? null : "create")}
-                            className={`px-2 py-1 ml-3 ${(onBoard)?`border-[1px] border-white hover:text-gray-700`:`primary-button`} rounded-md cursor-pointer flex items-center`}>
+                            className={`px-2 py-1 ml-3 ${(isBoardPage)?`border-[1px] border-white hover:text-gray-700`:`primary-button`} rounded-md cursor-pointer flex items-center`}>
                             Create <FaPlus className="ml-2 text-lg" />
                         </div>
 
@@ -120,7 +129,7 @@ const Header = ({onBoard}) => {
 
             <div className="w-auto h-full flex items-center">
                 <div className="relative h-full flex items-center">
-                    <div onClick={()=>{setShowNotifications(true)}} className={`relative w-auto h-auto text-2xl cursor-pointer ${(onBoard)?`text-white`:`text-gray-500`} hover:text-gray-700`}>
+                    <div onClick={()=>{setShowNotifications(true)}} className={`relative w-auto h-auto text-2xl cursor-pointer ${(isBoardPage)?`text-white`:`text-gray-500`} hover:text-gray-700`}>
                         <IoNotifications />
                         {unreadCount>0  && (
                             <div className="absolute -top-1 -right-1 bg-red-500 text-white text-sm font-semibold h-[18px] w-[18px] flex justify-center items-center rounded-full">

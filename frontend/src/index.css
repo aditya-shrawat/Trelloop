@@ -19,6 +19,11 @@
   }
 }
 
+@media (max-width: 350px) {
+  .card-on-tiny-screen {
+    @apply grid-cols-1;
+  }
+}
 
 .custom-scrollbar::-webkit-scrollbar {
   height: 10px;

@@ -147,7 +147,7 @@ const MyBoards = () => {
             :
             (
                 <div className="text-center text-gray-400 py-10">
-                    <p className="text-lg font-medium">No workspaces found!</p>
+                    <p className="text-lg font-medium">No board found!</p>
                     <p className="text-sm">You're not a member and haven't created any workspace yet.</p>
                 </div>)
             }

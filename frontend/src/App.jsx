@@ -9,6 +9,7 @@ import Layout from './Components/Layout'
 import Workspace from './Pages/Workspace'
 import CardDetailsModel from './Components/CardDetailsModel'
 import Board from './Pages/Board'
+import MyWorkspaces from './Components/MyWorkspaces'
 
 
 const router = createBrowserRouter([
@@ -19,13 +20,14 @@ const router = createBrowserRouter([
       <Layout />
     ),
     children:[
+      {path:'/home', element: <HomePage /> },
+      {path:'/myBoards', element: <HomePage /> },
+      {path:'/deadlines', element: <HomePage /> },
+      {path:'/myWorkspaces', element: <HomePage /> },
       {path:'/workspace/:name/:id/:contentType', element: <Workspace /> },
       {path:'/card/:name/:id', element: <CardDetailsModel /> }, 
     ]
   },
-  {path:'/home', element: <HomePage /> },
-  {path:'/myBoards', element: <HomePage /> },
-  {path:'/deadlines', element: <HomePage /> },
   { path:'/user/signin', element:<SignInPage /> },
   { path:'/user/signup', element:<SignupPage /> },
   {path:'/board/:name/:id', element: <Board /> },

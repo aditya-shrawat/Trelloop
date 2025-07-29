@@ -206,7 +206,7 @@ const CardDetailsModel = () => {
 
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
-        <div ref={divref} className=" max-w-[95%]  md:max-w-3xl w-full mx-auto my-10 md:my-20  rounded-2xl relative ">
+        <div ref={divref} className=" max-w-[95%]  md:max-w-5xl w-full mx-auto my-10 md:my-20  rounded-2xl relative ">
             <div onClick={()=>{navigate(-1)}} className=' rounded-full absolute text-gray-700 top-2 right-2 cursor-pointer'>
                 <AiTwotoneCloseCircle className='text-xl' />
             </div>
@@ -217,7 +217,7 @@ const CardDetailsModel = () => {
 
             {/* Main content */}
             <div className={`w-full py-3 sm:flex bg-white rounded-b-2xl ${(!cardCover)&&`rounded-t-2xl`}`}>
-            <div className="flex-1 p-6 ">
+            <div className="flex-1 p-4 sm:p-6">
                 {/* Header */}
                 <div className="flex items-start ">
                     <div onClick={()=>{if(UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin){toggleCardStatus()}}}
@@ -345,31 +345,13 @@ const CardDetailsModel = () => {
                     </div>
                 }
 
-                {/* Activity */}
-                <div className="">
-                    <div className="flex items-center justify-between mb-4 ">
-                        <div className="flex items-center gap-2 text-gray-700">
-                            <TbListDetails className="text-xl mr-2" />
-                            <h3 className="text-base font-medium">Activity</h3>
-                        </div>
-                    </div> 
-                    <div className="w-full h-full">
-                        {
-                          (board && card)&&
-                            <ActivityContainer UserRole={UserRole} currentUser={user} />
-                        }
-                    </div>
-                </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="sm:w-52 mt-4 sm:mt-none p-6 sm:pr-6 sm:p-2
-                    space-y-4 grid grid-cols-2 gap-x-4 sm:flex sm:flex-col ">
+                {/* Sidebar */}
+            <div className="w-full card-on-tiny-screen grid grid-cols-2 gap-4 mt-10">
                 {(board && (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)) &&
                     (<div className='relative'>
                         <button onClick={()=>{setCardFunctionality("addMember")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                             flex items-center text-gray-700">
-                            <RiAddLargeFill className="text-lg mr-3" />
+                            <RiAddLargeFill className="mr-3" />
                             Add member
                         </button>
 
@@ -382,7 +364,7 @@ const CardDetailsModel = () => {
                 { (board && ((UserRole.isBoardMember || UserRole.isBoardAdmin ||UserRole.isWorkspaceAdmin ||UserRole.isWorkspaceMember) && !UserRole.isCardMember) ) && 
                     <button onClick={joinCard} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
-                        <IoPersonAdd className="text-lg mr-3" />
+                        <IoPersonAdd className="mr-3" />
                         Join
                     </button>
                 }
@@ -390,7 +372,7 @@ const CardDetailsModel = () => {
                 <div className='relative'>
                     <button onClick={()=>{setCardFunctionality("members")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
-                        <IoPerson className="text-lg mr-3" />
+                        <IoPerson className="mr-3" />
                         Members
                     </button>
 
@@ -401,7 +383,7 @@ const CardDetailsModel = () => {
                     <div className='relative'>
                         <button onClick={()=>{setCardFunctionality("datePicker")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                             flex items-center text-gray-700">
-                            <FaRegCalendarAlt className="text-lg mr-3" />
+                            <FaRegCalendarAlt className="mr-3" />
                             Dates
                         </button>
 
@@ -414,7 +396,7 @@ const CardDetailsModel = () => {
                 <div className='h-auto w-auto relative'>
                     <button onClick={()=>{setCardFunctionality("attachment")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
-                        <div className='w-auto h-auto'><GrAttachment className="text-lg mr-3" /></div>
+                        <div className='w-auto h-auto'><GrAttachment className="mr-3" /></div>
                         Attachment
                     </button>
                     {
@@ -426,7 +408,7 @@ const CardDetailsModel = () => {
                 <div className='relative'>
                     <button onClick={()=>{setCardFunctionality("cover")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
-                        <BsLayersFill className="text-lg mr-3" />
+                        <BsLayersFill className="mr-3" />
                         Cover
                     </button>
                     {
@@ -440,7 +422,7 @@ const CardDetailsModel = () => {
                     <div className='h-auto w-auto relative'>
                         <button onClick={()=>{setCardFunctionality("delete")}} className=" w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                             flex items-center text-gray-700 hover:text-red-600">
-                            <div className='w-auto h-auto'><RiDeleteBin6Line className="text-lg mr-3" /></div>
+                            <div className='w-auto h-auto'><RiDeleteBin6Line className="mr-3" /></div>
                             Delete card
                         </button>
                         {
@@ -450,6 +432,26 @@ const CardDetailsModel = () => {
                     </div>
                 }
             </div>
+                
+            </div>
+
+            
+            {/* Activity */}
+                <div className="sm:w-md mt-4 sm:mt-none p-4 sm:pr-6 sm:p-2">
+                    <div className="flex items-center justify-between mb-4 ">
+                        <div className="flex items-center gap-2 text-gray-700">
+                            <TbListDetails className="text-xl mr-2" />
+                            <h3 className="text-base font-medium">Activity</h3>
+                        </div>
+                    </div> 
+                    <div className="w-full h-full">
+                        {
+                          (board && card)&&
+                            <ActivityContainer UserRole={UserRole} currentUser={user} />
+                        }
+                    </div>
+                </div>
+
             </div>
 
         </div>

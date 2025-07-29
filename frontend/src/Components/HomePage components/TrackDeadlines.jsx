@@ -124,13 +124,11 @@ export default function TrackDeadlines() {
     },[])
 
   return (
-    <div className="min-h-screen w-full p-4 md:pl-8">
-        <div className="">
-            
+    <div className="w-full p-4 md:pl-8">
             <div className="mb-8">
                 <div className="w-full mb-4">
-                    <h1 className="text-4xl font-bold text-gray-700 mb-2">Deadlines</h1>
-                    <p className="text-gray-400 leading-relaxed">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-700 mb-2">Deadlines</h1>
+                    <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
                         Track and manage all your task deadlines in one place. Stay on top of your tasks and never miss an
                         important milestone.
                     </p>
@@ -291,8 +289,6 @@ export default function TrackDeadlines() {
                 </div>
                 )
             }
-            
-        </div>
     </div>
   )
 }

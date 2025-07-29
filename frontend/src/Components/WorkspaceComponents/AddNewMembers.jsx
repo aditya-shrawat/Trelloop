@@ -160,7 +160,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
             />
           </div>
           {(selectedUsersInfo.length!==0) &&
-            <div className="mt-4 p-2 text-gray-500 border-[1px] border-teal-600 rounded-md flex gap-2 overflow-y-auto">
+            <div className="mt-4 p-2 text-gray-500 border-[1px] border-teal-500 rounded-md flex gap-2 overflow-y-auto">
                 {
                 selectedUsersInfo.map((user)=>{
                     return <SelectedUserItem key={user._id} user={user} onRemove={removeSelectedUser} />

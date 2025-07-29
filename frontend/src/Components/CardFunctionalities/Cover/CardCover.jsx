@@ -56,7 +56,7 @@ const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
 
   return (
     <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
-            absolute bottom-[130%] sm:top-[130%] right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10 '>
+            absolute bottom-[130%] left-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10 '>
         <div className='w-full'>
             <h3 className='pb-2 text-gray-700 font-semibold border-b-[1px] border-gray-300'>Card cover</h3>
             <h3 className='text-gray-500 text-xs my-3'>Select color to change card cover</h3>

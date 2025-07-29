@@ -17,6 +17,7 @@ import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import useWorkspaceSocket from "../Socket/useWorkspaceSocket";
 import socket from "../Socket/socket";
+import BottomNavigation from "../Components/BottomNavigation";
 
 const Workspace = () => {
     const location = useLocation();
@@ -83,6 +84,7 @@ const Workspace = () => {
 
   return (
     <main className="w-full h-full ">
+        <BottomNavigation  />
         <div className="w-full h-full flex relative">
             {/* Side nav bar */}
             <div className={`w-full bg-white z-10 px-4 max-w-[270px] lg:max-w-80 h-full sm:border-r-[1px] border-gray-300 absolute ${showSideBar ? `left-0`:`-left-full`} sm:relative top-0 sm:left-0 transition-all duration-500 flex`}>
@@ -154,7 +156,7 @@ const Workspace = () => {
             </div>
 
             {/* Main content */}
-            <div className="h-auto w-full px-4 sm:px-6 ">
+            <div className="h-fit sm:h-auto w-full px-4 pb-20 sm:px-6 ">
                 <div className="w-full h-auto px-2 py-6 flex justify-center border-b-[1px] border-gray-300 ">
                     <div className="w-full md:max-w-[85%] flex flex-col md:flex-row md:justify-between items-center ">
                         <div className="w-full md:w-auto flex flex-col">

@@ -66,7 +66,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
   return (
     <div className="w-full h-full space-y-4 ">
         {(UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) &&
-            (<div className="flex ">
+            (<div className="flex mb-6">
                 <div className='h-auto w-auto mr-3'>
                     <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
                         <span className=" font-semibold text-white text-lg">
@@ -75,7 +75,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
                     </div>
                 </div>
                 <input placeholder="Write a comment..." value={commentContent} onChange={handleInput} 
-                    className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 "
+                    className="w-full px-2 py-1 border-[1px] border-gray-300 outline-none rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 "
                 />
                 <div onClick={handleCommentSubmit} className='primary-button w-fit px-2 py-1 flex items-center justify-center ml-3'>
                     <IoIosSend className='text-xl text-white' />

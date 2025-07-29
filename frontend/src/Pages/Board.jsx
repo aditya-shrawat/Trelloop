@@ -168,7 +168,7 @@ const Board = () => {
 
   return (
     <div className='w-full h-screen flex flex-col ' style={{background:boardBg}}>
-        <Header onBoard={true} />
+        <Header />
 
     <div className='w-full pb-2 flex flex-1 min-h-0 flex-col pt-14'>
         <div className="z-10 w-full h-14 px-4 py-1 sticky left-0 backdrop-blur-md bg-white/10 shadow-sm" >

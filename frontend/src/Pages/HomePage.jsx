@@ -9,6 +9,8 @@ import HomeMainContainer from "../Components/HomePage components/HomeMainContain
 import MyBoards from "../Components/HomePage components/MyBoards";
 import TrackDeadlines from "../Components/HomePage components/TrackDeadlines";
 import { TbCalendarClock } from "react-icons/tb";
+import BottomNavigation from "../Components/BottomNavigation";
+import MyWorkspaces from "../Components/MyWorkspaces";
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
@@ -43,11 +45,11 @@ const HomePage = () => {
 
 
   return (
-    <div className="w-full h-full pt-14 min-h-screen overflow-y-auto">
-      <Header />
-      <main className="w-full h-full ">
-        <div className="w-full h-full ">
-          <div className="max-w-[800px] lg:max-w-7xl w-full h-full m-auto flex flex-row pt-4 sm:pt-8">
+      <main className="w-full h-full min-h-screen relative">
+
+        <BottomNavigation  />
+
+          <div className="max-w-[800px] lg:max-w-7xl w-full h-fit m-auto flex flex-row pt-4 pb-20 sm:py-8">
 
             <div className="hidden w-full sm:block max-w-[240px] md:max-w-[300px] h-full px-4">
               <div className="w-full h-auto py-4 border-b-[1px] border-gray-300 text-gray-700">
@@ -102,11 +104,10 @@ const HomePage = () => {
             {route === "/home" && <HomeMainContainer />}
             {route === "/myBoards" && <MyBoards />}
             {route === "/deadlines" && <TrackDeadlines />}
+            {route === "/myWorkspaces" && <MyWorkspaces />}
 
           </div>
-        </div>
       </main>
-    </div>
   );
 };
 

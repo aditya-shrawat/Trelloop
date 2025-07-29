@@ -83,7 +83,7 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
 
   return (
     <div ref={divref} className='bg-white h-fit w-72 sm:w-80 px-4 py-4 rounded-lg border-[1px] border-gray-300 
-            absolute bottom-[130%] sm:top-[130%] sm:right-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10 '>
+            absolute bottom-[130%] left-0 shadow-[0px_0px_12px_rgba(12,12,13,0.2)] z-10 '>
         <div className='w-full h-auto '>
             <div className='w-full h-auto' >
                 <h3 className=' text-gray-700 font-semibold'>Add Members</h3>
