@@ -290,6 +290,7 @@ const CreateDropDown = ()=>{
 
 const ProfilePicNavBar = ({setOpenProfileNav})=>{
     const navRef = useRef(null);
+    const [creatingWorkspace,setCreatingworkspace] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -319,14 +320,8 @@ const ProfilePicNavBar = ({setOpenProfileNav})=>{
                 </div>
             </div>
             <div className="w-full h-full mt-2 space-y-2">
-                <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+                <div onClick={()=>{setCreatingworkspace(true)}} className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                     <FaPlus className="mr-3" />Create Workspace
-                </div>
-                {/* <div className="block sm:hidden px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer ">
-                    Create Board
-                </div> */}
-                <div className="sm:hidden px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
-                    <TbStar className="mr-3" />Starred Board
                 </div>
                 <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
                     <IoSettingsOutline className="mr-3" />Settings
@@ -341,6 +336,8 @@ const ProfilePicNavBar = ({setOpenProfileNav})=>{
                 </div>
             </div>
         </div>
+        
+        {creatingWorkspace && <CreateWorkspace setCreatingworkspace={setCreatingworkspace}  />}
     </div>
     )
 }

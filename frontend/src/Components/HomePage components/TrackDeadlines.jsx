@@ -125,7 +125,7 @@ export default function TrackDeadlines() {
 
   return (
     <div className="w-full p-4 md:pl-8">
-            <div className="mb-8">
+            <div className="mb-10">
                 <div className="w-full mb-4">
                     <h1 className="text-3xl sm:text-4xl font-bold text-gray-700 mb-2">Deadlines</h1>
                     <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
@@ -201,7 +201,7 @@ export default function TrackDeadlines() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 mb-6">
+            {/* <div className="flex items-center gap-4 mb-6">
                 <div className="relative flex-1 max-w-md">
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                         <FaSearch />
@@ -216,7 +216,7 @@ export default function TrackDeadlines() {
                     </div>
                     Filter
                 </button>
-            </div>
+            </div> */}
 
             {
             (loading)?

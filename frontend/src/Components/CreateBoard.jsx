@@ -95,7 +95,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
   };
 
   return (
-    <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
+    <div className="w-screen h-screen overflow-x-hidden z-40 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
       <div
         ref={divref}
         className=" max-w-[95%] sm:max-w-md md:max-w-lg w-full 

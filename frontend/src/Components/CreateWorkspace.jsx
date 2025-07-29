@@ -57,7 +57,7 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
   }
 
   return (
-    <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
+    <div className="w-screen h-screen overflow-x-hidden z-40 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
         <div ref={divref} className=" max-w-[95%] sm:max-w-md md:max-w-lg w-full 
             absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 sm:px-6 py-6 sm:py-8 bg-white rounded-lg border-[1px] border-gray-300 ">
             <div className='w-full h-auto'>
