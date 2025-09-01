@@ -1,13 +1,14 @@
-import axios from 'axios';
 import React from 'react'
 import { useState } from 'react';
 import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import { IoIosArrowBack } from "react-icons/io";
 import { BsPersonWorkspace } from "react-icons/bs";
+import { useApi } from '../../../api/useApi';
 
 const BoardVisibilityPopup = ({board,setBoard,setVisibilityPopup})=>{
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi();
 
 
     const changeBoardVisibility = async (newVisibility)=>{
@@ -16,10 +17,7 @@ const BoardVisibilityPopup = ({board,setBoard,setVisibilityPopup})=>{
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/board/${board._id}/visibility`,{newVisibility},
-            {withCredentials: true}
-            );
+            const response = await api.post(`/board/${board._id}/visibility`,{newVisibility});
 
             setBoard(response.data.board)
         } catch (error) {

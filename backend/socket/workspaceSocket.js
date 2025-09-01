@@ -103,7 +103,7 @@ export const workspaceSocketHandler = (io, socket)=>{
 
             const user = await User.findById(userId);
             if(!user) return socket.emit('error', {message:'User not found.' }); 
-            const userName = user.name;
+            const userName = user.firstName + " " + user.lastName;
 
             await sendNotification(workspace.createdBy,userId.toString(),userName)
             await Promise.all(
@@ -143,7 +143,7 @@ export const workspaceSocketHandler = (io, socket)=>{
 
             const user = await User.findById(userId);
             if (!user) return socket.emit('error', {message:'User not found.' }); 
-            const userName = user.name;
+            const userName = user.firstName + " " + user.lastName;
             const adminId = workspace.createdBy?.toString();
 
             // send notification to admin

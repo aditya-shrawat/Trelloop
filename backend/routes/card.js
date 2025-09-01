@@ -1,5 +1,5 @@
 import express from 'express'
-import checkAuthentication from '../middlewares/authentication.js'
+import {checkAuthentication} from '../middlewares/authentication.js'
 import { addAttachment, addNewCardMembers, changeCardCover, deleteAttachment, deleteCard, fetchCardActivity, fetchCardData, joinCard, leaveCard, removeCardCover, removeCardMember, updateAttachment, updateCard, updateCardStatus, updateDeadline } from '../controllers/card.js';
 import checkCardAccess from '../middlewares/checkCardAccess.js';
 import { postCommentReply } from '../controllers/comment.js';

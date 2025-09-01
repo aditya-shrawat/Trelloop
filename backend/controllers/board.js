@@ -67,7 +67,7 @@ export const getBoardData = async (req,res)=>{
     try {
         const {boardId} = req.params ;
 
-        const board = await Board.findById(boardId).select("name workspace admin members pendingRequests visibility background").populate("admin",'name')
+        const board = await Board.findById(boardId).select("name workspace admin members pendingRequests visibility background").populate("admin",'firstName lastName userName profileImage')
         .populate({path: "workspace",select: "name members createdBy"});
         if(!board){
             return res.status(404).json({error:"Board not found."})
@@ -84,7 +84,7 @@ export const getBoardData = async (req,res)=>{
 export const getBoardStarStatus = async (req,res)=>{
     try {
         const {boardId} = req.params
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const existingStarredBoard = await StarredBoard.findOne({board:boardId,user:userId });
 
@@ -101,7 +101,7 @@ export const getBoardStarStatus = async (req,res)=>{
 export const toggleBoardStarStatus = async (req,res)=>{
     try {
         const {boardId} = req.params
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const board = await Board.findById(boardId);
         if(!board){
@@ -126,7 +126,7 @@ export const toggleBoardStarStatus = async (req,res)=>{
 
 export const getStarredBoards = async (req,res)=>{
     try {
-        const userId = req.user.id ;
+        const userId = req.user._id ;
 
         const starredBoardsIds = await StarredBoard.find({user:userId}).select("board").sort({createdAt:-1});
 
@@ -144,17 +144,17 @@ export const getStarredBoards = async (req,res)=>{
 
 export const getSharedBoards = async (req,res)=>{
     try {
-        const userId = req.user.id ;
+        const userId = req.user._id ;
 
         const boards = await Board.find({ members: userId }).select('name background workspace')
             .populate({
                 path: 'workspace',
-                select: 'members name', 
+                select: 'createdBy members name', 
             }).sort({createdAt:-1});
 
         const sharedBoards = boards.filter(board => {
             const workspaceMembers = board.workspace?.members || [];
-            return !workspaceMembers.includes(userId);
+            return !workspaceMembers.includes(userId) && board.workspace?.createdBy.toString() !== userId?.toString();
         });
 
         return res.status(200).json({message: "Shared boards fetched successfully.",sharedBoards});
@@ -165,7 +165,7 @@ export const getSharedBoards = async (req,res)=>{
 
 export const allJoinedWorkspacesAndBoards = async(req,res)=>{
     try {
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const workspaces = await Workspace.find({
         $or:[
@@ -213,7 +213,7 @@ export const deleteBoard = async (req,res)=>{
 
         await Board.findByIdAndDelete(boardId);
 
-        const userId = req.user.id ;
+        const userId = req.user._id ;
         await Activity.create({
             workspace:workspace._id,
             user:userId,
@@ -286,7 +286,7 @@ export const getBoardActivies= async (req,res)=>{
         }
 
         const boardActivities = await Activity.find({board:board._id})
-        .select("board card user type data createdAt").populate("user",'_id name')
+        .select("board card user type data createdAt").populate("user",'_id firstName lastName username profileImage')
 
         const activities = boardActivities.sort((a, b) => b.createdAt - a.createdAt);
 
@@ -328,7 +328,7 @@ export const fetchBoardMembers = async (req,res)=>{
 
         const board = await Board.findById(boardId)
 
-        await board.populate("admin members","name");
+        await board.populate("admin members","firstName lastName username profileImage");
 
         return res.status(200).json({message:"Board members fetched successfully.",
             members:board.members,admin:board.admin,currentUser:req.user
@@ -405,7 +405,7 @@ export const removeBoardMember = async (req,res)=>{
 export const leaveBoard = async (req,res)=>{
     try {
         const {boardId} = req.params
-        const userId = req.user.id
+        const userId = req.user._id
 
         const user = await User.findById(userId);
         if(!user){

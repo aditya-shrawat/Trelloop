@@ -1,7 +1,7 @@
-import axios from 'axios';
 import React from 'react'
 import { useState } from 'react';
 import { IoIosArrowBack } from "react-icons/io";
+import { useApi } from '../../../api/useApi';
 
 
 const colorOptions = ['#2980b9',  '#cd5a91', '#1abc9c', '#8e44ad', 'linear-gradient(to top, lightgrey 0%, lightgrey 1%, #e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%)', 
@@ -10,14 +10,13 @@ const colorOptions = ['#2980b9',  '#cd5a91', '#1abc9c', '#8e44ad', 'linear-gradi
 
 const ChangeBoardBg = ({boardId,currentBg,setBoardBg,setIsChangingBg}) => {
     const [selectedColor, setSelectedColor] = useState(currentBg);
+    const api = useApi();
 
     const handleColorChange = async (color) => {
         if(!color) return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/board/${boardId}/change-background`,
-                {newBackground:color},
-                {withCredentials: true}
+            const response = await api.patch(`/board/${boardId}/change-background`,
+                {newBackground:color}
             );
 
             console.log(response.data.message)

@@ -9,7 +9,6 @@ import Layout from './Components/Layout'
 import Workspace from './Pages/Workspace'
 import CardDetailsModel from './Components/CardDetailsModel'
 import Board from './Pages/Board'
-import MyWorkspaces from './Components/MyWorkspaces'
 
 
 const router = createBrowserRouter([

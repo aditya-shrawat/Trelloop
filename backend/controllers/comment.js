@@ -55,7 +55,7 @@ export const deleteComment = async (req,res)=>{
         const comment = await Comment.findById(commentId);
         if(!comment) return res.status(404).json({error:"Comment not found."})
 
-        const userId = req.user.id;
+        const userId = req.user._id;
         if(userId?.toString() !== comment.sender?.toString()){
             return res.status(403).json({error:"You are not allowed to perform this action."});
         }
@@ -81,7 +81,7 @@ export const editCommentContent = async (req,res)=>{
         const comment = await Comment.findById(commentId);
         if(!comment) return res.status(404).json({error:"Comment not found."})
 
-        const userId = req.user.id;
+        const userId = req.user._id;
         if(userId?.toString() !== comment.sender?.toString()){
             return res.status(403).json({error:"You are not allowed to perform this action."});
         }

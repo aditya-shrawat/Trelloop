@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import CreateBoard from '../CreateBoard';
 import { Link, useParams } from 'react-router-dom';
-import axios from 'axios';
 import { TbStar } from "react-icons/tb";
 import { TbStarFilled } from "react-icons/tb";
+import { useApi } from '../../../api/useApi';
 
 const BoardSlide = ({isAdmin,isMember}) => {
     const [creatingBoard,setCreatingBoard] = useState(false);
     const [boards,setBoards] = useState([]);
     const [loading,setLoading] = useState(true);
     const { id, name } = useParams();
+    const api = useApi();
 
     const fetchBoards =async ()=>{
       try {
-        const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/workspace/${id}/boards`,
-          {withCredentials: true}
-        );
+        const response = await api.get(`/workspace/${id}/boards`);
 
         setBoards(response.data.boards)
       } catch (error) {
@@ -48,7 +46,7 @@ const BoardSlide = ({isAdmin,isMember}) => {
         <div>Loading...</div>
         :
         boards.map((board) => (
-          <BoardCard key={board._id} board={board} />
+          <BoardCard key={board._id} board={board} api={api}/>
         ))
         }
       </div>
@@ -60,16 +58,13 @@ const BoardSlide = ({isAdmin,isMember}) => {
   );
 };
 
-const BoardCard = ({board})=>{
+const BoardCard = ({board,api})=>{
   const [starStatus,setStarStatus] = useState(false)
 
 
   const fetchStarStatus = async (e)=>{
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/board/${board._id}/starred`,
-        {withCredentials: true}
-      );
+      const response = await api.get(`/board/${board._id}/starred`);
 
       setStarStatus(response.data.starStatus)
     } catch (error) {
@@ -85,10 +80,8 @@ const BoardCard = ({board})=>{
     e.preventDefault();
 
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/board/${board._id}/starred`,
+      const response = await api.post(`/board/${board._id}/starred`,
         {},
-        {withCredentials: true}
       );
 
       setStarStatus(response.data.starStatus)

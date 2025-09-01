@@ -5,7 +5,7 @@ import List from "../models/list.js";
 
 export const getAllDeadlines = async (req,res)=>{
     try {
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const boardIds = await Board.find({ admin: userId }).distinct('_id');
 

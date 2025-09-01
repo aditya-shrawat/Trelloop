@@ -1,5 +1,5 @@
-import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
+import { useApi } from "../../api/useApi";
 
 
 const colorOptions = ['#2980b9',  '#cd5a91', '#1abc9c', '#8e44ad', 'linear-gradient(to top, lightgrey 0%, lightgrey 1%, #e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%)', 
@@ -15,6 +15,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
   const [errorMsg,setErrorMsg] = useState("");
   const [selectedColor, setSelectedColor] = useState(colorOptions[0]);
   const [isCreating,setIsCreating] = useState(false);
+  const api = useApi();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -30,11 +31,8 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
 
   const fetchWorkspaces = async ()=>{
     try {
-        const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/workspace/`,
-          {withCredentials: true}
-        );
-        
+      const response = await api.get('/workspace/');
+
       setWorkspaces(response.data.workspaces);
       setWorkspaceId(response.data.workspaces[0]._id)
       setLoading(false)
@@ -69,11 +67,8 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
     setIsCreating(true);
 
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/workspace/${workspaceId}/newBoard`,
-        {boardName,workspaceId,background:selectedColor},
-        {withCredentials: true}
-      );
+      const response = await api.post(`/workspace/${workspaceId}/newBoard`,
+        {boardName,workspaceId,background:selectedColor});
 
       console.log(response.data.message);
       setCreatingBoard(false)

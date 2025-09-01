@@ -5,7 +5,7 @@ export const fetchNotifications = async (req,res)=>{
     try {
         const user = req.user ;
 
-        const notifications = await Notification.find({userId:user.id,isRead:false}).populate('senderId','name').sort({createdAt:-1});
+        const notifications = await Notification.find({userId:user._id,isRead:false}).populate('senderId','firstName lastName username profileImage').sort({createdAt:-1});
 
         return res.status(200).json({message:"Notificatons fetched successfully.",notifications})
     } catch (error) {
@@ -18,7 +18,7 @@ export const countUnreadNotification = async (req,res)=>{
     try {
         const user = req.user ;
 
-        const notifCount = await Notification.countDocuments({userId:user.id,isRead:false})
+        const notifCount = await Notification.countDocuments({userId:user._id,isRead:false})
 
         return res.status(200).json({message:"Notifications counted successfully.",notifCount})
     } catch (error) {

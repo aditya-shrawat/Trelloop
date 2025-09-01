@@ -1,4 +1,3 @@
-import axios from "axios";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -7,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useUser } from "../../Contexts/UserContext";
 import socket from "../../Socket/socket";
 import useBoardSocket from "../../Socket/useBoardSocket";
+import { useApi } from "../../../api/useApi";
 
 
 const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
@@ -20,6 +20,8 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
   const [workspaceMembers,setWorkspaceMembers] = useState([]);
   const [selectFrom,setSelectFrom] = useState('Workspace');
   const {user} = useUser()
+  const api = useApi();
+
   useBoardSocket(socket,board._id,{});
 
   useEffect(() => {
@@ -35,10 +37,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
 
   const fetchworkspaceMembers = async ()=>{
     try {
-        const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/workspace/${board.workspace.name}/${board.workspace._id}/members`,
-            {withCredentials: true}
-        );
+        const response = await api.get(`/workspace/${board.workspace.name}/${board.workspace._id}/members`);
 
         setWorkspaceMembers([response.data.admin, ...response.data.members]);
     } catch (error) {
@@ -54,10 +53,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
 
   const fetchBoardMembers = async ()=>{
     try {
-        const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/board/${board._id}/members`,
-            {withCredentials: true}
-        );
+        const response = await api.get(`/board/${board._id}/members`);
 
         setBoardMembers([response.data.admin, ...response.data.members]);
     } catch (error) {
@@ -81,10 +77,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
     }
 
     try {
-        const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.get(`${BackendURL}/search/global-users?query=${value}`,
-            {withCredentials: true}
-        );
+        const response = await api.get(`/search/global-users?query=${value}`);
 
         setSearchedUsers(response.data.users);
     } catch (error) {
@@ -99,7 +92,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
 
     if(selectFrom === 'Workspace'){
         const filtered = workspaceMembers.filter(member =>
-            member.name.toLowerCase().includes(value.toLowerCase())
+            member.firstName.toLowerCase().includes(value.toLowerCase())
         );
 
         setSearchedUsers(filtered);
@@ -146,10 +139,8 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
     if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
 
     try {
-        const BackendURL = import.meta.env.VITE_BackendURL;
-        const response = await axios.post(`${BackendURL}/board/${board._id}/add-members`,
-            {selectedUsers:selectedUsersIds},
-            {withCredentials: true}
+        const response = await api.post(`/board/${board._id}/add-members`,
+            {selectedUsers:selectedUsersIds}
         );
 
         console.log(response.data.message);
@@ -173,7 +164,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
       socket.emit("send_board_invite", {
         boardId:board._id,
         userIds:selectedUsersIds,
-        senderId:user.id,
+        senderId:user._id,
       });
 
       socket.once("board_invite_sent", (data) => {
@@ -310,12 +301,12 @@ const UserItem = ({user,isAlreadyMember,selectingUsers,checkIsAlreadySelected})=
         <div onClick={()=>{selectingUsers(user)}} className={`w-full px-2 py-1 my-1 rounded-lg 
             ${(isAlreadyMember || isAlreadySelected)?`bg-gray-200 pointer-events-none cursor-not-allowed`:`hover:bg-gray-200 cursor-pointer`} flex items-center`}>
             <div className=" mr-3">
-                <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center">
-                  {user.name[0].toUpperCase()}
+                <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center overflow-hidden">
+                  {<img src={user.profileImage} alt="" />}
                 </div>
             </div>
             <div className="w-full h-auto">
-                <h2 className="font-semibold text-gray-700">{user.name}</h2>
+                <h2 className="font-semibold text-gray-700">{user.firstName} {user.lastName}</h2>
                 { 
                 (isAlreadyMember) &&
                 <h2 className="text-gray-500 text-xs">Already a member.</h2>
@@ -328,7 +319,7 @@ const UserItem = ({user,isAlreadyMember,selectingUsers,checkIsAlreadySelected})=
 const SelectedUserItem = ({user,onRemove})=>{
     return (
         <div className="px-1 py-[0.5px] border-[1px] border-gray-300 rounded-md text-gray-500 text-sm flex ">
-            <h3 className="mr-1">{user.name}</h3>
+            <h3 className="mr-1">{user.firstName} {user.lastName}</h3>
             <div onClick={()=>{onRemove(user)}} className="text-base px-1 flex items-center justify-center cursor-pointer "><RxCross2 /></div>
         </div>
     )

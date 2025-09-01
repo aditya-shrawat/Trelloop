@@ -1,14 +1,15 @@
-import axios from 'axios';
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApi } from '../../../../api/useApi';
 
 const DeleteCard = ({setCardFunctionality,cardId})=>{
     const navigate = useNavigate()
     const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi();
 
 
     useEffect(() => {
@@ -26,10 +27,7 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.delete(`${BackendURL}/card/${cardId}/delete`,
-            {withCredentials: true}
-            );
+            const response = await api.delete(`/card/${cardId}/delete`);
 
             console.log("card deleted")
             setCardFunctionality(null)

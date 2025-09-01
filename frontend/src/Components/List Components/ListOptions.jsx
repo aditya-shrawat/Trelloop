@@ -1,7 +1,7 @@
-import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useApi } from '../../../api/useApi';
 
 const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
     const divref = useRef();
@@ -9,6 +9,7 @@ const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
     const [isDeletingList,setIsDeletingList] = useState(false)
     const [newListName,setNewListName] = useState("")
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi();
 
     useEffect(()=>{
         setNewListName(list.name);
@@ -40,10 +41,8 @@ const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/board/${boardId}/list/${list._id}/update`,
-                {newListName:newListName},
-            {withCredentials: true}
+            const response = await api.patch(`/board/${boardId}/list/${list._id}/update`,
+                {newListName:newListName}
             );
 
             setLists(prevLists =>
@@ -62,10 +61,7 @@ const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.delete(`${BackendURL}/board/${boardId}/list/${list._id}/delete`,
-            {withCredentials: true}
-            );
+            const response = await api.delete(`/board/${boardId}/list/${list._id}/delete`);
 
             setLists(prevLists =>
                 prevLists.filter(l => l._id !== list._id)

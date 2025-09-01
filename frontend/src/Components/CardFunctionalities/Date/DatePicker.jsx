@@ -1,10 +1,11 @@
-import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
+import { useApi } from '../../../../api/useApi';
 
 const DatePicker = ({onClose,cardId,setCard}) => {
     const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
     const [newDeadline,setNewDeadline] = useState(null);
+    const api = useApi();
 
 
     useEffect(() => {
@@ -24,10 +25,8 @@ const DatePicker = ({onClose,cardId,setCard}) => {
             return;
         }
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/deadline`,
-                {newDeadline},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${cardId}/deadline`,
+                {newDeadline}
             );
 
             setCard((prev)=>({...prev,deadline:newDeadline}));

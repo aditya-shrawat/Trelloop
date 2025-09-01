@@ -1,11 +1,12 @@
-import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
+import { useApi } from '../../../../api/useApi';
 
 const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
     const divref = useRef();
     const [boardMembers,setBoardMembers] = useState([])
     const [errorMsg,setErrorMsg] = useState("")
     const [selectedMembersIds,setSelectedMembersIds] = useState([]);
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -20,10 +21,7 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
 
     const fetchBoardMembers = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${boardId}/members`,
-            {withCredentials: true}
-            );
+            const response = await api.get(`/board/${boardId}/members`);
 
             setBoardMembers([...response.data.members,response.data.admin])
         } catch (error) {
@@ -67,11 +65,8 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
     const addNewMembers = async ()=>{
         if(selectedMembersIds.length ===0) return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/add-members`,
-                {selectedMembersIds},
-                {withCredentials: true}
-            );
+            const response = await api.patch(`/card/${cardId}/add-members`,
+                {selectedMembersIds});
 
             console.log(response.data.message)
             // update card members , socket
@@ -96,8 +91,11 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
                     :
                     boardMembers?.map((user)=>{
                         const isAlreadyMember = checkIsAlreadyMember(user);
-                        return <MemberItem key={user._id} user={user} isAlreadyMember={isAlreadyMember} selectingMembers={selectingMembers}
-                            checkIsAlreadySelected={checkIsAlreadySelected} />
+                        if(isAlreadyMember) return null;
+                        return (
+                            <MemberItem key={user._id} user={user} selectingMembers={selectingMembers}
+                                checkIsAlreadySelected={checkIsAlreadySelected} />
+                        )
                     })
                 }
             </div>
@@ -122,22 +120,18 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
 export default AddMemberToCard
 
 
-const MemberItem = ({user,isAlreadyMember,selectingMembers,checkIsAlreadySelected})=>{
+const MemberItem = ({user,selectingMembers,checkIsAlreadySelected})=>{
     const isAlreadySelected = checkIsAlreadySelected(user);
     return (
         <div onClick={()=>{selectingMembers(user)}} className={`w-full p-2 my-1 rounded-lg 
-            ${(isAlreadyMember || isAlreadySelected)?`bg-gray-200`:`hover:bg-gray-100`} cursor-pointer flex items-center`}>
+            ${(isAlreadySelected)?`bg-gray-200`:`hover:bg-gray-100`} cursor-pointer flex items-center`}>
             <div className=" mr-2">
-                <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-white flex justify-center items-center">
-                  {user.name[0].toUpperCase()}
+                <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-white flex justify-center items-center overflow-hidden">
+                  {user.profileImage && <img src={user.profileImage} alt="" />}
                 </div>
             </div>
             <div className="w-full h-auto">
-                <h2 className="font-semibold text-gray-700">{user.name}</h2>
-                { 
-                (isAlreadyMember) &&
-                <h2 className="text-gray-500 text-[12px]">Already a member.</h2>
-                }
+                <h2 className="font-semibold text-gray-700">{`${user.firstName} ${user.lastName}`}</h2>
             </div>
         </div>
     )

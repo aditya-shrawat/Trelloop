@@ -4,7 +4,7 @@ import Comment from "../models/Comment.js";
 
 export const getMainFeed = async (req,res)=>{
     try {
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const boardIds = await Board.find(
             {$or: [{ members: userId }, { admin: userId }]}
@@ -14,8 +14,8 @@ export const getMainFeed = async (req,res)=>{
             { path: "workspace", select: "name" },
             { path: "board", select: "name background" },
             { path: "card", select: "name deadline" },
-            { path: "sender", select: "name" },
-            { path: "replyTo", select: "name" },
+            { path: "sender", select: "firstName lastName userName profileImage" },
+            { path: "replyTo", select: "firstName lastName userName profileImage" },
         ]);
 
         allComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

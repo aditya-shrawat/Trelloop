@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+import { useApi } from "../../../../api/useApi";
 
 
 
@@ -7,6 +7,7 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
     const divref = useRef();
     const [inputLink,setInputLink] = useState("")
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi();
 
 
     useEffect(() => {
@@ -35,10 +36,8 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/attachments`,
-                {link:inputLink},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${cardId}/attachments`,
+                {link:inputLink}
             );
 
             setAttachments(response.data.cardAttachments);

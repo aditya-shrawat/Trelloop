@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { GoCheckCircleFill } from "react-icons/go";
 import { FaRegClock } from "react-icons/fa6";
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useApi } from '../../api/useApi';
 
 const Card = ({card,UserRole})=>{
     const [isCompleted,setIsCompleted] = useState(null)
+    const api = useApi();
 
     useEffect(()=>{
         setIsCompleted(card.isCompleted)
@@ -14,10 +15,8 @@ const Card = ({card,UserRole})=>{
 
     const toggleCardStatus = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${card._id}/isCompleted`,
-                {},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${card._id}/isCompleted`,
+                {}
             );
 
             setIsCompleted(response.data.isCompleted)

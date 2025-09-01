@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { IoHome } from "react-icons/io5";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { IoMdArrowDropright } from "react-icons/io";
-import Header from "../Components/Header";
-import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import HomeMainContainer from "../Components/HomePage components/HomeMainContainer";
 import MyBoards from "../Components/HomePage components/MyBoards";
@@ -11,10 +9,12 @@ import TrackDeadlines from "../Components/HomePage components/TrackDeadlines";
 import { TbCalendarClock } from "react-icons/tb";
 import BottomNavigation from "../Components/BottomNavigation";
 import MyWorkspaces from "../Components/MyWorkspaces";
+import { useApi } from "../../api/useApi";
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
   const [loadingWorkspaces,setLoadingWorkspaces] = useState(true);
+  const api = useApi();
 
   const location = useLocation();
   const [route, setRoute] = useState(location.pathname);
@@ -25,11 +25,8 @@ const HomePage = () => {
 
   const fetchWorkspaces = async ()=>{
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/workspace/`,
-        {withCredentials: true}
-      );
-          
+      const response = await api.get('/workspace/');
+
       setWorkspaces(response.data.workspaces);
     } catch (error) {
       console.log("Error while fetching workspaces - ",error)

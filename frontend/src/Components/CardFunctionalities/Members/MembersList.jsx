@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
 import { useUser } from '../../../Contexts/UserContext';
 import { RxExit } from "react-icons/rx";
-import axios from 'axios';
+import { useApi } from '../../../../api/useApi';
 
 const MembersList = ({onClose,members,cardId,UserRole,setCard}) => {
     const divref = useRef();
@@ -37,7 +37,7 @@ const MembersList = ({onClose,members,cardId,UserRole,setCard}) => {
                 <div className='w-full py-5 text-center text-gray-500 font-semibold'>NO members !!</div> 
                 :
                 members?.map((member)=>(
-                    <MembersItem key={member._id} member={member} isAdmin={isAdmin} isSelf={(member._id).toString() === (user.id).toString()} 
+                    <MembersItem key={member._id} member={member} isAdmin={isAdmin} isSelf={(member._id).toString() === (user._id).toString()} 
                         cardId={cardId} setCard={setCard} />
                 ))
                 }
@@ -50,14 +50,13 @@ const MembersList = ({onClose,members,cardId,UserRole,setCard}) => {
 export default MembersList
 
 const MembersItem = ({member,isAdmin,isSelf,cardId,setCard})=>{
+  const api = useApi();
+
     const removeMember = async ()=>{
         if(!isAdmin) return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/remove-member`,
-                {userId:member._id},
-                {withCredentials: true}
-            );
+            const response = await api.patch(`/card/${cardId}/remove-member`,
+                {userId:member._id});
 
             console.log(response.data.message)
             setCard(prevCard => ({
@@ -71,10 +70,8 @@ const MembersItem = ({member,isAdmin,isSelf,cardId,setCard})=>{
 
     const leaveCard = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/leave`,
-                {userId:member._id},
-                {withCredentials: true}
+            const response = await api.patch(`/card/${cardId}/leave`,
+                {userId:member._id}
             );
 
             console.log(response.data.message)
@@ -91,16 +88,16 @@ const MembersItem = ({member,isAdmin,isSelf,cardId,setCard})=>{
     <div
       className="w-full px-1 py-2 border-b-[1px] border-gray-300 flex items-center">
       <div className=" mr-2">
-        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center">
-          {(member.name) && (member.name[0].toUpperCase())}
+        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center overflow-hidden">
+          {(member.profileImage) && (<img src={member.profileImage} alt="" />)}
         </div>
       </div>
       <div className="w-full h-auto flex justify-between items-center">
         <div className="w-full h-auto">
-          <h2 className="font-semibold text-gray-700 flex items-baseline line-clamp-1">{`${member.name}`} 
+          <h2 className="font-semibold text-gray-700 flex items-baseline line-clamp-1">{`${member.firstName} ${member.lastName}`} 
             {isSelf && <span className="text-sm text-gray-500 ml-2">(You)</span>}
           </h2>
-          <h2 className="text-gray-500 text-xs line-clamp-1">@username</h2>
+          <h2 className="text-gray-500 text-xs line-clamp-1">@{member.username}</h2>
         </div>
         <div className="w-auto h-auto inline-block ">
           {

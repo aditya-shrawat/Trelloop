@@ -6,18 +6,16 @@ import { RxDashboard } from "react-icons/rx";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
 import CreateWorkspace from "./CreateWorkspace";
 import CreateBoard from "./CreateBoard";
-import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../Contexts/UserContext.jsx";
 import Notification from "./Notification.jsx";
 import { cleanupNotificationListener, registerUserSocket, setupNotificationListener } from "../Socket/socketService.js";
 import socket from "../Socket/socket.js";
-import { TbStar } from "react-icons/tb";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FiLogOut } from "react-icons/fi";
-import { MdOutlineLightMode } from "react-icons/md";
+import { UserButton } from "@clerk/clerk-react";
+import { useApi } from "../../api/useApi.js";
+import ProfilePicNavBar from "./Profile navBar/ProfilePicNavBar.jsx";
 
-const Header = () => {
+const Header =  () => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const [openProfileNav,setOpenProfileNav] = useState(false)
@@ -26,6 +24,8 @@ const Header = () => {
     const location = useLocation();
     const contentType = location.pathname.split("/")[1] ;
     const [isBoardPage,setIsBoardPage] = useState(false);
+
+    const api = useApi();
 
     useEffect(()=>{
         if(contentType==='board'){
@@ -36,9 +36,9 @@ const Header = () => {
     const {user} = useUser();
 
     useEffect(() => {
-        if (!user?.id) return;
+        if (!user?._id) return;
 
-        registerUserSocket(socket,user.id);
+        registerUserSocket(socket,user._id);
         setupNotificationListener(socket,setUnreadCount);
 
         return () => {
@@ -58,10 +58,7 @@ const Header = () => {
 
     const fetchUnreadNotificationCount = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/notification/count`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/notification/count');
 
             setUnreadCount(response.data.notifCount);
         } catch (error) {
@@ -93,7 +90,7 @@ const Header = () => {
 
                         {openDropdown === "workspace" && (
                             <div ref={dropdownRef} className="absolute top-full left-0 mt-4 z-30 w-[300px]">
-                            <WorkspaceDropDown />
+                            <WorkspaceDropDown api={api} />
                             </div>
                         )}
                     </div>
@@ -108,7 +105,7 @@ const Header = () => {
                         
                         {openDropdown === "starred" && (
                             <div ref={dropdownRef} className="absolute top-full left-0 mt-4 z-30 w-[300px]">
-                            <StarredDropDown />
+                            <StarredDropDown api={api} />
                             </div>
                         )}
                     </div>
@@ -124,6 +121,7 @@ const Header = () => {
                             </div>
                         )}
                     </div>
+                    <UserButton />
                 </div>
             </div>
 
@@ -143,13 +141,13 @@ const Header = () => {
                 </div>
                 <div className="relative h-full flex items-center ml-4">
                     <div onClick={()=>setOpenProfileNav(true)} className="h-8 w-8 flex items-center justify-center 
-                    bg-blue-500 text-white font-semibold text-lg rounded-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)]  ">
-                    {(user)&&user.name[0].toUpperCase()}
+                    bg-blue-500 text-white font-semibold text-lg rounded-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] overflow-hidden">
+                    {(user)&& <img src={user.profileImage} alt="" />}
                     </div>
 
                     {
                     (openProfileNav) &&
-                    <ProfilePicNavBar setOpenProfileNav={setOpenProfileNav} />
+                    <ProfilePicNavBar currentUser={user} setOpenProfileNav={setOpenProfileNav} />
                     }
                 </div>
             </div>
@@ -158,17 +156,13 @@ const Header = () => {
   );
 };
 
-const WorkspaceDropDown = () => {
+const WorkspaceDropDown = ({ api }) => {
     const [workspaces,setWorkspaces] = useState([]);
     const [loading,setLoading] = useState(true);
 
     const fetchWorkspaces = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/workspace/`,
-                {withCredentials: true}
-            );
-            
+            const response = await api.get('/workspace/');
             setWorkspaces(response.data.workspaces);
         } catch (error) {
             console.log("Error while fetching workspaces - ",error)
@@ -208,16 +202,13 @@ const WorkspaceDropDown = () => {
   );
 };
 
-const StarredDropDown = ()=>{
+const StarredDropDown = ({ api })=>{
     const [starredBoards,setStarredBoards] = useState([]);
     const [loadingStarredBoards,setLoadingStarredBoards] = useState(true);
 
     const fetchStarredBoards = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/starred-boards`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/board/starred-boards');
 
             setStarredBoards(response.data.starredBoards)
         } catch (error) {
@@ -284,60 +275,6 @@ const CreateDropDown = ()=>{
         {
         (creatingBoard)&& <CreateBoard setCreatingBoard={setCreatingBoard} />
         }
-    </div>
-    )
-}
-
-const ProfilePicNavBar = ({setOpenProfileNav})=>{
-    const navRef = useRef(null);
-    const [creatingWorkspace,setCreatingworkspace] = useState(false)
-
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-        if (navRef.current && !navRef.current.contains(e.target)) {
-            setOpenProfileNav(false);
-        }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    return (
-    <div ref={navRef} className="w-[90vw] h-[100vh] sm:w-[350px] sm:h-auto bg-white border-[1px] border-gray-300 shadow-[-2px_2px_10px_rgba(12,12,13,0.1)] rounded-lg z-40 absolute top-full -right-6">
-        <div className=" w-full h-full px-3 py-4 ">
-            <div className="w-full h-auto pb-6 border-b-[1px] border-gray-300 px-2">
-                <h2 className="font-semibold text-gray-700 ">Account</h2>
-                <div className="w-full flex items-start mt-3">
-                    <div className="w-auto h-auto mr-4">
-                        <div className="h-9 w-9 flex items-center justify-center bg-blue-500 text-white font-semibold text-lg rounded-full ">
-                        P
-                        </div>
-                    </div>
-                    <div>
-                        <h1 className="text-gray-700 font-semibold break-words">Name</h1>
-                        <h2 className="text-gray-500 break-words text-sm">email@gmail.com</h2>
-                    </div>
-                </div>
-            </div>
-            <div className="w-full h-full mt-2 space-y-2">
-                <div onClick={()=>{setCreatingworkspace(true)}} className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
-                    <FaPlus className="mr-3" />Create Workspace
-                </div>
-                <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
-                    <IoSettingsOutline className="mr-3" />Settings
-                </div>
-                <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
-                    <MdOutlineLightMode className="mr-3" />Theme
-                </div>
-                <div className="pt-2 border-t-[1px] border-gray-300">
-                    <div className="mt-2 px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
-                        <FiLogOut className="mr-3" />Logout
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        {creatingWorkspace && <CreateWorkspace setCreatingworkspace={setCreatingworkspace}  />}
     </div>
     )
 }

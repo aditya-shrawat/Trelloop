@@ -86,10 +86,10 @@ export const fetchCardData = async (req,res)=>{
         const {cardId} = req.params;
         
         const card = req.card;
-        await card.populate({ path: 'members', select: 'name' });
-        const list = await List.findById(card.list).select('name board')
+        await card.populate({ path: 'members', select: 'firstName lastName username profileImage' });
+        const list = await List.findById(card.list).select('name board');
 
-        const board = await Board.findById(list.board).select("name workspace admin members visibility").populate("admin",'name')
+        const board = await Board.findById(list.board).select("name workspace admin members visibility").populate("admin",'firstName lastName username profileImage')
         .populate({path: "workspace",select: "name members createdBy"});
         if(!board){
             return res.status(404).json({error:"Board doesn't exist."})
@@ -108,12 +108,12 @@ export const fetchCardActivity = async (req,res)=>{
         const card = req.card;
 
         const activities = await Activity.find({card:card._id})
-        .select("user type data createdAt").populate("user",'_id name').sort({ createdAt: -1 }).lean();
+        .select("user type data createdAt").populate("user",'_id firstName lastName profileImage').sort({ createdAt: -1 }).lean();
 
         const comments = await Comment.find({ card: card._id }).select('card sender receiver content createdAt parentComment').populate([
             { path: 'card', select: 'name' },
-            { path: 'sender', select: 'name' },
-            { path: 'replyTo', select: 'name' }
+            { path: 'sender', select: 'firstName lastName username profileImage' },
+            { path: 'replyTo', select: 'firstName lastName username profileImage' }
         ]).sort({ createdAt: -1 }).lean();
 
         const taggedActivities = activities.map(act => ({ ...act, _type: 'activity' }));
@@ -433,7 +433,7 @@ export const deleteCard = async (req,res)=>{
         });
         const board = list.board
         const workspace = board.workspace ;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const isBoardAdmin = board.admin?.toString() === userId;
         const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
@@ -488,7 +488,7 @@ export const updateDeadline = async (req,res)=>{
         });
         const board = list.board
         const workspace = board.workspace ;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         card.deadline = new Date(newDeadline);
         await card.save()
@@ -561,7 +561,7 @@ export const joinCard = async (req,res)=>{
         if (!req.canEdit) {
             return res.status(403).json({ error: "You don't have permission to perform this action." });
         }
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const card = req.card ;
         const isCardMember = card.members?.some((id)=>id?.toString()=== userId?.toString());

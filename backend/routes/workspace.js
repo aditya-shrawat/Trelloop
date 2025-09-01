@@ -1,6 +1,5 @@
-
 import express from 'express'
-import checkAuthentication from '../middlewares/authentication.js';
+import {checkAuthentication} from '../middlewares/authentication.js';
 import { createWorkspace, deleteWorkspace, fetchWorkspaceMembers, fetchWorkspaces, getWorkspaceActivies, getWorkspaceData, leaveWorkspace, removeWorkspaceMember, updateWorkspace, updateWorkspaceVisibility } from '../controllers/workspace.js';
 import { createBoard, fetcheBoards } from '../controllers/board.js';
 import checkWorkspaceAccess from '../middlewares/checkWorkspaceAccess.js';

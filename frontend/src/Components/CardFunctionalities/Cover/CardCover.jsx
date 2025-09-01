@@ -1,14 +1,15 @@
-import axios from 'axios';
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
+import { useApi } from '../../../../api/useApi';
 
 const colorOptions = ['#9f8fef', '#ffa8d9', '#77b6fb', '#ffe566', '#32cd9e', '#fea362', '#b5f9a3', '#f87168', '#e2a0ff', '#adb5bd'];
 
 const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
     const divref = useRef();
     const [selectedColor, setSelectedColor] = useState(currentColor);
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -24,10 +25,8 @@ const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
     const handleColorChange = async (color) => {
         if(!color) return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/set-cover`,
-                {newCover:color},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${cardId}/set-cover`,
+                {newCover:color}
             );
 
             console.log(response.data.message)
@@ -40,10 +39,8 @@ const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
 
     const removeCardCover = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${cardId}/remove-cover`,
-                {},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${cardId}/remove-cover`,
+                {}
             );
 
             console.log(response.data.message)

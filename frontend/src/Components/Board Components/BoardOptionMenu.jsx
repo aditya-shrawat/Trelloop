@@ -6,13 +6,13 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { BsPersonWorkspace } from "react-icons/bs";
 import { MdOutlineVisibility } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import BoardActivity from './BoardActivity';
 import { IoPerson } from "react-icons/io5";
 import BoardMembers from './BoardMembers';
 import BoardVisibilityPopup from './BoardVisibilityPopup';
 import { FiEdit } from "react-icons/fi";
 import ChangeBoardBg from './ChangeBoardBg';
+import { useApi } from '../../../api/useApi';
 
 const BoardOptionMenu = ({board,setBoard,starStatus,setBoardBg,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
@@ -114,6 +114,7 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
     const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
     const navigate = useNavigate()
+    const api = useApi();
 
 
     useEffect(() => {
@@ -132,11 +133,7 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.delete(`${BackendURL}/board/${boardId}/delete`,
-            {withCredentials: true}
-            );
-
+            const response = await api.delete(`/board/${boardId}/delete`);
             console.log("board deleted successfully.")
             setDeletePopup(false)
             navigate(-1)
@@ -178,6 +175,7 @@ const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
     const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
     const [newName,setNewName] = useState(boardName?boardName:"");
+    const api = useApi();
 
 
     useEffect(() => {
@@ -201,10 +199,8 @@ const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/board/${boardId}/re-name`,
-                {newName},
-            {withCredentials: true}
+            const response = await api.patch(`/board/${boardId}/re-name`,
+                {newName}
             );
 
             setBoard((prev) => ({ ...prev, name:newName }));

@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React from 'react'
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { RxCross2 } from "react-icons/rx";
 import { useParams } from 'react-router-dom';
+import { useApi } from '../../../api/useApi';
 
 const MembersSlide = () => {
   const {name,id} = useParams();
@@ -12,13 +12,11 @@ const MembersSlide = () => {
   const [admin,setAdmin] = useState();
   const [loadingMembers,setLoadingMembers] = useState(true)
   const [currentUser,setCurrentUser] = useState()
+  const api = useApi();
 
   const fetchWorkspaceMembers = async ()=>{
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/workspace/${name}/${id}/members`,
-        {withCredentials: true}
-      );
+      const response = await api.get(`/workspace/${name}/${id}/members`);
 
       setMembers(response.data.members);
       setAdmin(response.data.admin)
@@ -50,11 +48,11 @@ const MembersSlide = () => {
           (<div>Loading workspace members...</div>)
           :
           (<>
-            <MembersItem member={admin} isAdmin={true} isSelf={admin._id === currentUser.id} currentUser={currentUser} adminId={admin._id} />
+            <MembersItem member={admin} isAdmin={true} isSelf={admin._id === currentUser._id} currentUser={currentUser} adminId={admin._id} />
             
             {members && members.length !== 0 && (
               members.map((member) => (
-                <MembersItem key={member._id} member={member} isAdmin={false} isSelf={member._id === currentUser.id} 
+                <MembersItem key={member._id} member={member} isAdmin={false} isSelf={member._id === currentUser._id} 
                         currentUser={currentUser} adminId={admin._id} workspaceId={id} setMembers={setMembers} />
               ))
             )}
@@ -68,7 +66,7 @@ const MembersSlide = () => {
 export default MembersSlide
 
 const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,workspaceId,setMembers})=>{
-  const isCurrentUserAdmin = currentUser.id === adminId;
+  const isCurrentUserAdmin = currentUser._id === adminId;
   const [removePopup,setRemovePopup] = useState(false);
   const [leavePopup,setLeavePopup] = useState(false);
   
@@ -76,16 +74,16 @@ const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,workspaceId,setM
     <div
       className="w-full px-2 py-3 border-b-[1px] border-gray-300 flex items-center">
       <div className=" mr-3">
-        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center">
-          {(member.name) && (member.name[0].toUpperCase())}
+        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center overflow-hidden">
+          {(member.profileImage) && (<img src={member.profileImage} alt="" />)}
         </div>
       </div>
       <div className="w-full h-auto flex justify-between items-center">
         <div className="w-full h-auto">
-          <h2 className="font-semibold text-gray-700 flex items-baseline">{`${member.name}`} 
+          <h2 className="font-semibold text-gray-700 flex items-baseline">{`${member.firstName} ${member.lastName}`} 
             {isSelf && <span className="text-sm text-gray-500 ml-2">(You)</span>}
           </h2>
-          <h2 className="text-gray-500 text-sm">@username</h2>
+          <h2 className="text-gray-500 text-sm">@{member.username}</h2>
         </div>
         <div className="w-auto h-auto inline-block ">
           {
@@ -131,6 +129,7 @@ const RemoveMemberPopup = ({setRemovePopup,userId,workspaceId,setMembers})=>{
   const divref = useRef();
   const [errorMsg,setErrorMsg] = useState("")
   const [removing,setRemoving] = useState(false);
+  const api = useApi();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -149,10 +148,8 @@ const RemoveMemberPopup = ({setRemovePopup,userId,workspaceId,setMembers})=>{
     try {
       setRemoving(true);
 
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/workspace/${workspaceId}/remove-member`,
-        {userId:userId},
-        {withCredentials: true}
+      const response = await api.post(`/workspace/${workspaceId}/remove-member`,
+        {userId:userId}
       );
 
       setMembers(response.data.members)
@@ -194,6 +191,7 @@ const LeaveWorkspacePopup = ({setLeavePopup,userId,workspaceId,setMembers})=>{
   const divref = useRef();
   const [errorMsg,setErrorMsg] = useState("")
   const [leaving,setLeaving] = useState(false);
+  const api = useApi();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -212,10 +210,8 @@ const LeaveWorkspacePopup = ({setLeavePopup,userId,workspaceId,setMembers})=>{
     try {
       setLeaving(true);
 
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/workspace/${workspaceId}/leave-workspace`,
-        {userId:userId},
-        {withCredentials: true}
+      const response = await api.post(`/workspace/${workspaceId}/leave-workspace`,
+        {userId:userId}
       );
 
       setMembers(response.data.members)

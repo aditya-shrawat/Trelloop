@@ -1,7 +1,6 @@
-
 import express from 'express';
-import checkAuthentication from '../middlewares/authentication.js';
 import { countUnreadNotification, fetchNotifications, markAsRead } from '../controllers/notification.js';
+import { checkAuthentication } from '../middlewares/authentication.js';
 
 const router = express.Router();
 

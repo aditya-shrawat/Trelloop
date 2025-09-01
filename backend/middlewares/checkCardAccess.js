@@ -20,7 +20,7 @@ const checkCardAccess = async (req, res, next) => {
     await board.populate("workspace");
     const workspace = board.workspace;
 
-    const userId = req.user.id;
+    const userId = req.user._id?.toString();
     const isBoardMember = board.members.some(id => id.toString() === userId);
     const isBoardAdmin = board.admin?.toString() === userId;
     const isWorkspaceMember = workspace.members.some(id => id.toString() === userId);

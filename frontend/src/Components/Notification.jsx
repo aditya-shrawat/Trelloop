@@ -1,13 +1,14 @@
-import axios from 'axios';
 import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useRef } from 'react';
 import socket from '../Socket/socket';
+import { useApi } from '../../api/useApi';
 
 const Notification = ({setShowNotifications}) => {
     const divRef = useRef(null);
     const [notifications,setNotifications] = useState([]);
     const [loadingNotifications,setLoadingNotifications] = useState(true)
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -21,10 +22,7 @@ const Notification = ({setShowNotifications}) => {
 
     const fetchNotification = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/notification`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/notification');
 
             setNotifications(response.data.notifications)
         } catch (error) {
@@ -56,7 +54,7 @@ const Notification = ({setShowNotifications}) => {
                     <div>NO notification</div>
                     :
                     notifications.map((notif)=>(
-                        <NotificationItem key={notif._id} notif={notif} setNotifications={setNotifications} />
+                        <NotificationItem key={notif._id} notif={notif} setNotifications={setNotifications} api={api} />
                     ))
                     }
                 </div>
@@ -67,7 +65,7 @@ const Notification = ({setShowNotifications}) => {
 
 export default Notification
 
-const NotificationItem = ({notif,setNotifications})=>{
+const NotificationItem = ({notif,setNotifications,api})=>{
     const [accepting, setAccepting] = useState(false);
     const [rejecting, setRejecting] = useState(false);
     const [closing, setClosing] = useState(false);
@@ -94,10 +92,7 @@ const NotificationItem = ({notif,setNotifications})=>{
                 // })
             }
 
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
-                {withCredentials: true}
-            );
+            const response = await api.post(`/notification/${notif._id}/read`,{isRead:true});
 
             setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
         } catch (error) {
@@ -128,10 +123,7 @@ const NotificationItem = ({notif,setNotifications})=>{
                 // })
             }
 
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
-                {withCredentials: true}
-            );
+            const response = await api.post(`/notification/${notif._id}/read`,{isRead:true});
 
             setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
         } catch (error) {
@@ -147,10 +139,7 @@ const NotificationItem = ({notif,setNotifications})=>{
         try {
             setClosing(true) ;
 
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
-                {withCredentials: true}
-            );
+            const response = await api.post(`/notification/${notif._id}/read`,{isRead:true});
 
             setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
         } catch (error) {
@@ -168,10 +157,7 @@ const NotificationItem = ({notif,setNotifications})=>{
 
             socket.emit("accept_board_request",{boardId:notif.boardId,senderId:notif.userId,userId:notif.senderId._id })
 
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
-                {withCredentials: true}
-            );
+            const response = await api.post(`/notification/${notif._id}/read`,{isRead:true});
 
             setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
         } catch (error) {
@@ -189,10 +175,7 @@ const NotificationItem = ({notif,setNotifications})=>{
 
             socket.emit("reject_board_request",{boardId:notif.boardId,senderId:notif.userId,userId:notif.senderId._id })
 
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/notification/${notif._id}/read`,{isRead:true},
-                {withCredentials: true}
-            );
+            const response = await api.post(`/notification/${notif._id}/read`,{isRead:true});
 
             setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
         } catch (error) {
@@ -209,12 +192,12 @@ const NotificationItem = ({notif,setNotifications})=>{
         <div className='w-full h-auto p-3 bg-white/40 backdrop-blur-md rounded-md shadow-[0px_0px_4px_rgba(12,12,13,0.2)]'>
             <div className="w-full flex ">
                 <div className=" mr-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center">
-                        {notif.senderId.name[0].toUpperCase()}
+                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center overflow-hidden">
+                        {notif.senderId.profileImage && <img src={notif.senderId.profileImage} alt="" />}
                     </div>
                 </div>
                 <p className='text-base text-gray-500'><span className="font-semibold text-base text-gray-700 mr-1">
-                    {notif.senderId.name}</span> {notif.message}
+                    {notif.senderId.firstName} {notif.senderId.lastName}</span> {notif.message}
                 </p>
             </div>
             <div className='w-full mt-4 flex justify-evenly '>
@@ -236,12 +219,12 @@ const NotificationItem = ({notif,setNotifications})=>{
         <div className='w-full h-auto p-3 bg-white/40 backdrop-blur-md rounded-md shadow-[0px_0px_4px_rgba(12,12,13,0.2)] '>
             <div className="w-full flex ">
                 <div className=" mr-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center">
-                        {notif.senderId.name[0].toUpperCase()}
+                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center overflow-hidden">
+                        {notif.senderId.profileImage && <img src={notif.senderId.profileImage} alt="" />}
                     </div>
                 </div>
                 <p className='text-base text-gray-500'><span className="font-semibold text-base text-gray-700 mr-1">
-                    {notif.senderId.name}</span> {notif.message}
+                    {notif.senderId.firstName} {notif.senderId.lastName}</span> {notif.message}
                 </p>
             </div>
             <div className='w-full mt-4 flex justify-end '>
@@ -270,12 +253,12 @@ const NotificationItem = ({notif,setNotifications})=>{
         (<div className='w-full h-auto p-3 bg-white/40 backdrop-blur-md rounded-md shadow-[0px_0px_4px_rgba(12,12,13,0.2)]'>
             <div className="w-full flex ">
                 <div className=" mr-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center">
-                        {notif.senderId.name[0].toUpperCase()}
+                    <div className="w-7 h-7 rounded-full bg-blue-300 font-semibold text-base text-white flex justify-center items-center overflow-hidden">
+                        {notif.senderId.profileImage && <img src={notif.senderId.profileImage} alt="" />}
                     </div>
                 </div>
                 <p className='text-base text-gray-500'>
-                    <span className="font-semibold text-base text-gray-700 mr-1">{notif.senderId.name}</span> 
+                    <span className="font-semibold text-base text-gray-700 mr-1">{notif.senderId.firstName} {notif.senderId.lastName}</span> 
                     {notif.message}
                 </p>
             </div>

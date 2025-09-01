@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { BiEdit } from "react-icons/bi";
 import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useApi } from '../../../api/useApi';
 
 const initialWorkspacedata ={
     name:"",
@@ -16,6 +16,7 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
     const [errorMsg,setErrorMsg] = useState("")
     const [deleteWorkspace,setDeleteWorkspace] = useState(false)
     const [changingVisibility,setChangingVisibility] = useState(false);
+    const api = useApi();
 
 
     useEffect(()=>{
@@ -43,11 +44,9 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/workspace/update/${workspace._id}`,
-                {newName:workspaceData.name, newDescription:workspaceData.description},
-                {withCredentials: true}
-            ); 
+            const response = await api.patch(`/workspace/update/${workspace._id}`,
+                {newName:workspaceData.name, newDescription:workspaceData.description}
+            );
 
             setWorkspace(response.data.workspace)
             setEditWorkspace(false)
@@ -180,6 +179,7 @@ const DeleteComponent = ({workspaceId,setDeleteWorkspace})=>{
     const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
     const navigate = useNavigate()
+    const api = useApi();
 
 
     useEffect(() => {
@@ -198,10 +198,7 @@ const DeleteComponent = ({workspaceId,setDeleteWorkspace})=>{
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.delete(`${BackendURL}/workspace/delete/${workspaceId}`,
-            {withCredentials: true}
-            );
+            const response = await api.delete(`/workspace/delete/${workspaceId}`);
 
             console.log("Workspace deleted successfully.")
             setDeleteWorkspace(false)
@@ -243,6 +240,7 @@ const DeleteComponent = ({workspaceId,setDeleteWorkspace})=>{
 const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility})=>{
     const divref = useRef();
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -260,10 +258,7 @@ const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility
         if(visibility===workspace.isPrivate) return;
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/workspace/visibility/${workspace._id}`,{newVisibility:visibility},
-            {withCredentials: true}
-            );
+            const response = await api.patch(`/workspace/visibility/${workspace._id}`,{newVisibility:visibility});
 
             setWorkspace(response.data.workspace)
         } catch (error) {

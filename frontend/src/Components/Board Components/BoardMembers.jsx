@@ -1,4 +1,3 @@
-import axios from "axios";
 import React from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
@@ -6,19 +5,18 @@ import { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { RxExit } from "react-icons/rx";
+import { useApi } from "../../../api/useApi";
 
 const BoardMembers = ({boardId,setShowMembers}) => {
     const [members,setMembers] = useState([]);
     const [admin,setAdmin] = useState();
     const [loadingMembers,setLoadingMembers] = useState(true)
     const [currentUser,setCurrentUser] = useState()
+    const api = useApi();
 
     const fetchBoardMembers = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${boardId}/members`,
-                {withCredentials: true}
-            );
+            const response = await api.get(`/board/${boardId}/members`);
 
             setMembers(response.data.members);
             setAdmin(response.data.admin)
@@ -49,13 +47,16 @@ const BoardMembers = ({boardId,setShowMembers}) => {
                 (<div>Loading workspace members...</div>)
                 :
                 (<>
-                    <MembersItem member={admin} isAdmin={true} isSelf={admin._id === currentUser.id} currentUser={currentUser} adminId={admin._id} />
+                    <MembersItem member={admin} isAdmin={true} isSelf={admin._id === currentUser._id} currentUser={currentUser} adminId={admin._id} />
                     
                     {members && members.length !== 0 && (
-                    members.map((member) => (
-                        <MembersItem key={member._id} member={member} isAdmin={false} isSelf={member._id === currentUser.id} 
+                    members.map((member) => {
+                      if(member._id === admin._id) return null; // Skip admin as it's already rendered
+                      return (
+                        <MembersItem key={member._id} member={member} isAdmin={false} isSelf={member._id === currentUser._id} 
                                 currentUser={currentUser} adminId={admin._id} boardId={boardId} setMembers={setMembers} />
-                    ))
+                      )
+                    })
                     )}
                 </>)
                 }
@@ -69,7 +70,7 @@ export default BoardMembers;
 
 
 const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,boardId,setMembers})=>{
-  const isCurrentUserAdmin = currentUser.id === adminId;
+  const isCurrentUserAdmin = currentUser._id === adminId;
   const [removePopup,setRemovePopup] = useState(false);
   const [leavePopup,setLeavePopup] = useState(false);
   
@@ -77,16 +78,16 @@ const MembersItem = ({member,isAdmin,isSelf,currentUser,adminId,boardId,setMembe
     <div
       className="w-full px-1 py-2 border-b-[1px] border-gray-300 flex items-center">
       <div className=" mr-2">
-        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center">
-          {(member.name) && (member.name[0].toUpperCase())}
+        <div className="w-8 h-8 rounded-full bg-blue-300 font-semibold text-lg text-white flex justify-center items-center overflow-hidden">
+          {(member.profileImage) && (<img src={member.profileImage} alt="" />)}
         </div>
       </div>
       <div className="w-full h-auto flex justify-between items-center">
         <div className="w-full h-auto">
-          <h2 className="font-semibold text-gray-700 flex items-baseline line-clamp-1">{`${member.name}`} 
+          <h2 className="font-semibold text-gray-700 flex items-baseline line-clamp-1">{`${member.firstName} ${member.lastName}`} 
             {isSelf && <span className="text-sm text-gray-500 ml-2">(You)</span>}
           </h2>
-          <h2 className="text-gray-500 text-xs line-clamp-1">@username</h2>
+          <h2 className="text-gray-500 text-xs line-clamp-1">@{member.username}</h2>
         </div>
         <div className="w-auto h-auto inline-block ">
           {
@@ -137,6 +138,7 @@ const RemoveMemberPopup = ({setRemovePopup,userId,boardId,setMembers})=>{
   const divref = useRef();
   const [errorMsg,setErrorMsg] = useState("")
   const [removing,setRemoving] = useState(false);
+  const api = useApi();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -155,10 +157,8 @@ const RemoveMemberPopup = ({setRemovePopup,userId,boardId,setMembers})=>{
     try {
       setRemoving(true);
 
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/board/${boardId}/remove-member`,
-        {userId:userId},
-        {withCredentials: true}
+      const response = await api.post(`/board/${boardId}/remove-member`,
+        {userId:userId}
       );
 
       setMembers(response.data.members)
@@ -200,6 +200,7 @@ const LeaveBoardPopup = ({setLeavePopup,userId,boardId,setMembers})=>{
   const divref = useRef();
   const [errorMsg,setErrorMsg] = useState("")
   const [leaving,setLeaving] = useState(false);
+  const api = useApi();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -218,10 +219,8 @@ const LeaveBoardPopup = ({setLeavePopup,userId,boardId,setMembers})=>{
     try {
       setLeaving(true);
 
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/board/${boardId}/leave-board`,
-        {userId:userId},
-        {withCredentials: true}
+      const response = await api.post(`/board/${boardId}/leave-board`,
+        {userId:userId}
       );
 
       setMembers(response.data.members)

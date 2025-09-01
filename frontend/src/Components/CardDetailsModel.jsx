@@ -9,8 +9,7 @@ import { BsLayersFill } from "react-icons/bs";
 import { CgDetailsMore } from "react-icons/cg";
 import { TbListDetails } from "react-icons/tb";
 import { BiEdit } from "react-icons/bi";
-import { AiTwotoneCloseCircle } from "react-icons/ai";
-import axios from 'axios';
+import { AiTwotoneCloseCircle } from "react-icons/ai"; 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../Contexts/UserContext';
 import AddAttachments from './CardFunctionalities/Attachment/AddAttachments';
@@ -23,6 +22,7 @@ import AddMemberToCard from './CardFunctionalities/Members/AddMemberToCard';
 import { RiAddLargeFill } from "react-icons/ri";
 import CardCover from './CardFunctionalities/Cover/CardCover';
 import ActivityContainer from './CardFunctionalities/Card Activity/ActivityContainer';
+import { useApi } from '../../api/useApi';
 
 
 const CardDetailsModel = () => {
@@ -48,6 +48,7 @@ const CardDetailsModel = () => {
                                 isWorkspaceAdmin: undefined
                             });
     const [cardCover,setCardCover] = useState(null);
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -63,8 +64,7 @@ const CardDetailsModel = () => {
 
     const fetchCardDetails = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/card/${id}`,
+            const response = await api.get(`/card/${id}`,
             {withCredentials: true}
             );
 
@@ -90,7 +90,7 @@ const CardDetailsModel = () => {
     useEffect(() => {
         if (board && user && card) {
             const workspace = board.workspace;
-            const userId = user.id?.toString();
+            const userId = user._id?.toString();
 
             const isBoardMember = board.members?.some(id => id.toString() === userId);
             const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
@@ -127,10 +127,8 @@ const CardDetailsModel = () => {
         card.description = newCardInfo.description
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${id}`,
-                {name:newCardInfo.name,description:newCardInfo.description},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${id}`,
+                {name:newCardInfo.name,description:newCardInfo.description}
             );
 
             card.name = response.data.card.name
@@ -151,10 +149,8 @@ const CardDetailsModel = () => {
 
     const toggleCardStatus = async (e)=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${id}/isCompleted`,
-                {},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${id}/isCompleted`,
+                {}
             );
 
             setIsCompleted(response.data.isCompleted)
@@ -191,8 +187,7 @@ const CardDetailsModel = () => {
         if(!card) return;
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${card._id}/join`,
+            const response = await api.patch(`/card/${card._id}/join`,
                 {},
             {withCredentials: true}
             );

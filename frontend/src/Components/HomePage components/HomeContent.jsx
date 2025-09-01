@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -11,6 +10,7 @@ import { IoIosSend } from "react-icons/io";
 import { useRef } from 'react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useApi } from '../../../api/useApi';
 
 dayjs.extend(relativeTime);
 
@@ -18,13 +18,11 @@ dayjs.extend(relativeTime);
 const HomeContent = () => {
     const [receivedComments,setReceivedComments] = useState([]);
     const [loadinMainFeed,setLoadingMainFeed] = useState(true);
+    const api = useApi();
 
     const fetchReceivedComments = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/api/home`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/api/home');
 
             setReceivedComments(response.data.allComments);
         } catch (error) {
@@ -44,7 +42,7 @@ const HomeContent = () => {
     <div className=' w-full h-full py-4'>
         {
         (loadinMainFeed)?
-            <div>Loaing...</div>
+            <div>Loading...</div>
         :
         (receivedComments && receivedComments.length !== 0)?
             <div className='w-full h-auto space-y-6'>
@@ -85,7 +83,7 @@ const CommentItem = ({comment})=>{
 
     useEffect(()=>{
         if(comment){
-            setIsYou(comment.sender._id?.toString()===user.id?.toString());
+            setIsYou(comment.sender._id?.toString()===user._id?.toString());
         }
     },[comment,user])
 
@@ -115,17 +113,15 @@ const CommentItem = ({comment})=>{
                 <div className='w-full '>
                     <div className='w-full flex items-center'>
                         <div className='h-auto w-auto mr-2'>
-                            <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                                <span className="font-semibold text-white text-lg ">
-                                    {comment.sender.name && comment.sender.name[0].toUpperCase()}
-                                </span>
+                            <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center overflow-hidden">
+                                {comment.sender.profileImage && <img src={comment.sender.profileImage} alt="" />}
                             </div>
                         </div>
                         <div className="w-full">
                             <div className='w-full text-sm flex justify-between'>
                                 <div>
                                     <div className="font-semibold line-clamp-1">
-                                        {comment.sender.name}
+                                        {comment.sender.firstName} {comment.sender.lastName}
                                     </div>
                                     <div className='text-gray-500 text-xs'>{displayTime}</div>
                                 </div>
@@ -146,7 +142,7 @@ const CommentItem = ({comment})=>{
                             {
                             (comment && comment.parentComment) &&
                                 <span className="text-xs px-2 py-0.5 h-fit text-white bg-teal-500 rounded-lg mr-1 cursor-pointer inline-block shrink-0">
-                                    @{comment.replyTo.name}
+                                    @{comment.replyTo.firstName} {comment.replyTo.lastName}
                                 </span>
                             }
                             {
@@ -184,6 +180,7 @@ const ReplyComment = ({cardId,commentId,onClose,currentUser})=>{
     const divref = useRef();
     const [replyContent,setReplyContent] = useState("");
     const inputRef = useRef()
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -207,11 +204,8 @@ const ReplyComment = ({cardId,commentId,onClose,currentUser})=>{
     const replyComment = async ()=>{
         if(!replyContent || replyContent.trim()==="") return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/card/${cardId}/comment/${commentId}/reply`,
-                {replyContent},
-                {withCredentials: true}
-            );
+            const response = await api.post(`/card/${cardId}/comment/${commentId}/reply`,
+                {replyContent});
 
             console.log(response.data.message);
             onClose()
@@ -224,10 +218,8 @@ const ReplyComment = ({cardId,commentId,onClose,currentUser})=>{
         <div ref={divref} className='w-full px-2 py-3 flex flex-col items-end border-[1px] border-gray-300 rounded-md'>
             <div className='w-full flex items-center'>
                 <div className='h-auto w-auto mr-2'>
-                    <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                        <span className="font-semibold text-white text-lg ">
-                            {currentUser.name && currentUser.name[0].toUpperCase()}
-                        </span>
+                    <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center overflow-hidden">
+                        {currentUser.profileImage && <img src={currentUser.profileImage} alt="" />}
                     </div>
                 </div>
                 <div className='w-full'>

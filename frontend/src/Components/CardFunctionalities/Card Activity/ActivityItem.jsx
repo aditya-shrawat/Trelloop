@@ -54,15 +54,13 @@ const ActivityItem = ({activity})=>{
     return (
         <div className='w-full flex '>
             <div className='h-auto w-auto mr-2'>
-                <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                    <span className="font-semibold text-white text-lg ">
-                        {activity.user.name && activity.user.name[0].toUpperCase()}
-                    </span>
+                <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center overflow-hidden">
+                    {activity.user.profileImage && <img src={activity.user.profileImage} alt="" />}
                 </div>
             </div>
             <div className="w-full">
                 <div className='w-full text-sm text-gray-700'>
-                    <span className="font-semibold mr-1">{activity.user.name}</span>{getActivityMessage(activity)}
+                    <span className="font-semibold mr-1">{activity.user.firstName} {activity.user.lastName}</span>{getActivityMessage(activity)}
                 </div>
                 <p className="text-xs text-gray-500">
                     {displayTime}

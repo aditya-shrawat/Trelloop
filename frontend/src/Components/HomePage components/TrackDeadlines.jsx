@@ -1,9 +1,9 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
 import { FaCalendarAlt, FaClock, FaFilter, FaSearch, FaPlus, FaCheck } from "react-icons/fa"
 import { BsHourglassSplit } from "react-icons/bs";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
+import { useApi } from "../../../api/useApi";
 
 
 const getStatusBadge = (isCompleted, deadline) => {
@@ -71,7 +71,7 @@ export default function TrackDeadlines() {
             pending: 0,
             completed: 0,
         })
-
+    const api = useApi();
 
     const getStatusCount = (cards)=>{
         const now = dayjs();
@@ -104,10 +104,7 @@ export default function TrackDeadlines() {
 
     const fetchDeadlines = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/api/deadlines`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/api/deadlines');
 
             setDeadlineData(response.data.cardsDeadlinesDetails)
             getStatusCount(response.data.cardsDeadlinesDetails)

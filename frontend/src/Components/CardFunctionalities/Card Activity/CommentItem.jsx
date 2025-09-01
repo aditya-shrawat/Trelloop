@@ -7,8 +7,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useUser } from '../../../Contexts/UserContext';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import { useRef } from 'react';
+import { useApi } from '../../../../api/useApi';
 dayjs.extend(relativeTime);
 
 export const CommentItem = ({comment}) => {
@@ -22,25 +22,24 @@ export const CommentItem = ({comment}) => {
     const [isReplying,setIsReplying] = useState(false);
     const [showCommentOptions,setShowCommentOptions] = useState(false);
     const [editComment,setEditComment] = useState(false);
+    const api = useApi();
 
     useEffect(()=>{
         if(comment){
-            setIsYou(comment.sender._id?.toString()===user.id?.toString());
+            setIsYou(comment.sender._id?.toString()===user._id?.toString());
         }
     },[comment,user])
 
     return (
         <div className='w-full flex '>
             <div className='h-auto w-auto mr-2'>
-                <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                    <span className="font-semibold text-white text-lg ">
-                        {comment.sender.name && comment.sender.name[0].toUpperCase()}
-                    </span>
+                <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center overflow-hidden">
+                    {comment.sender.profileImage && <img src={comment.sender.profileImage} alt="" />}
                 </div>
             </div>
             <div className="w-full">
                 <div className='w-full text-sm text-gray-700 flex justify-between'>
-                    <div className="font-semibold line-clamp-1">{comment.sender.name}</div>
+                    <div className="font-semibold line-clamp-1">{comment.sender.firstName} {comment.sender.lastName}</div>
                     {
                     (isYou) && 
                         <div className={`w-auto relative ml-2 ${(showCommentOptions)&&`bg-gray-200`} rounded-md`}>
@@ -56,14 +55,14 @@ export const CommentItem = ({comment}) => {
                         {
                         (comment && comment.parentComment) &&
                             <span className="text-xs px-2 py-0.5 h-fit text-white bg-teal-500 rounded-lg mr-1 cursor-pointer inline-block shrink-0">
-                                @{comment.replyTo.name}
+                                {`@${comment.replyTo.firstName} ${comment.replyTo.lastName}`}
                             </span>
                         }
                         {
                         (!editComment)?
                             <>{comment.content}</>
                         :
-                            <EditCommentContent closeEditing={()=>setEditComment(false)} commentId={comment._id} currentContent={comment.content} />
+                            <EditCommentContent closeEditing={()=>setEditComment(false)} commentId={comment._id} currentContent={comment.content} api={api} />
                         }
                     </div>
                 </div>
@@ -78,7 +77,7 @@ export const CommentItem = ({comment}) => {
                         </div>
                         )
                     :
-                        (<ReplyContainer commentId={comment._id} onClose={()=>{setIsReplying(false)}} />)
+                        (<ReplyContainer commentId={comment._id} onClose={()=>{setIsReplying(false)}} api={api} />)
                     }
                 </div>
             </div>
@@ -87,7 +86,7 @@ export const CommentItem = ({comment}) => {
 }
 
 
-const ReplyContainer = ({commentId,onClose})=>{
+const ReplyContainer = ({commentId,onClose,api})=>{
     const [replyContent,setReplyContent] = useState("");
     const {id} = useParams();
 
@@ -100,10 +99,8 @@ const ReplyContainer = ({commentId,onClose})=>{
     const replyComment = async ()=>{
         if(!replyContent || replyContent.trim()==="") return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/card/${id}/comment/${commentId}/reply`,
-                {replyContent},
-                {withCredentials: true}
+            const response = await api.post(`/card/${id}/comment/${commentId}/reply`,
+                {replyContent}
             );
 
             console.log(response.data.message);
@@ -139,6 +136,7 @@ export const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
     const divref = useRef();
     const [deletingComment,setDeletingComment] = useState(false)
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi()
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -154,10 +152,8 @@ export const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
     const deleteComment = async (e)=>{
         e.preventDefault();
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.delete(`${BackendURL}/api/comment/${commentId}/delete`,
-                {withCredentials: true}
-            );
+            console.log(commentId)
+            const response = await api.delete(`/api/comment/${commentId}/delete`);
 
             console.log(response.data.message)
             closeOptions()
@@ -198,6 +194,7 @@ export const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
 export const EditCommentContent = ({closeEditing,commentId,currentContent})=>{
     const divref = useRef();
     const [newContent,setNewContent] = useState(currentContent);
+    const api = useApi()
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -219,10 +216,10 @@ export const EditCommentContent = ({closeEditing,commentId,currentContent})=>{
         e.preventDefault();
         if(!newContent && newContent.trim()==="") return;
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/api/comment/${commentId}/edit-content`,
-                {newContent},
-                {withCredentials: true}
+            console.log(commentId)
+            console.log(newContent)
+            const response = await api.post(`/api/comment/${commentId}/edit-content`,
+                {newContent}
             );
 
             console.log(response.data.message)

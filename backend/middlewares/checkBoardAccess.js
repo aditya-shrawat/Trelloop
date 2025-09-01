@@ -3,7 +3,7 @@ import Board from "../models/board.js";
 
 const checkBoardAccess = async (req,res,next)=> {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id?.toString();
     const { boardId } = req.params;
 
     const board = await Board.findById(boardId);

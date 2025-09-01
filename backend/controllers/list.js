@@ -90,7 +90,7 @@ export const updateList = async (req,res)=>{
         list.name = newListName.trim();
         await list.save();
 
-        const userId = req.user.id ;
+        const userId = req.user._id ;
         await Activity.create({
             workspace:board.workspace,
             board:boardId,

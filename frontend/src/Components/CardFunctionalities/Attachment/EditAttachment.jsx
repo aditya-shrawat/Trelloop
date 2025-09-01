@@ -1,8 +1,8 @@
-import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useApi } from '../../../../api/useApi';
 
 const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
     const divref = useRef();
@@ -10,6 +10,7 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
     const [deletingAttachment,setDeletingAttachment] = useState(false)
     const [newInputLink,setNewInputLink] = useState("")
     const [errorMsg,setErrorMsg] = useState("")
+    const api = useApi();
 
     const { id } = useParams();
 
@@ -43,10 +44,8 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${id}/update/attachment`,
-                {newLink:newInputLink,index:index},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${id}/update/attachment`,
+                {newLink:newInputLink,index:index}
             );
 
             setAttachments(response.data.cardAttachments);
@@ -61,10 +60,8 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.patch(`${BackendURL}/card/${id}/delete/attachment`,
-                {index:index},
-            {withCredentials: true}
+            const response = await api.patch(`/card/${id}/delete/attachment`,
+                {index:index}
             );
 
             setAttachments(response.data.cardAttachments);

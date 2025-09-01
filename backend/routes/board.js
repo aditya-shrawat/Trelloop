@@ -1,11 +1,10 @@
-
 import express from 'express';
-import checkAuthentication from '../middlewares/authentication.js';
 import { addNewMembers, allJoinedWorkspacesAndBoards, changeBoardBackground, changeVisibility, deleteBoard, fetchBoardMembers, getBoardActivies, getBoardData, getBoardStarStatus, getSharedBoards, getStarredBoards, joinMemberInBoard, leaveBoard, removeBoardMember, renameBoard, toggleBoardStarStatus } from '../controllers/board.js';
 import { creatingNewList, deleteList, updateList } from '../controllers/list.js';
 import checkBoardAccess from '../middlewares/checkBoardAccess.js';
 import { fetchAllLists } from '../controllers/list.js';
 import { creatingNewCard, fetchListCards } from '../controllers/card.js';
+import { checkAuthentication } from '../middlewares/authentication.js';
 
 const router = express.Router();
 

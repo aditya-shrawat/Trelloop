@@ -1,25 +1,18 @@
 import React from "react";
-import { TbLayoutDashboardFilled } from "react-icons/tb";
-import { IoPerson } from "react-icons/io5";
-import { IoMdSettings } from "react-icons/io";
 import { useState } from "react";
-import { useRef } from "react";
 import { useEffect } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { IoMdArrowDropright } from "react-icons/io";
+import { useApi } from "../../api/useApi";
 
 const MyWorkspaces = () => {
   const [workspaces, setWorkspaces] = useState([]);
   const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
+  const api = useApi();
 
   const fetchWorkspaces = async () => {
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/workspace/`, {
-        withCredentials: true,
-      });
+      const response = await api.get(`/workspace/`);
 
       setWorkspaces(response.data.workspaces);
     } catch (error) {

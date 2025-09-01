@@ -8,21 +8,19 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import { BsThreeDotsVertical } from "react-icons/bs";
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useApi } from '../../../api/useApi';
 
 const MyBoards = () => {
     const [workspaces,setWorkspaces] = useState([]);
     const [loading,setLoading]= useState(true)
     const [starredBoards,setStarredBoards] = useState([]);
     const [sharedBoards,setSharedBoards] = useState([]);
+    const api = useApi();
 
     const fetchAllJoinedWorkspaces = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/joined-workspaces-boards`, {
-                withCredentials: true,
-            });
+            const response = await api.get('/board/joined-workspaces-boards');
 
             setWorkspaces(response.data.workspaces)
         } catch (error) {
@@ -35,10 +33,7 @@ const MyBoards = () => {
 
     const fetchStarredBoards = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/starred-boards`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/board/starred-boards');
 
             setStarredBoards(response.data.starredBoards)
         } catch (error) {
@@ -48,10 +43,7 @@ const MyBoards = () => {
 
     const fetchSharedBoards = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/shared-boards`,
-                {withCredentials: true}
-            );
+            const response = await api.get('/board/shared-boards');
 
             setSharedBoards(response.data.sharedBoards)
         } catch (error) {

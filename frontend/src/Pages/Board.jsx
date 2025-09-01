@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { TbStar } from "react-icons/tb";
 import { IoMdAdd } from "react-icons/io";
-import axios from 'axios';
 import List from '../Components/List';
 import { TbStarFilled } from "react-icons/tb";
 import Header from '../Components/Header';
@@ -12,6 +11,7 @@ import { useUser } from '../Contexts/UserContext';
 import AddMemberToBoard from '../Components/Board Components/AddMemberToBoard';
 import socket from '../Socket/socket';
 import useBoardSocket from '../Socket/useBoardSocket';
+import { useApi } from '../../api/useApi';
 
 const Board = () => {
     const { id, name } = useParams();
@@ -32,13 +32,11 @@ const Board = () => {
     const [boardBg,setBoardBg] = useState('#fff');
 
     const {user} = useUser();
+    const api = useApi();
 
     const fetchBoard = async ()=>{
             try {
-                const BackendURL = import.meta.env.VITE_BackendURL;
-                const response = await axios.get(`${BackendURL}/board/${name}/${id}`,
-                    {withCredentials: true}
-                );
+                const response = await api.get(`/board/${name}/${id}`);
 
                 setBoard(response.data.board)
                 setBoardBg(response.data.board.background)
@@ -49,10 +47,7 @@ const Board = () => {
 
     const fetchLists = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${id}/lists`,
-                {withCredentials: true}
-            );
+            const response = await api.get(`/board/${id}/lists`);
 
             setLists(response.data.lists)
         } catch (error) {
@@ -65,10 +60,7 @@ const Board = () => {
 
     const fetchStarStatus = async (e)=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${id}/starred`,
-                {withCredentials: true}
-            );
+            const response = await api.get(`/board/${id}/starred`);
 
             setStarStatus(response.data.starStatus)
         } catch (error) {
@@ -88,8 +80,7 @@ const Board = () => {
         e.preventDefault();
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/board/${id}/starred`,
+            const response = await api.post(`/board/${id}/starred`,
                 {},
                 {withCredentials: true}
             );
@@ -103,7 +94,7 @@ const Board = () => {
     useEffect(() => {
         if (board && user) {
             const workspace = board.workspace;
-            const userId = user.id?.toString();
+            const userId = user._id?.toString();
 
             const isBoardMember = board.members?.some(id => id.toString() === userId);
             const isWorkspaceMember = workspace.members?.some(id => id.toString() === userId);
@@ -128,8 +119,7 @@ const Board = () => {
         setIsJoining(true);
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/board/${id}/join`,
+            const response = await api.post(`/board/${id}/join`,
                 {},
                 {withCredentials: true}
             );
@@ -195,10 +185,8 @@ const Board = () => {
                     { (board) &&
                     <div className='flex items-center mr-3'>
                         <div className='w-auto h-auto hidden sm:block'> 
-                            <div title='Admin' className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center cursor-pointer">
-                                <span className="font-semibold text-white text-lg ">
-                                    {board.admin.name && board.admin.name[0].toUpperCase()} 
-                                </span>
+                            <div title='Admin' className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center cursor-pointer overflow-hidden">
+                                {board.admin.profileImage && <img src={board.admin.profileImage} alt="" />} 
                             </div>
                         </div>
                         {(board) &&
@@ -283,6 +271,7 @@ const AddNewList = ({boardId,setLists})=>{
     const [creatingNewList,setCreatingNewList] = useState(false)
     const divRef = useRef(null);
     const [errMsg,setErrMsg] = useState("");
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -311,11 +300,9 @@ const AddNewList = ({boardId,setLists})=>{
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/board/${boardId}/newList`,
-                {listName},
-                {withCredentials: true}
-            ); 
+            const response = await api.post(`/board/${boardId}/newList`,
+                {listName}
+            );
 
             setLists(prevLists => [...prevLists, response.data.list])
         } catch (error) {

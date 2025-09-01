@@ -1,21 +1,19 @@
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import Card from "./Card";
 import { BsThreeDots } from "react-icons/bs";
 import ListOptions from "./List Components/ListOptions";
+import { useApi } from "../../api/useApi";
 
 const List = ({list,boardId,setLists,UserRole}) => {
     const [cards,setCards] = useState([]);
     const [loading,setLoading] = useState(true);
     const [showListOptions,setShowListOptions] = useState(false)
+    const api = useApi();
 
     const fetchListCards = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${boardId}/list/${list._id}/cards`,
-                {withCredentials: true}
-            );
+            const response = await api.get(`/board/${boardId}/list/${list._id}/cards`);
 
             setCards(response.data.cards)
         } catch (error) {
@@ -81,6 +79,7 @@ const AddNewCard = ({listId,boardId,setCards})=>{
     const [creatingNewCard,setCreatingNewCard] = useState(false)
     const divRef = useRef(null);
     const [errMsg,setErrMsg] = useState("");
+    const api = useApi();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -109,11 +108,9 @@ const AddNewCard = ({listId,boardId,setCards})=>{
         }
 
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.post(`${BackendURL}/board/${boardId}/list/${listId}/newCard`,
-                {cardName},
-                {withCredentials: true}
-            ); 
+            const response = await api.post(`/board/${boardId}/list/${listId}/newCard`,
+                {cardName}
+            );
 
             setCards(prevLists => [...prevLists, response.data.card])
         } catch (error) {

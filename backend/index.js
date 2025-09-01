@@ -4,7 +4,6 @@ dotenv.config();
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose';
-import UserRouter from './routes/user.js'
 import cookieParser from 'cookie-parser';
 import WorkspaceRouter from './routes/workspace.js';
 import BoardRouter  from './routes/board.js'
@@ -13,7 +12,7 @@ import http from "http"
 import {Server} from "socket.io"
 import { workspaceSocketHandler } from './socket/workspaceSocket.js';
 import searchRouter from './routes/search.js'
-import checkAuthentication from './middlewares/authentication.js';
+import {checkAuthentication} from './middlewares/authentication.js';
 import { fetchUserInfo } from './controllers/userInfo.js';
 import NotificationRouter from './routes/notification.js'
 import { boardSocket } from './socket/boardSocket.js';
@@ -22,6 +21,9 @@ import { handleCommentSocket } from './socket/commentSocket.js';
 import { getMainFeed } from './controllers/home.js';
 import CommentRouter from './routes/comment.js'
 import { getAllDeadlines } from './controllers/deadlines.js';
+import bodyParser from 'body-parser';
+import { webhookHandler } from './clerk/webhookHandler.js';
+// import { setAuthToken } from './controllers/authControllers.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -42,8 +44,12 @@ app.use(cookieParser());
 
 app.use(cors({
     origin: frontend,
-    credentials: true
+    credentials: true,
 }));
+
+// webhook for clerk
+app.post('/api/webhook',bodyParser.raw({type: 'application/json'}),webhookHandler);
+
 app.use(express.json())
 
 io.on('connection', (socket) => {
@@ -64,7 +70,6 @@ startReminderScheduler(io);
 app.get("/user-info",checkAuthentication,fetchUserInfo);
 app.get('/api/home',checkAuthentication,getMainFeed)
 app.get('/api/deadlines',checkAuthentication,getAllDeadlines)
-app.use('/user',UserRouter);
 app.use('/workspace',WorkspaceRouter);
 app.use('/board',BoardRouter);
 app.use('/card',CardRouter)

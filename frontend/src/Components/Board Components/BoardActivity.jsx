@@ -4,20 +4,18 @@ import { IoIosArrowBack } from "react-icons/io";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useEffect } from 'react';
-import axios from 'axios';
+import { useApi } from '../../../api/useApi';
 
 dayjs.extend(relativeTime);
 
 const BoardActivity = ({boardId,setShowActivity})=>{
     const [activities,setActivities] = useState([])
     const [loadingActivities,setLoadingActivities] = useState(true)
+    const api = useApi();
 
     const fetchBoardActivities = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/board/${boardId}/activities`,
-            {withCredentials: true}
-            );
+            const response = await api.get(`/board/${boardId}/activities`);
 
             setActivities(response.data.activities)
         } catch (error) {
@@ -136,15 +134,13 @@ const BoardActivityItem = ({activity})=>{
     return (
         <div className='w-full flex '>
             <div className='h-auto w-auto mr-3'>
-                <div className="w-7 h-7 rounded-full bg-blue-300 flex items-center justify-center">
-                    <span className="font-semibold text-white text-base ">
-                        {activity.user.name && activity.user.name[0].toUpperCase()}
-                    </span>
+                <div className="w-7 h-7 rounded-full bg-blue-300 flex items-center justify-center overflow-hidden">
+                    {activity.user.profileImage && <img src={activity.user.profileImage} alt="" />}
                 </div>
             </div>
             <div className="w-full">
                 <div className='w-full text-sm text-gray-700'>
-                    <span className="font-semibold mr-1">{activity.user.name}</span>{getActivityMessage(activity)}
+                    <span className="font-semibold mr-1">{activity.user.firstName} {activity.user.lastName}</span>{getActivityMessage(activity)}
                 </div>
                 <p className="text-xs text-gray-500">
                     {displayTime}

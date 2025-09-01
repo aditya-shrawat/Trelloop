@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
@@ -7,19 +6,18 @@ import ActivityItem from './ActivityItem'
 import { IoIosSend } from "react-icons/io";
 import socket from '../../../Socket/socket'
 import { CommentItem } from './CommentItem'
+import { useApi } from '../../../../api/useApi'
 
 const ActivityContainer = ({UserRole,currentUser}) => {
     const {id} = useParams();
     const [cardActivities,setCardActivities] = useState(null)
     const [loadingCardActivities,setLoadingCardActivities] = useState(true)
     const [commentContent,setCommentContent] = useState("");
+    const api = useApi();
 
     const fetchCardActivities = async ()=>{
         try {
-            const BackendURL = import.meta.env.VITE_BackendURL;
-            const response = await axios.get(`${BackendURL}/card/activities/${id}`,
-            {withCredentials: true}
-            );
+            const response = await api.get(`/card/activities/${id}`);
 
             setCardActivities(response.data.allActivities)
         } catch (error) {
@@ -45,12 +43,10 @@ const ActivityContainer = ({UserRole,currentUser}) => {
     const handleCommentSubmit = async ()=>{
         if(!commentContent || commentContent.trim()==="") return;
         try {
-            console.log(commentContent)
-
             socket.emit("add_comment", {
                 cardId:id,
                 content:commentContent,
-                senderId:currentUser.id
+                senderId:currentUser._id
             });
 
             socket.once("comment_added", (data) => {
@@ -68,10 +64,8 @@ const ActivityContainer = ({UserRole,currentUser}) => {
         {(UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) &&
             (<div className="flex mb-6">
                 <div className='h-auto w-auto mr-3'>
-                    <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center">
-                        <span className=" font-semibold text-white text-lg">
-                            {currentUser && currentUser.name[0].toUpperCase()}
-                        </span>
+                    <div className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center overflow-hidden">
+                        {currentUser && <img src={currentUser.profileImage} alt="" />}
                     </div>
                 </div>
                 <input placeholder="Write a comment..." value={commentContent} onChange={handleInput} 
@@ -84,7 +78,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
         }
         { (loadingCardActivities) ?
             <div>Loading activity</div> :
-            (cardActivities?.map((item)=>{
+            (cardActivities && cardActivities?.map((item)=>{
                 if(item._type==='activity'){
                     return <ActivityItem key={item._id} activity={item}  />
                 }

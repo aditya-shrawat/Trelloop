@@ -4,7 +4,6 @@ import { IoPerson } from "react-icons/io5";
 import { IoPersonAdd } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import axios from 'axios'
 import { TbListDetails } from "react-icons/tb";
 import { IoIosArrowDown } from "react-icons/io";
 import AddNewMembers from "../Components/WorkspaceComponents/AddNewMembers";
@@ -18,6 +17,7 @@ import { MdPublic } from "react-icons/md";
 import useWorkspaceSocket from "../Socket/useWorkspaceSocket";
 import socket from "../Socket/socket";
 import BottomNavigation from "../Components/BottomNavigation";
+import { useApi } from "../../api/useApi";
 
 const Workspace = () => {
     const location = useLocation();
@@ -31,16 +31,14 @@ const Workspace = () => {
     const navigate = useNavigate();
     const [isAdmin,setIsAdmin] = useState();
     const [isMember, setIsMember] = useState();
+    const api = useApi();
 
     const isActive = (type) => contentType === type;
 
 
     const fetchWorkspace = async ()=>{
-        const BackendURL = import.meta.env.VITE_BackendURL;
         try {
-            const response = await axios.get(`${BackendURL}/workspace/${name}/${id}`,
-                {withCredentials: true}
-            );
+            const response = await api.get(`/workspace/${name}/${id}`);
 
             setWorkspace(response.data.workspace);
         } catch (error) {
@@ -54,7 +52,7 @@ const Workspace = () => {
 
     useEffect(() => {
         if (workspace && user) {
-            const userId = user.id?.toString();
+            const userId = user._id?.toString();
             const creatorId = workspace.createdBy?.toString();
 
             setIsAdmin(userId === creatorId);

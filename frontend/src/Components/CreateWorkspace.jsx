@@ -1,5 +1,5 @@
-import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
+import { useApi } from '../../api/useApi';
 
 
 const initialWorkspaceData ={
@@ -12,6 +12,7 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
   const [workspaceData,setWorkspaceData] = useState(initialWorkspaceData) ;
   const [errorMsg,setErrorMsg] = useState('');
   const [isCreating,setIsCreating] = useState(false)
+  const api = useApi();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -41,11 +42,8 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
     setIsCreating(true)
 
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.post(`${BackendURL}/workspace/new`,
-        {name:workspaceData.name,description:workspaceData.description},
-        {withCredentials: true}
-      );
+      const response = await api.post('/workspace/new',
+        {name:workspaceData.name,description:workspaceData.description});
       console.log("Workspace created!!")
       setCreatingworkspace(false)
     } catch (error) {

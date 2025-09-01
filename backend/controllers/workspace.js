@@ -34,7 +34,7 @@ export const createWorkspace = async (req,res)=>{
 
 export const fetchWorkspaces = async (req,res)=>{
     try {
-        const userId = req.user.id ;
+        const userId = req.user._id ;
         
         const ownWorkspaces = await Workspace.find({createdBy:userId});
         const memberedWorkspaces = await Workspace.find({members:userId,createdBy:{$ne:userId }});
@@ -78,7 +78,7 @@ export const updateWorkspace = async (req,res)=>{
 
         const workspace = req.workspace;
 
-        const userId = req.user.id; 
+        const userId = req.user._id; 
 
         const previousName = workspace.name;
         const previousDescription = workspace.description;
@@ -153,7 +153,7 @@ export const deleteWorkspace = async (req, res) => {
 
       await Board.deleteMany({ workspace: workspace._id });
 
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const notifyMembers = async (senderId,receiverId)=>{
             await Notification.create({
@@ -185,7 +185,7 @@ export const fetchWorkspaceMembers = async (req,res)=>{
 
         const workspace = req.workspace;
 
-        await workspace.populate("createdBy members","name");
+        await workspace.populate("createdBy members","firstName lastName username profileImage");
 
         return res.status(200).json({message:"Workspace members fetched successfully.",
             members:workspace.members,admin:workspace.createdBy,currentUser:req.user
@@ -286,7 +286,7 @@ export const removeWorkspaceMember = async (req,res)=>{
 
 export const leaveWorkspace = async (req,res)=>{
     try {
-        const userId = req.user.id
+        const userId = req.user._id
         const user = await User.findById(userId);
         if(!user){
             return res.status(404).json({error:"user doesn't exist."})
@@ -338,7 +338,7 @@ export const getWorkspaceActivies= async (req,res)=>{
         const workspace = req.workspace;
 
         const workspaceActivities = await Activity.find({workspace:workspace._id})
-        .select("workspace board card user type data createdAt").populate("user",'_id name')
+        .select("workspace board card user type data createdAt").populate("user",'_id firstName lastName username profileImage')
 
         const activities = workspaceActivities.sort((a, b) => b.createdAt - a.createdAt);
 

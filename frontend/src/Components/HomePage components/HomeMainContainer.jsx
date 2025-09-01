@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import HomeContent from "./HomeContent";
+import { useApi } from "../../../api/useApi";
 
 const HomeMainContainer = () => {
   const [starredBoards, setStarredBoards] = useState([]);
   const [loadingStarredBoards, setLoadingStarredBoards] = useState(true);
   const [sharedBoards,setSharedBoards] = useState([]);
+  const api = useApi();
 
   const fetchStarredBoards = async () => {
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/board/starred-boards`, {
-        withCredentials: true,
-      });
+      const response = await api.get('/board/starred-boards');
 
       setStarredBoards(response.data.starredBoards);
     } catch (error) {
@@ -26,10 +24,7 @@ const HomeMainContainer = () => {
 
   const fetchSharedBoards = async ()=>{
     try {
-      const BackendURL = import.meta.env.VITE_BackendURL;
-      const response = await axios.get(`${BackendURL}/board/shared-boards`,
-        {withCredentials: true}
-      );
+      const response = await api.get('/board/shared-boards');
 
       setSharedBoards(response.data.sharedBoards)
     } catch (error) {
