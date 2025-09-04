@@ -6,6 +6,7 @@ import Notification from "../models/notification.js";
 import StarredBoard from "../models/starredBoard.js";
 import User from "../models/user.js";
 import Workspace from "../models/workspace.js";
+import { getSocketInstance } from "../utils/socketInstance.js";
 
 
 
@@ -21,6 +22,7 @@ export const createBoard = async (req,res)=>{
             return res.status(400).json({error:"All fields are required!"})
         }
 
+        const io = getSocketInstance();
         const workspace = req.workspace;
 
         const board = await Board.create({
@@ -42,6 +44,15 @@ export const createBoard = async (req,res)=>{
             },
             createdAt: new Date()
         })
+
+        io.to(`workspace_${workspace._id}`).emit("workspace_board_created", {
+            workspaceId: workspace._id,
+            newBoard: {
+                _id: board._id,
+                name: board.name,
+                background: board.background
+            },
+        });
 
         return res.status(200).json({message:"Board created successfully.",board})
     } catch (error) {

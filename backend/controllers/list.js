@@ -2,6 +2,7 @@ import Activity from "../models/Activity.js";
 import Board from "../models/board.js";
 import Card from "../models/card.js";
 import List from "../models/list.js";
+import { getSocketInstance } from "../utils/socketInstance.js";
 
 
 
@@ -9,6 +10,7 @@ export const creatingNewList = async (req,res)=>{
     try {
         const {boardId} = req.params;
         const {listName} = req.body;
+        const io = getSocketInstance()
 
         if (!req.canEdit) {
             return res.status(403).json({ error: "You don't have permission to edit this board." });
@@ -42,7 +44,15 @@ export const creatingNewList = async (req,res)=>{
             createdAt: new Date()
         })
 
-        return res.status(200).json({message:"List created successfully.",list})
+        io.to(`board_${board._id}`).emit("list_created", {
+            boardId: board._id,
+            newList: {
+                _id: list._id,
+                name: list.name
+            }
+        });
+
+        return res.status(200).json({message:"List created successfully."})
     } catch (error) {
         console.log("Error while creating list - ",error);
         return res.status(500).json({error:"Internal server error."})

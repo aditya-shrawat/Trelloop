@@ -133,8 +133,9 @@ const Board = () => {
         }
     }
 
+    // join board room
     let shouldJoinBoardRoom = UserRole.isBoardAdmin || UserRole.isBoardMember || UserRole.isWorkspaceAdmin || UserRole.isWorkspaceMember ;
-    useBoardSocket(socket, (shouldJoinBoardRoom)?id:null ,{}); // join board room
+    useBoardSocket(socket, (shouldJoinBoardRoom)?id:null); 
 
     const sendRequestToJoinBoard = async ()=>{
         if(!board._id || !user.id){
@@ -155,6 +156,23 @@ const Board = () => {
             console.log("error while sending request", error);
         }
     }
+
+    // Socket handler
+    useEffect(() => {
+      if (!id) return;
+
+      const handleListCreated = (data) => {
+        if (data.boardId === id) {
+          setLists((prevLists) => [...prevLists, data.newList]);
+        }
+      };
+
+      socket.on('list_created', handleListCreated);
+
+      return () => {
+        socket.off('list_created', handleListCreated);
+      };
+    }, [id]);
 
   return (
     <div className='w-full h-screen flex flex-col ' style={{background:boardBg}}>
@@ -246,14 +264,14 @@ const Board = () => {
                 :
                 <>
                     { (board && board._id)&&
-                    lists.map((list)=>(
+                    lists?.map((list)=>(
                         <List key={list._id} list={list} boardId={board._id} setLists={setLists} UserRole={UserRole} />
                     ))
                     }
                 </>
                 }
                 { (board && (UserRole.isBoardMember || UserRole.isWorkspaceMember || UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin) ) &&
-                    <AddNewList boardId={board._id} setLists={setLists} />
+                    <AddNewList boardId={board._id} />
                 }
         </div>
     </div>
@@ -266,7 +284,7 @@ export default Board
 
 
 
-const AddNewList = ({boardId,setLists})=>{
+const AddNewList = ({boardId})=>{
     const [listName,setListName] = useState("");
     const [creatingNewList,setCreatingNewList] = useState(false)
     const divRef = useRef(null);
@@ -303,8 +321,6 @@ const AddNewList = ({boardId,setLists})=>{
             const response = await api.post(`/board/${boardId}/newList`,
                 {listName}
             );
-
-            setLists(prevLists => [...prevLists, response.data.list])
         } catch (error) {
             console.log("Error while creating list - ",error)
         }

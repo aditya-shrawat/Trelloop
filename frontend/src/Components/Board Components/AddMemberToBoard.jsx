@@ -22,7 +22,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
   const {user} = useUser()
   const api = useApi();
 
-  useBoardSocket(socket,board._id,{});
+  useBoardSocket(socket,board._id);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

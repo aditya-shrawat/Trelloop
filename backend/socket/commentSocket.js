@@ -35,7 +35,7 @@ export const handleCommentSocket = (io, socket) => {
             if(!isBoardAdmin && !isBoardMember && !isWorkspaceAdmin && !isWorkspaceMember) 
                 return socket.emit('error',{message:"User doesn't have permission to perform this action."})
 
-            await Comment.create({
+            const comment = await Comment.create({
                 workspace:workspace._id,
                 board:board._id,
                 card:card._id,
@@ -55,7 +55,12 @@ export const handleCommentSocket = (io, socket) => {
                 }
             });
 
-            socket.emit('comment_added',{cardId,content});
+            const newComment = await Comment.findById(comment._id).select('card sender receiver content createdAt parentComment').populate([
+                { path: 'card', select: 'name' },
+                { path: 'sender', select: 'firstName lastName username profileImage' },
+                { path: 'replyTo', select: 'firstName lastName username profileImage' }
+            ]).lean()
+            socket.emit('comment_added', {...newComment,_type: 'comment'});
         } catch (error) {
             console.log("error in comment - ",error);
             socket.emit('error', { message: 'Internal server error.' });

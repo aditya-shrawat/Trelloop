@@ -40,7 +40,7 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
                 {link:inputLink}
             );
 
-            setAttachments(response.data.cardAttachments);
+            setAttachments((prevAttachments) => [...prevAttachments, inputLink]);
             setCardFunctionality(null)
         } catch (error) {
             console.log("Error while attachment - ",error)

@@ -11,7 +11,6 @@ import { useUser } from "../Contexts/UserContext.jsx";
 import Notification from "./Notification.jsx";
 import { cleanupNotificationListener, registerUserSocket, setupNotificationListener } from "../Socket/socketService.js";
 import socket from "../Socket/socket.js";
-import { UserButton } from "@clerk/clerk-react";
 import { useApi } from "../../api/useApi.js";
 import ProfilePicNavBar from "./Profile navBar/ProfilePicNavBar.jsx";
 
@@ -121,7 +120,6 @@ const Header =  () => {
                             </div>
                         )}
                     </div>
-                    <UserButton />
                 </div>
             </div>
 

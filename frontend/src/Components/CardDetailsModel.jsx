@@ -324,7 +324,7 @@ const CardDetailsModel = () => {
 
                 {/* Attachments */}
                 {
-                    (card && card.attachments.length > 0) &&
+                    (card && attachments.length > 0) &&
                     <div className="flex my-6 ">
                         <GrAttachment className="text-xl mr-3 text-gray-700 mt-0" />
                         <div className="w-full ">
@@ -432,7 +432,7 @@ const CardDetailsModel = () => {
 
             
             {/* Activity */}
-                <div className="sm:w-md mt-4 sm:mt-none p-4 sm:pr-6 sm:p-2">
+                <div className="flex-1 mt-4 sm:mt-none p-4 sm:pr-6 sm:p-2">
                     <div className="flex items-center justify-between mb-4 ">
                         <div className="flex items-center gap-2 text-gray-700">
                             <TbListDetails className="text-xl mr-2" />

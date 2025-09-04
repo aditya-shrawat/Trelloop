@@ -4,6 +4,7 @@ import Card from "./Card";
 import { BsThreeDots } from "react-icons/bs";
 import ListOptions from "./List Components/ListOptions";
 import { useApi } from "../../api/useApi";
+import socket from "../Socket/socket";
 
 const List = ({list,boardId,setLists,UserRole}) => {
     const [cards,setCards] = useState([]);
@@ -28,6 +29,22 @@ const List = ({list,boardId,setLists,UserRole}) => {
         fetchListCards()
     },[])
 
+    // socket handler
+    useEffect(() => {
+      if (!list._id && !boardId) return;
+
+      const handleCardCreated = (data) => {
+        if (data.boardId === boardId && data.listId === list._id) {
+          setCards((prevCards) => [...prevCards, data.newCard]);
+        }
+      };
+
+      socket.on('card_created', handleCardCreated);
+
+      return () => {
+        socket.off('card_created', handleCardCreated);
+      };
+    }, [list,boardId]);
 
   return (
     <div className="w-[270px] shrink-0 h-full mr-4">
@@ -53,8 +70,8 @@ const List = ({list,boardId,setLists,UserRole}) => {
             :
             <>
                 {
-                cards.map((card)=>(
-                    <Card key={card._id} card={card} UserRole={UserRole} />
+                cards?.map((card)=>(
+                    card && <Card key={card._id} card={card} UserRole={UserRole} />
                 ))
                 }
             </>

@@ -7,11 +7,13 @@ import StarredBoard from '../models/starredBoard.js';
 import Notification from '../models/notification.js';
 import User from '../models/user.js';
 import Activity from '../models/Activity.js';
+import { getSocketInstance } from '../utils/socketInstance.js';
 
 export const createWorkspace = async (req,res)=>{
     try {
         const {name,description} = req.body ;
         const Description = (description.trim()==="")?"":description
+        const io = getSocketInstance();
 
         if(name.trim()===''){
             return res.status(400).json({error:"Workspace name is required."})
@@ -20,8 +22,16 @@ export const createWorkspace = async (req,res)=>{
         const workspace = await Workspace.create({
             name,
             description:Description,
-            createdBy:req.user.id,
+            createdBy:req.user._id,
             isPrivate:true,
+        });
+
+        io.to(`user_${req.user._id}`).emit("workspace_created", {
+            workspaceId: workspace._id,
+            newWorkspace: {
+                _id: workspace._id,
+                name: workspace.name,
+            },
         });
 
         return res.status(201).json({message:"Workspace is created.",workspace})
@@ -36,8 +46,8 @@ export const fetchWorkspaces = async (req,res)=>{
     try {
         const userId = req.user._id ;
         
-        const ownWorkspaces = await Workspace.find({createdBy:userId});
-        const memberedWorkspaces = await Workspace.find({members:userId,createdBy:{$ne:userId }});
+        const ownWorkspaces = await Workspace.find({createdBy:userId}).select("_id name");
+        const memberedWorkspaces = await Workspace.find({members:userId,createdBy:{$ne:userId }}).select("_id name");
 
         const allWorkspaces = [...ownWorkspaces, ...memberedWorkspaces]
         .sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt));
@@ -240,16 +250,24 @@ export const updateWorkspaceVisibility = async (req,res)=>{
 
 export const removeWorkspaceMember = async (req,res)=>{
     try {
-        const {id} = req.params
         const {userId} = req.body
 
         const workspace = req.workspace;
+        const io = getSocketInstance()
 
         if(req.user.id !== workspace.createdBy?.toString()){
             return res.status(403).json({error:"Only admin can remove members."})
         }
 
+        const isMember = workspace.members.some(memberId => memberId.toString() === userId);
+        if (!isMember) {
+            return res.status(400).json({ error: "User is not a member of this workspace." });
+        }
+
         const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
 
         workspace.members = workspace.members.filter(memberId => memberId.toString() !== userId);
         await workspace.save();
@@ -267,7 +285,7 @@ export const removeWorkspaceMember = async (req,res)=>{
         const adminId = workspace.createdBy
         await notifyMembers(adminId,userId,"you") // notify removed user
 
-        const userName = `"${user.name}"`
+        const userName = `"${user.firstName} ${user.lastName}"`
         // notify other members
         await Promise.all(
             workspace.members.map((member) =>
@@ -275,10 +293,14 @@ export const removeWorkspaceMember = async (req,res)=>{
             )
         );
 
-        await workspace.populate("members", "name _id");
+        io.to(`workspace_${workspace._id}`).emit("workspace_member_removed", {
+            workspaceId: workspace._id,
+            removedMemberId: userId,
+        });
 
-        return res.status(200).json({message:"User removed successfully.",members:workspace.members})
+        return res.status(200).json({message:"User removed successfully.",})
     } catch (error) {
+        console.log("error - ", error)
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -288,6 +310,7 @@ export const leaveWorkspace = async (req,res)=>{
     try {
         const userId = req.user._id
         const user = await User.findById(userId);
+        const io = getSocketInstance()
         if(!user){
             return res.status(404).json({error:"user doesn't exist."})
         }
@@ -314,9 +337,8 @@ export const leaveWorkspace = async (req,res)=>{
             });
         }
 
-        await notifyMembers(userId,workspace.createdBy) // notify admin
+        await notifyMembers(userId, workspace.createdBy) // notify admin
 
-        await workspace.populate("members", "name _id");
         // notify other members
         await Promise.all(
             workspace.members.map((member) =>
@@ -324,7 +346,12 @@ export const leaveWorkspace = async (req,res)=>{
             )
         );
 
-        return res.status(200).json({message:"User left workspace successfully.",members:workspace.members})
+        io.to(`workspace_${workspace._id}`).emit("workspace_member_left", {
+            workspaceId: workspace._id,
+            memberLeft: userId,
+        });
+
+        return res.status(200).json({message:"User left workspace successfully."})
     } catch (error) {
         return res.status(500).json({error:"Internal server error."})
     }

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 
 
-const useBoardSocket = (socket,boardId,handlers={})=>{
+const useBoardSocket = (socket,boardId)=>{
     useEffect(()=>{
         if(!socket || !boardId) {
             console.log("socket or boardId not present")
@@ -9,9 +9,7 @@ const useBoardSocket = (socket,boardId,handlers={})=>{
         }
 
         socket.emit('join_board_room',{boardId});
-        console.log("joinded board room ")
-
-        /******* handle board events to update in real time */
+        console.log("joined board room ");
     },[socket,boardId])
 }
 

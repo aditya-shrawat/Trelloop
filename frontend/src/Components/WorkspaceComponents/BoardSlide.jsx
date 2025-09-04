@@ -4,6 +4,8 @@ import { Link, useParams } from 'react-router-dom';
 import { TbStar } from "react-icons/tb";
 import { TbStarFilled } from "react-icons/tb";
 import { useApi } from '../../../api/useApi';
+import useWorkspaceSocket from '../../Socket/useWorkspaceSocket';
+import socket from '../../Socket/socket';
 
 const BoardSlide = ({isAdmin,isMember}) => {
     const [creatingBoard,setCreatingBoard] = useState(false);
@@ -31,6 +33,25 @@ const BoardSlide = ({isAdmin,isMember}) => {
       }
     },[id,name])
 
+    // join workspace room
+    useWorkspaceSocket(socket,id);
+
+    // socket handlers 
+    useEffect(() => {
+      if ((!isAdmin || !isMember) && !id) return;
+
+      const handleBoardCreated = (data) => {
+        if (data.workspaceId === id) {
+          setBoards((prevBoards) => [...prevBoards, data.newBoard]);
+        }
+      };
+
+      socket.on('workspace_board_created', handleBoardCreated);
+
+      return () => {
+        socket.off('workspace_board_created', handleBoardCreated);
+      };
+    }, [(isAdmin || isMember), id]);
 
   return (
     <div className="w-full h-auto ">
@@ -45,7 +66,7 @@ const BoardSlide = ({isAdmin,isMember}) => {
         {(loading)?
         <div>Loading...</div>
         :
-        boards.map((board) => (
+        boards?.map((board) => (
           <BoardCard key={board._id} board={board} api={api}/>
         ))
         }

@@ -10,11 +10,15 @@ import { TbCalendarClock } from "react-icons/tb";
 import BottomNavigation from "../Components/BottomNavigation";
 import MyWorkspaces from "../Components/MyWorkspaces";
 import { useApi } from "../../api/useApi";
+import { registerUserSocket } from "../Socket/socketService";
+import socket from "../Socket/socket";
+import { useUser } from "../Contexts/UserContext";
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
   const [loadingWorkspaces,setLoadingWorkspaces] = useState(true);
   const api = useApi();
+  const user = useUser()
 
   const location = useLocation();
   const [route, setRoute] = useState(location.pathname);
@@ -40,6 +44,24 @@ const HomePage = () => {
     fetchWorkspaces()
   },[])
 
+  // register user socket
+  useEffect(() => {
+    if(!socket || !user._id) return;
+
+    registerUserSocket(socket, user._id);
+  }, [socket, user._id]);
+
+  //socket handlers
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (data) => setWorkspaces((w) => [data.newWorkspace, ...w]);
+    socket.on("workspace_created", handler);
+
+    return () => {
+      socket.off("workspace_created", handler);
+    };
+  }, []);
 
   return (
       <main className="w-full h-full min-h-screen relative">
@@ -72,9 +94,10 @@ const HomePage = () => {
                 <div className="w-full h-auto mt-2">
                   {
                     (loadingWorkspaces)?
-                      (<div>loadingWorkspaces</div>):
+                      (<div>loadingWorkspaces</div>)
+                      :
                     (workspaces && workspaces.length!==0)?
-                      workspaces.map((workspace)=>(
+                      workspaces?.map((workspace)=>(
                         (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
                           className="w-full px-2 py-2 my-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer ">
                           <div className="w-auto h-auto inline-block mr-3">

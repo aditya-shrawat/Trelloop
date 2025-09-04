@@ -50,7 +50,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
             });
 
             socket.once("comment_added", (data) => {
-                console.log("comment status : ", data);
+                setCardActivities((prevActivities)=>([data,...prevActivities]))
             });
             setCommentContent("")
         } catch (error) {

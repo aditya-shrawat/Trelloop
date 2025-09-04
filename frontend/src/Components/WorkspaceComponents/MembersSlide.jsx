@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { RxCross2 } from "react-icons/rx";
 import { useParams } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
+import socket from '../../Socket/socket';
+import useWorkspaceSocket from '../../Socket/useWorkspaceSocket';
 
 const MembersSlide = () => {
   const {name,id} = useParams();
@@ -33,11 +35,46 @@ const MembersSlide = () => {
     fetchWorkspaceMembers()
   },[])
 
+  // join workspace room
+  useWorkspaceSocket(socket, id);
+
+  // socket handlers
+  useEffect(() => {
+    if (!currentUser?._id || !id) return;
+
+    const handleMemberAdded = (data) => {
+      if (data.workspaceId === id) {
+        setMembers(data.allMembers);
+      }
+    };
+
+    const handleMemberRemoved = (data) => {
+      if (data.workspaceId === id) {
+        setMembers((prev) => prev?.filter(m => m._id !== data.removedMemberId));
+      }
+    };
+
+    const handleMemberLeft = (data) => {
+      if (data.workspaceId === id) {
+        setMembers((prev) => prev?.filter(m => m._id !== data.memberLeft));
+      }
+    };
+
+    socket.on('workspace_member_added', handleMemberAdded);
+    socket.on('workspace_member_removed', handleMemberRemoved);
+    socket.on('workspace_member_left', handleMemberLeft);
+
+    return () => {
+      socket.off('workspace_member_added', handleMemberAdded);
+      socket.off('workspace_member_removed', handleMemberRemoved);
+      socket.off('workspace_member_left', handleMemberLeft);
+    };
+  }, [currentUser?._id, id]);
 
     return (
       <div className="w-full h-auto">
         <div className="pb-6 border-b-[1px] border-gray-300 ">
-          <h2 className="text-xl font-semibold text-gray-700">{`Workspace members (${(members||admin)?`${members.length+1}`:`0`})`}</h2>
+          <h2 className="text-xl font-semibold text-gray-700">{`Workspace members (${(members && admin)?`${members.length+1}`:`0`})`}</h2>
           <h2 className="text-sm text-gray-400 ">
             Workspace members can view and join all Workspace visible boards and
             create new boards in the Workspace.

@@ -21,7 +21,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
   const api = useApi();
   
   // join workspace room
-  useWorkspaceSocket (socket,workspace.id,{});
+  useWorkspaceSocket (socket,workspace.id);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

@@ -101,23 +101,25 @@ export const workspaceSocketHandler = (io, socket)=>{
                 });
             }
 
+            const updatedWorkspace = await Workspace.findById(workspace._id)
+            .populate("members", "firstName lastName username profileImage email");
+
             const user = await User.findById(userId);
             if(!user) return socket.emit('error', {message:'User not found.' }); 
             const userName = user.firstName + " " + user.lastName;
 
-            await sendNotification(workspace.createdBy,userId.toString(),userName)
+            await sendNotification(updatedWorkspace.createdBy,userId.toString(),userName)
             await Promise.all(
-                workspace.members.map((memberId) => 
+                updatedWorkspace.members.map((memberId) => 
                     sendNotification(memberId,userId,userName)
                 )
             );
 
-            // optional
-            // io.to(`workspace_${workspaceId}`).emit('workspace_member_added', {
-            //     workspaceId,
-            //     userId,
-            //     message: 'A new member has joined'
-            // });
+            io.to(`workspace_${workspaceId}`).emit('workspace_member_added', {
+                workspaceId,
+                userId,
+                allMembers:updatedWorkspace.members,
+            });
 
             socket.emit('workspace_invite_accepted', {workspaceId, userId });
         } catch (error) {

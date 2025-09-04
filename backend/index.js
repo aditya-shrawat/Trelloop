@@ -23,7 +23,7 @@ import CommentRouter from './routes/comment.js'
 import { getAllDeadlines } from './controllers/deadlines.js';
 import bodyParser from 'body-parser';
 import { webhookHandler } from './clerk/webhookHandler.js';
-// import { setAuthToken } from './controllers/authControllers.js';
+import { setSocketInstance } from './utils/socketInstance.js';
 
 
 const mongoDB = process.env.MongoDB_URL;
@@ -66,6 +66,7 @@ io.on('connection', (socket) => {
   });
 });
 startReminderScheduler(io);
+setSocketInstance(io)
 
 app.get("/user-info",checkAuthentication,fetchUserInfo);
 app.get('/api/home',checkAuthentication,getMainFeed)
