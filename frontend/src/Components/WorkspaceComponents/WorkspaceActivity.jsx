@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useParams } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
+import CircularProgress from '@mui/material/CircularProgress';
 
 dayjs.extend(relativeTime);
 
@@ -42,7 +43,9 @@ const WorkspaceActivity = () => {
         </div>
         <div className="w-full h-auto space-y-4 ">
             {   (loadingActivities) ?
-                    <div>Loading workspace activities...</div> 
+                    <div className="w-full text-center pt-24">
+                       <CircularProgress size="30px" sx={{ color: '#059669' }} />
+                    </div> 
                 :
                 (activities.length !==0)?
                     (activities.map((activity)=>(

@@ -23,12 +23,13 @@ import { RiAddLargeFill } from "react-icons/ri";
 import CardCover from './CardFunctionalities/Cover/CardCover';
 import ActivityContainer from './CardFunctionalities/Card Activity/ActivityContainer';
 import { useApi } from '../../api/useApi';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const CardDetailsModel = () => {
     const {id} = useParams()
     const divref = useRef(null);
-    const [card,setCard] = useState()
+    const [card,setCard] = useState(null)
     const [list,setList] = useState()
     const [loadingCardInfo,setLoadingCardInfo] = useState(true)
     const [updatingCard,setUpdatingCard] = useState(false)
@@ -201,6 +202,12 @@ const CardDetailsModel = () => {
 
   return (
     <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
+        {
+        (card === null) ?
+        <div className='bg-white max-w-[95%] md:max-w-5xl w-full h-[50%] mx-auto my-10 md:my-20  rounded-2xl relative flex justify-center items-center'>
+            <CircularProgress size="30px" sx={{ color: '#059669' }} />
+        </div>
+        :
         <div ref={divref} className=" max-w-[95%]  md:max-w-5xl w-full mx-auto my-10 md:my-20  rounded-2xl relative ">
             <div onClick={()=>{navigate(-1)}} className=' rounded-full absolute text-gray-700 top-2 right-2 cursor-pointer'>
                 <AiTwotoneCloseCircle className='text-xl' />
@@ -450,6 +457,7 @@ const CardDetailsModel = () => {
             </div>
 
         </div>
+        }
     </div>
   )
 }

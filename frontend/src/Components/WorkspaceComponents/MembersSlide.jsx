@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import socket from '../../Socket/socket';
 import useWorkspaceSocket from '../../Socket/useWorkspaceSocket';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const MembersSlide = () => {
   const {name,id} = useParams();
@@ -82,7 +83,9 @@ const MembersSlide = () => {
         </div>
         <div className="w-full h-auto ">
           { (loadingMembers)?
-          (<div>Loading workspace members...</div>)
+            <div className="w-full text-center pt-24">
+              <CircularProgress size="30px" sx={{ color: '#059669' }} />
+            </div>
           :
           (<>
             <MembersItem member={admin} isAdmin={true} isSelf={admin._id === currentUser._id} currentUser={currentUser} adminId={admin._id} />

@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
+import Skeleton from '@mui/material/Skeleton';
 
 const MyBoards = () => {
     const [workspaces,setWorkspaces] = useState([]);
@@ -101,7 +102,19 @@ const MyBoards = () => {
             <div className='w-full h-auto space-y-8 '>
             {
             (loading)?
-            <div>loading ....</div>
+                ([...Array(2)].map((_, index) => (
+                    <div className=''>
+                    <div className='flex items-center'>
+                        <Skeleton animation="wave" sx={{ height: 30, width:30 , borderRadius: 2 }} variant="rectangular" />
+                        <Skeleton animation="wave" sx={{ height: 20, width:150 , borderRadius: 1, m:2 }} variant="rectangular" />
+                    </div>
+                    <div className="w-full mt-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4">
+                        {[...Array(3)].map((_, index) => (
+                            <Skeleton key={index} animation="wave" sx={{ height: 100, borderRadius: 2 }} variant="rectangular" />
+                        ))}
+                    </div>
+                </div>
+                )))
             :
             (workspaces.length!==0)
             ?

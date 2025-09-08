@@ -6,6 +6,7 @@ import { TbStarFilled } from "react-icons/tb";
 import { useApi } from '../../../api/useApi';
 import useWorkspaceSocket from '../../Socket/useWorkspaceSocket';
 import socket from '../../Socket/socket';
+import Skeleton from '@mui/material/Skeleton';
 
 const BoardSlide = ({isAdmin,isMember}) => {
     const [creatingBoard,setCreatingBoard] = useState(false);
@@ -63,8 +64,13 @@ const BoardSlide = ({isAdmin,isMember}) => {
                 cursor-pointer relative bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 flex justify-center items-center border-[1px] border-gray-300 ">
           <h3 className="font-semibold inline-block text-center">Create board</h3>
         </div>)}
+        
         {(loading)?
-        <div>Loading...</div>
+          <>
+            {[...Array(4)].map((_, index) => (
+              <Skeleton key={index} animation="wave" sx={{ height: 110, borderRadius: 2 }} variant="rectangular" />
+            ))}
+          </>
         :
         boards?.map((board) => (
           <BoardCard key={board._id} board={board} api={api}/>

@@ -13,6 +13,7 @@ import { useApi } from "../../api/useApi";
 import { registerUserSocket } from "../Socket/socketService";
 import socket from "../Socket/socket";
 import { useUser } from "../Contexts/UserContext";
+import Skeleton from '@mui/material/Skeleton';
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
@@ -94,7 +95,11 @@ const HomePage = () => {
                 <div className="w-full h-auto mt-2">
                   {
                     (loadingWorkspaces)?
-                      (<div>loadingWorkspaces</div>)
+                      <div className="w-full">
+                        {[...Array(4)].map((_, index) => (
+                          <Skeleton key={index} animation="wave" height={70} />
+                        ))}
+                      </div>
                       :
                     (workspaces && workspaces.length!==0)?
                       workspaces?.map((workspace)=>(

@@ -8,6 +8,7 @@ import { LuCalendarCheck2 } from "react-icons/lu";
 import { FaUserGroup } from "react-icons/fa6";
 import { MdOutlineMarkUnreadChatAlt } from "react-icons/md";
 import { FaChartLine } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const featuresCards = [
   {
@@ -57,16 +58,21 @@ const LandingPage = () => {
         ></div>
 
         <header className="w-full z-20 flex items-center justify-between px-6 py-6">
-          <div className=" inline-block font-bold text-teal-600 text-2xl mr-4">
+          <div className="font-bold text-teal-600 text-2xl mr-4 flex items-center">
+            <img src="./logo2.png" alt="Trelloop Logo" className="h-7 mr-1" />
             Trelloop
           </div>
           <div className="flex items-center space-x-3">
-            <button className="px-4 sm:px-6 py-2 text-slate-600 hover:text-slate-900 font-semibold border-[1px] border-transparent hover:border-gray-200 rounded-md transition-all duration-200 outline-none cursor-pointer">
-              Login
-            </button>
-            <button className="primary-button px-4 sm:px-6 py-2">
-              Sign up
-            </button>
+            <Link to="/user/signin">
+              <button className="px-4 sm:px-6 py-2 text-slate-600 hover:text-slate-900 font-semibold border-[1px] border-transparent hover:border-gray-200 rounded-md transition-all duration-200 outline-none cursor-pointer">
+                Login
+              </button>
+            </Link>
+            <Link to="/user/signup">
+              <button className="primary-button px-4 sm:px-6 py-2">
+                Sign up
+              </button>
+            </Link>
           </div>
         </header>
         <main className="max-w-7xl z-10 px-6 pt-6 pb-12 sm:py-12 md:pb-24 mx-auto">
@@ -91,14 +97,14 @@ const LandingPage = () => {
                   efficiently in one place.
                 </p>
               </div>
-              <div>
+              <Link to="/user/signup" className="inline-block">
                 <button className="primary-button px-6 py-3 group flex items-center justify-center">
                   Get started
                   <div className="ml-3 w-fit h-fit group-hover:translate-x-1 transition-transform">
                     <FaArrowRight />
                   </div>
                 </button>
-              </div>
+              </Link>
             </div>
             <div className="w-full md:w-fit flex justify-center md:justify-end items-center mt-12 md:mt-0 ">
               <div className="w-auto sm:min-w-[360px] max-h-[450px] h-full">
@@ -303,14 +309,14 @@ const LandingPage = () => {
             <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
               Join thousands of teams who have already revolutionized their productivity with Trelloop
             </p>
-            <div className="flex justify-center">
+            <Link to={'/user/signup'} className="flex justify-center">
               <button className="primary-button px-6 py-3 group flex items-center justify-center">
                 Get started
                 <div className="ml-3 w-fit h-fit group-hover:translate-x-1 transition-transform">
                   <FaArrowRight />
                 </div>
               </button>
-            </div>
+            </Link>
           </div>
         </div>
       </section>

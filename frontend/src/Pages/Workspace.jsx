@@ -16,12 +16,15 @@ import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import BottomNavigation from "../Components/BottomNavigation";
 import { useApi } from "../../api/useApi";
+import Skeleton from "@mui/material/Skeleton";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Workspace = () => {
     const location = useLocation();
     const contentType = location.pathname.split("/").pop() ; //last segment of the URL path
     const { id, name } = useParams();
     const [workspace,setWorkspace] = useState();
+    const [loading,setLoading] = useState(true);
     const [showSideBar,setShowSideBar] = useState(false)
 
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false)
@@ -36,11 +39,15 @@ const Workspace = () => {
 
     const fetchWorkspace = async ()=>{
         try {
+            setLoading(true);
             const response = await api.get(`/workspace/${name}/${id}`);
 
             setWorkspace(response.data.workspace);
         } catch (error) {
             console.log("Error while fetching workspace - ",error)
+        }
+        finally{
+            setLoading(false);
         }
     }
 
@@ -84,53 +91,67 @@ const Workspace = () => {
                 <div className="w-full relative">
                     <div className="w-full min-h-14 ">
                     <div className="px-1 py-2 text-gray-700 text-sm font-semibold">Workspace</div>
-                    <div className="w-full h-auto flex items-center rounded-md border-[1px] border-gray-300">
-                        <div className="w-full px-2 py-2 flex items-center  ">
-                            <div className="w-auto h-auto inline-block mr-2">
-                                {
-                                (workspace) &&
-                                <span className="w-8 h-8 font-bold text-lg text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                                {workspace.name[0].toUpperCase()}
-                                </span>
-                                }
-                            </div>
-                            <div className="w-full font-semibold text-lg text-gray-700 flex items-center justify-between">
-                                {(workspace) &&<div className=" line-clamp-2">{workspace.name}</div>}
-                            </div>
+                    {
+                    (loading) ?
+                        <div className='flex items-center'>
+                            <Skeleton animation="wave" sx={{ height: 40, width:40 , borderRadius: 2 }} variant="rectangular" />
+                            <Skeleton animation="wave" sx={{ height: 20 ,width:"70%", borderRadius: 1, m:2 }} variant="rectangular" />
                         </div>
-                        <div className="text-gray-700 text-lg p-2 "><IoIosArrowDown /></div>
-                    </div>
+                    :
+                        <div className="w-full h-auto flex items-center rounded-md border-[1px] border-gray-300">
+                            <div className="w-full px-2 py-2 flex items-center  ">
+                                <div className="w-auto h-auto inline-block mr-2">
+                                    {
+                                    (workspace) &&
+                                    <span className="w-8 h-8 font-bold text-lg text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                                    {workspace.name[0].toUpperCase()}
+                                    </span>
+                                    }
+                                </div>
+                                <div className="w-full font-semibold text-lg text-gray-700 flex items-center justify-between">
+                                    {(workspace) &&<div className=" line-clamp-2">{workspace.name}</div>}
+                                </div>
+                            </div>
+                            <div className="text-gray-700 text-lg p-2 "><IoIosArrowDown /></div>
+                        </div>
+                    }
                     </div>
                     <div className="w-full h-auto mt-4 ">
-                        {workspace &&
-                        <> 
-                        <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} 
-                            className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                            ${(contentType==='home')?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
-                            "text-gray-700 hover:bg-gray-100"} `}>
-                            <TbLayoutDashboardFilled className="mr-3 text-xl"/> Boards
-                        </Link>
-                        <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/members`}
-                            className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                            ${isActive("members")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
-                            "text-gray-700 hover:bg-gray-100"} `}>
-                            <IoPerson className="mr-3 text-xl"/> Members
-                        </Link>
-                        <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/activity`} 
-                            className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                            ${isActive("activity")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
-                            "text-gray-700 hover:bg-gray-100"} `}>
-                            <TbListDetails className="mr-3 text-xl"/> Activity
-                        </Link>
-                        {(isAdmin || isMember) && 
-                            (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
+                        {loading ?
+                            <div>
+                                {[...Array(4)].map((_, index) => (
+                                  <Skeleton key={index} animation="wave" height={55} />
+                                ))}
+                            </div>
+                        :
+                            <> 
+                            <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} 
                                 className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
-                                ${isActive("settings")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                                ${(contentType==='home')?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
                                 "text-gray-700 hover:bg-gray-100"} `}>
-                                <IoMdSettings className="mr-3 text-xl"/> Settings
-                            </Link>)
-                        }
-                        </>
+                                <TbLayoutDashboardFilled className="mr-3 text-xl"/> Boards
+                            </Link>
+                            <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/members`}
+                                className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                                ${isActive("members")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                                "text-gray-700 hover:bg-gray-100"} `}>
+                                <IoPerson className="mr-3 text-xl"/> Members
+                            </Link>
+                            <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/activity`} 
+                                className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                                ${isActive("activity")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                                "text-gray-700 hover:bg-gray-100"} `}>
+                                <TbListDetails className="mr-3 text-xl"/> Activity
+                            </Link>
+                            {(isAdmin || isMember) && 
+                                (<Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/settings`} 
+                                    className={`my-2 px-2 py-1 flex items-center font-semibold rounded-md cursor-pointer 
+                                    ${isActive("settings")?"text-teal-600 border-[1px] border-teal-600 bg-[#49C5C5]/20 backdrop-blur-xl":
+                                    "text-gray-700 hover:bg-gray-100"} `}>
+                                    <IoMdSettings className="mr-3 text-xl"/> Settings
+                                </Link>)
+                            }
+                            </>
                         }
                     </div>
 
@@ -152,40 +173,46 @@ const Workspace = () => {
             <div className="h-fit sm:h-auto w-full px-4 pb-20 sm:px-6 ">
                 <div className="w-full h-auto px-2 py-6 flex justify-center border-b-[1px] border-gray-300 ">
                     <div className="w-full md:max-w-[85%] flex flex-col md:flex-row md:justify-between items-center ">
-                        <div className="w-full md:w-auto flex flex-col">
-                            <div className="flex items-center ">
-                                <div className="w-auto h-auto inline-block mr-4">
-                                {workspace && 
-                                    <span className="w-14 h-14 font-bold text-3xl text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                                    {workspace.name[0].toUpperCase()}
-                                    </span>
-                                }
+                        {
+                        (loading)?
+                            <div className='w-full flex items-center'>
+                                <Skeleton animation="wave" sx={{ height: 60, width:60 , borderRadius: 2 }} variant="rectangular" />
+                                <div>
+                                    <Skeleton animation="wave" sx={{ height: 20, width:160 , borderRadius: 1, m:2 }} variant="rectangular" />
+                                    <Skeleton animation="wave" sx={{ height: 15, width:80 , borderRadius: 1, m:2 }} variant="rectangular" />
                                 </div>
-                                {(workspace && workspace.name ) && 
-                                <div className="w-full text-xl ">
-                                    <div className="font-semibold line-clamp-1 text-gray-700">
-                                        {workspace.name}
+                            </div>
+                        :
+                            <div className="w-full md:w-auto flex flex-col">
+                                <div className="flex items-center ">
+                                    <div className="w-auto h-auto inline-block mr-4">
+                                        <span className="w-14 h-14 font-bold text-3xl text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                                        {workspace.name[0].toUpperCase()}
+                                        </span>
                                     </div>
-                                    {
-                                    (workspace.isPrivate)?
-                                    (<div className='text-gray-500 text-xs flex items-center'>
-                                        <RiLock2Line className='mr-1' />Private
-                                    </div>)
-                                    :
-                                    (<div className='text-gray-500 text-xs flex items-center'>
-                                        <MdPublic className='mr-1' />Public
-                                    </div>)
-                                    }
+                                    <div className="w-full text-xl ">
+                                        <div className="font-semibold line-clamp-1 text-gray-700">
+                                            {workspace.name}
+                                        </div>
+                                        {
+                                        (workspace.isPrivate)?
+                                        (<div className='text-gray-500 text-xs flex items-center'>
+                                            <RiLock2Line className='mr-1' />Private
+                                        </div>)
+                                        :
+                                        (<div className='text-gray-500 text-xs flex items-center'>
+                                            <MdPublic className='mr-1' />Public
+                                        </div>)
+                                        }
+                                    </div>
+                                </div>
+                                {
+                                <div className="mt-2 text-[14px] text-gray-500">
+                                    {workspace.description}
                                 </div>
                                 }
                             </div>
-                            {
-                            (workspace && workspace.description) &&
-                            <div className="mt-2 text-[14px] text-gray-500">
-                                {workspace.description}
-                            </div>
-                            }
-                        </div>
+                        }
                         {
                         (isAdmin) &&
                         <div className="w-full md:w-auto">  
@@ -197,7 +224,11 @@ const Workspace = () => {
                         }
                     </div>
                 </div>
-                {(workspace && workspace._id) && 
+                {(loading) ?
+                    <div className="w-full text-center pt-24">
+                        <CircularProgress size="30px" sx={{ color: '#059669' }} />
+                    </div>
+                :
                     <div className="h-auto w-full px-2 py-6 ">
                         {contentType === "members" ? (
                             <MembersSlide />

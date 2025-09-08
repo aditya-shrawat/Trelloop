@@ -11,6 +11,7 @@ import { useRef } from 'react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useApi } from '../../../api/useApi';
+import Skeleton from '@mui/material/Skeleton';
 
 dayjs.extend(relativeTime);
 
@@ -42,7 +43,11 @@ const HomeContent = () => {
     <div className=' w-full h-full py-4'>
         {
         (loadinMainFeed)?
-            <div>Loading...</div>
+            <div className='space-y-6'>
+                {[...Array(4)].map((_, index) => (
+                          <Skeleton key={index} sx={{ height: 210, borderRadius: 3 }} animation="wave" variant="rectangular" />
+                ))}
+            </div>
         :
         (receivedComments && receivedComments.length !== 0)?
             <div className='w-full h-auto space-y-6'>

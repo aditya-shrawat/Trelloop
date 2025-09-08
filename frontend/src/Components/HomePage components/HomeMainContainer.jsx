@@ -3,6 +3,7 @@ import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import HomeContent from "./HomeContent";
 import { useApi } from "../../../api/useApi";
+import Skeleton from '@mui/material/Skeleton';
 
 const HomeMainContainer = () => {
   const [starredBoards, setStarredBoards] = useState([]);
@@ -44,15 +45,24 @@ const HomeMainContainer = () => {
       </div>
 
       <div className="hidden lg:block w-full max-w-[300px] h-full px-4">
-        { (starredBoards.length !==0) &&
+        {
+          (loadingStarredBoards) &&
+          (
+            <div className="px-3">
+              {[...Array(4)].map((_, index) => (
+                <Skeleton key={index} animation="wave" height={65} />
+              ))}
+            </div>
+          )
+        }
+        { (!loadingStarredBoards) &&
           <div className="w-full h-auto py-4 border-b-[1px] border-gray-300">
-            <h3 className="text-gray-500 font-semibold text-[14px] px-2">
-              Starred
-            </h3>
+            { (starredBoards.length !== 0) &&
+              <h3 className="text-gray-500 font-semibold text-[14px] px-2">
+                Starred
+              </h3>}
             <div className="w-full h-full mt-1 ">
-              {loadingStarredBoards ? (
-                <div>loading starred boards</div>
-              ) : (
+              {
                 (starredBoards) && starredBoards?.map((board) => (
                   <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id}
                     className="w-full px-2 py-2 hover:bg-gray-100 text-gray-700 rounded-lg flex items-center cursor-pointer "
@@ -70,7 +80,11 @@ const HomeMainContainer = () => {
                     </div>
                   </Link>
                 ))
-              )}
+              }
+              {
+                (starredBoards.length === 0) && 
+                <div className="text-gray-400 text-center">⭐ <br /> Star boards to see them here.</div>
+              }
             </div>
           </div>
         }

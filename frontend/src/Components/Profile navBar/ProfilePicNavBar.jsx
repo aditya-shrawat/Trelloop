@@ -66,10 +66,10 @@ const ProfilePicNavBar = ({ currentUser, setOpenProfileNav }) => {
             <FaPlus className="mr-3" />
             Create Workspace
           </div>
-          <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
+          {/* <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center">
             <MdOutlineLightMode className="mr-3" />
             Theme
-          </div>
+          </div> */}
           <div className="pt-2 border-t-[1px] border-gray-300">
             {/* <div className="w-full relative"> */}
                 
@@ -82,7 +82,7 @@ const ProfilePicNavBar = ({ currentUser, setOpenProfileNav }) => {
                         className="mt-2 px-2 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex items-center"
                     >
                         <FiLogOut className="mr-3" />
-                        SignOut
+                        Sign out
                     </div>
                 }
             {/* </div> */}
@@ -132,8 +132,8 @@ const SignOutPopUp = ({setShowSignOutPopUp})=>{
     <div ref={divref} className='h-fit w-full px-4 py-4'>
         <div className='w-full h-full  '>
             <div className='w-full text-start'>
-                <h1 className='font-semibold text-gray-700'>SignOut</h1>
-                <p className='text-sm text-gray-400'>Once deleted, you won’t be able to recover the card or its data.</p>
+                <h1 className='font-semibold text-gray-700'>Sign out</h1>
+                <p className='text-sm text-gray-400'>Are you sure you want to sign out?</p>
             </div>
             {   (errorMsg.trim()!=="") &&
                 <div className='text-red-600 text-sm mt-2'>
@@ -142,7 +142,7 @@ const SignOutPopUp = ({setShowSignOutPopUp})=>{
             }
             <div className='w-full flex mt-4'>
                 <button onClick={handleSignOut} className='flex-1 py-1 bg-red-600 rounded-md text-white font-semibold cursor-pointer outline-none border-none'>
-                    SignOut
+                    Sign out
                 </button>
             </div>
         </div>

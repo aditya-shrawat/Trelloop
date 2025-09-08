@@ -12,10 +12,11 @@ import AddMemberToBoard from '../Components/Board Components/AddMemberToBoard';
 import socket from '../Socket/socket';
 import useBoardSocket from '../Socket/useBoardSocket';
 import { useApi } from '../../api/useApi';
+import Skeleton from '@mui/material/Skeleton';
 
 const Board = () => {
     const { id, name } = useParams();
-    const [board,setBoard] = useState()
+    const [board,setBoard] = useState(null)
     const [loadingLists,setLoadingLists] = useState(true) ;
     const [lists,setLists] = useState([]);
     const [starStatus,setStarStatus] = useState(false)
@@ -183,9 +184,12 @@ const Board = () => {
             <div className="w-full sm:px-2 py-2 flex justify-between items-center ">
                 <div className='w-auto flex items-center text-white'>
                     {
-                    (board) && <h3 className='inline-block font-bold text-xl'>{board.name}</h3>
+                    (board===null) ? 
+                        <Skeleton sx={{ height: 30,width:170, borderRadius: 1 }} animation="wave" variant="rectangular" /> 
+                        :
+                        <h3 className='inline-block font-bold text-xl'>{board.name}</h3>
                     }
-                    <div onClick={toggleStarStatus} 
+                    {board && <div onClick={toggleStarStatus} 
                           className="inline-block ml-3 cursor-pointer text-xl ">
                         {
                         (!starStatus)?
@@ -197,16 +201,19 @@ const Board = () => {
                           <TbStarFilled />
                         </div>
                         }
-                    </div>
+                    </div>}
                 </div>
                 <div className='w-auto flex' >
-                    { (board) &&
                     <div className='flex items-center mr-3'>
-                        <div className='w-auto h-auto hidden sm:block'> 
-                            <div title='Admin' className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center cursor-pointer overflow-hidden">
-                                {board.admin.profileImage && <img src={board.admin.profileImage} alt="" />} 
+                        {(board===null) ?
+                            <Skeleton sx={{ height: 32,width:32, borderRadius: 12 }} animation="wave" variant="rectangular" />
+                            :
+                            <div className='w-auto h-auto hidden sm:block'> 
+                                <div title='Admin' className="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center cursor-pointer overflow-hidden">
+                                    {board.admin.profileImage && <img src={board.admin.profileImage} alt="" />} 
+                                </div>
                             </div>
-                        </div>
+                        }
                         {(board) &&
                             (
                                 (UserRole.isBoardAdmin || UserRole.isWorkspaceAdmin)?
@@ -245,7 +252,6 @@ const Board = () => {
                             )
                         }
                     </div>
-                    }
                     <div className='w-auto relative'>
                         <div onClick={()=>{setShowBoardOptions(true)}} className={`w-auto h-auto p-1.5 text-xl cursor-pointer ${(showBoardOptions) ? `text-gray-700 bg-white`:`text-white hover:text-gray-700`} rounded-md`} >
                             <FaBarsStaggered  />
@@ -260,7 +266,12 @@ const Board = () => {
         </div>
         <div className='p-4 pb-8 flex flex-1 min-h-0 overflow-y-hidden overflow-x-auto custom-scrollbar'>
                 { (loadingLists)?
-                <div>Loading lists ...</div>
+                <div className='flex w-full space-x-4'>
+                    <Skeleton sx={{ height: "70%",width:270, borderRadius: 3 }} animation="wave" variant="rectangular" />
+                    <Skeleton sx={{ height: "45%",width:270, borderRadius: 3 }} animation="wave" variant="rectangular" />
+                    <Skeleton sx={{ height: "70%",width:270, borderRadius: 3 }} animation="wave" variant="rectangular" />
+                    <Skeleton sx={{ height: "45%",width:270, borderRadius: 3 }} animation="wave" variant="rectangular" />
+                </div> 
                 :
                 <>
                     { (board && board._id)&&

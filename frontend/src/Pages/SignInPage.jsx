@@ -189,7 +189,7 @@ const SignInPage = () => {
             disabled={loading || googleLoading}
             className="primary-button py-3 my-5 text-xl"
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           <div className="w-full text-center text-gray-700 text-base">

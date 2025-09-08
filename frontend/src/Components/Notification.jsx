@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import socket from '../Socket/socket';
 import { useApi } from '../../api/useApi';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Notification = ({setShowNotifications}) => {
     const divRef = useRef(null);
@@ -45,13 +46,15 @@ const Notification = ({setShowNotifications}) => {
                         Notifications
                     </h3>
                 </div>
-                <div className='w-full px-4 pt-2 pb-2 space-y-4 flex flex-col'>
+                <div className='w-full px-4 pt-2 pb-2 space-y-2 flex flex-col'>
                     {
                     (loadingNotifications)?
-                    <div>Loading notifications...</div>
+                        <div className="w-full text-center py-4">
+                            <CircularProgress size="30px" sx={{ color: '#059669' }} />
+                        </div>
                     :
                     (notifications.length ===0)?
-                    <div>NO notification</div>
+                        <div className="text-gray-400 text-center py-2">No notifications yet.</div>
                     :
                     notifications.map((notif)=>(
                         <NotificationItem key={notif._id} notif={notif} setNotifications={setNotifications} api={api} />

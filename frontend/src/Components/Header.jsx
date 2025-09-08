@@ -13,6 +13,7 @@ import { cleanupNotificationListener, registerUserSocket, setupNotificationListe
 import socket from "../Socket/socket.js";
 import { useApi } from "../../api/useApi.js";
 import ProfilePicNavBar from "./Profile navBar/ProfilePicNavBar.jsx";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Header =  () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -73,7 +74,8 @@ const Header =  () => {
     <header className={`w-full z-20 h-auto shadow-sm ${(isBoardPage)?`backdrop-blur-md bg-white/20`:`bg-white`} fixed top-0`} >
         <div className="w-full h-14 px-4 sm:px-6 flex items-center justify-between ">
             <div className="w-full h-full flex items-center ">
-                <div className={`inline-block font-bold ${(isBoardPage)?`text-white`:`text-teal-600`} text-2xl mr-4`}>
+                <div className={`font-bold ${(isBoardPage)?`text-white`:`text-teal-600`} text-2xl mr-6 flex items-center`}>
+                    <img src="./logo2.png" alt="Trelloop Logo" className="h-7 mr-1" />
                     Trelloop
                 </div>
                 <div className={`w-full h-auto ${(isBoardPage)?`text-white`:`text-gray-500`} hidden sm:block`}>
@@ -139,12 +141,12 @@ const Header =  () => {
                 </div>
                 <div className="relative h-full flex items-center ml-4">
                     <div onClick={()=>setOpenProfileNav(true)} className="h-8 w-8 flex items-center justify-center 
-                    bg-blue-500 text-white font-semibold text-lg rounded-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] overflow-hidden">
+                    bg-gray-300 text-white font-semibold text-lg rounded-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(12,12,13,0.3)] overflow-hidden">
                     {(user)&& <img src={user.profileImage} alt="" />}
                     </div>
 
                     {
-                    (openProfileNav) &&
+                    (openProfileNav && user) &&
                     <ProfilePicNavBar currentUser={user} setOpenProfileNav={setOpenProfileNav} />
                     }
                 </div>
@@ -180,20 +182,26 @@ const WorkspaceDropDown = ({ api }) => {
         <div className="w-full p-3 max-h-[90vh] overflow-y-auto">
         {
             (loading)?
-            <div>Loading</div>:
-            workspaces.map((workspace)=>(
-                <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
-                    className="w-full px-2 py-2 hover:bg-gray-100 rounded-md flex items-center cursor-pointer">
-                    <div className="w-auto h-auto inline-block mr-4">
-                    <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
-                        {workspace.name[0].toUpperCase()}
-                    </span>
-                    </div>
-                    <div className="w-full font-semibold text-gray-700 line-clamp-1 ">
-                        {workspace.name}
-                    </div>
-                </Link>
-            ))
+                <div className="w-full text-center py-4">
+                    <CircularProgress size="30px" sx={{ color: '#059669' }} />
+                </div>
+            :
+            workspaces && workspaces.length !==0 ? 
+                workspaces?.map((workspace)=>(
+                    <Link to={`/workspace/${workspace.name.replace(/\s+/g, '')}/${workspace._id}/home`} key={workspace._id} 
+                        className="w-full px-2 py-2 hover:bg-gray-100 rounded-md flex items-center cursor-pointer">
+                        <div className="w-auto h-auto inline-block mr-4">
+                        <span className="w-8 h-8 font-bold text-white bg-blue-300 rounded-md flex items-center justify-center ">
+                            {workspace.name[0].toUpperCase()}
+                        </span>
+                        </div>
+                        <div className="w-full font-semibold text-gray-700 line-clamp-1 ">
+                            {workspace.name}
+                        </div>
+                    </Link>
+                ))
+            :
+            <div className="text-gray-400 text-center py-6">No workspaces found.</div>
         }
         </div>
     </div>
@@ -227,21 +235,26 @@ const StarredDropDown = ({ api })=>{
             {
                 (loadingStarredBoards)
                 ?
-                <div>loading starred boards</div>
+                <div className="w-full text-center py-4">
+                    <CircularProgress size="30px" sx={{ color: '#059669' }} />
+                </div>
                 :
-                starredBoards.map((board)=>(
-                    <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 hover:bg-gray-100 rounded-md flex items-center cursor-pointer">
-                        <div className="w-auto h-auto inline-block mr-4">
-                        <span className="w-8 h-8 font-bold text-white rounded-md flex items-center justify-center" style={{background:board.background}}>
-                            {board.name[0].toUpperCase()}
-                        </span>
-                        </div>
-                        <div className="w-full text-gray-700 ">
-                            <h1 className="font-semibold text-[14px]">{board.name}</h1>
-                            <h3 className="text-[12px]  ">{board.workspace.name}</h3>
-                        </div>
-                    </Link>
-                ))
+                starredBoards && starredBoards.length !==0 ?
+                    starredBoards?.map((board)=>(
+                        <Link to={`/board/${board.name.replace(/\s+/g, '')}/${board._id}`} key={board._id} className="w-full px-2 py-1.5 hover:bg-gray-100 rounded-md flex items-center cursor-pointer">
+                            <div className="w-auto h-auto inline-block mr-4">
+                            <span className="w-8 h-8 font-bold text-white rounded-md flex items-center justify-center" style={{background:board.background}}>
+                                {board.name[0].toUpperCase()}
+                            </span>
+                            </div>
+                            <div className="w-full text-gray-700 ">
+                                <h1 className="font-semibold text-[14px]">{board.name}</h1>
+                                <h3 className="text-[12px]  ">{board.workspace.name}</h3>
+                            </div>
+                        </Link>
+                    ))
+                :
+                <div className="text-gray-400 text-center py-6">No boards found.</div>
             }
         </div>
     </div>

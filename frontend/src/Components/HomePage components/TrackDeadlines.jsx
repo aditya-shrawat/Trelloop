@@ -4,6 +4,7 @@ import { BsHourglassSplit } from "react-icons/bs";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
 import { useApi } from "../../../api/useApi";
+import CircularProgress from "@mui/material/CircularProgress";
 
 
 const getStatusBadge = (isCompleted, deadline) => {
@@ -218,7 +219,9 @@ export default function TrackDeadlines() {
             {
             (loading)?
                 (
-                <div>Loading...</div>
+                    <div className="w-full text-center py-4">
+                        <CircularProgress size="30px" sx={{ color: '#059669' }} />
+                    </div>
                 )
             :
             (deadlineData && deadlineData.length!==0)?
