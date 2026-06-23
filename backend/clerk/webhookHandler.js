@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import User from "../models/user.js";
 
 // function to generate unique username from mail ids
-const generateUniqueUsername = async (email) => {
+export const generateUniqueUsername = async (email) => {
   const [prefix, domain] = email.split("@");
   const cleanPrefix = prefix.toLowerCase().replace(/[^a-z0-9]/g, "");
 

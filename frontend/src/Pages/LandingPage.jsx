@@ -59,7 +59,7 @@ const LandingPage = () => {
 
         <header className="w-full z-20 flex items-center justify-between px-6 py-6">
           <div className="font-bold text-teal-600 text-2xl mr-4 flex items-center">
-            <img src="./logo2.png" alt="Trelloop Logo" className="h-7 mr-1" />
+            <img src="./logo2.png" className="h-7 mr-1" />
             Trelloop
           </div>
           <div className="flex items-center space-x-3">

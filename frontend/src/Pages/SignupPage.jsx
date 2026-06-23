@@ -6,7 +6,8 @@ const initialSignupData={
     firstName:"",
     lastName:"",
     email:"",
-    password:""
+    password:"",
+    confirmPassword: ""
 };
 
 const getErrorMessage = (err) => {
@@ -51,6 +52,11 @@ const SignupPage = () => {
 
         if (!formData.password || formData.password.length < 8) {
             setErrors([{ message: "Password must be at least 8 characters" }]);
+            return false;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            setErrors([{ message: "Passwords do not match" }]);
             return false;
         }
 
@@ -152,13 +158,17 @@ const SignupPage = () => {
         }
     },
     [isLoaded, code, signUp, completeVerificationFlow, navigate]
-);
+    );
 
   // Loading State
   if (!isLoaded) {
     return (
-        <div className="max-w-[400px] mx-auto my-8 p-8 text-center">
-        <div>Loading...</div>
+        <div className="w-screen h-screen flex items-center justify-center">
+            <img
+            src="/logo2.png"
+            alt="Trelloop Logo"
+            className="h-14 w-14 animate-spin"
+            />
         </div>
     );
   }
@@ -167,8 +177,11 @@ const SignupPage = () => {
   return (
     <div className='overflow-y-auto w-full bg-white sm:bg-[#F0F4F8]'>
         <div className='md:w-[450px] max-w-[450px] w-full px-6 py-8 rounded-lg bg-white mx-auto sm:shadow-xl flex flex-col items-center my-14'>
-            <div className='h-auto w-auto inline-block text-3xl font-bold text-teal-600 mb-2'>
-                Trelloop
+            <div className="flex items-center justify-center mb-2">
+                <img src="/logo2.png" className="h-10 w-10 mr-2" />
+                <h1 className="text-3xl font-bold text-teal-600">
+                    Trelloop
+                </h1>
             </div>
 
             {
@@ -178,13 +191,17 @@ const SignupPage = () => {
                         Sign up now and start managing your tasks effortlessly.
                     </div>
 
-                    <button onClick={signUpWithGoogle}
-                        type="button" disabled={loading}
-                        className={`w-full px-3 py-3 text-white border-none rounded cursor-pointer mb-4 text-base font-medium transition-colors duration-200 ${
-                            loading ? 'bg-[#ccc] cursor-not-allowed' : 'bg-[#db4437] cursor-pointer'
-                        }`}
-                        >
-                        {loading ? 'Signing up...' : 'Continue with Google'}
+                    <button type="button"
+                        disabled={loading} onClick={signUpWithGoogle}
+                        className={`w-full px-4 py-3 rounded-lg mb-4 text-base font-medium flex items-center justify-center gap-3 border border-gray-300 shadow-sm transition-all duration-200
+                            ${
+                            loading
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-white text-gray-700 hover:bg-gray-50"
+                            }`}
+                    >
+                        <img src="https://www.google.com/favicon.ico" className="w-6 h-6" />
+                        {loading ? "Signing up..." : "Continue with Google"}
                     </button>
 
                     <div className="text-center my-6 relative">
@@ -218,6 +235,11 @@ const SignupPage = () => {
                         <label className='mb-1 font-semibold' >Password</label>
                         <input type="password" name='password' onChange={(e)=>{inputChange(e)}} 
                         className='mb-4 h-10 p-1 px-2 rounded-md border-[1px] border-gray-300 outline-teal-500' />
+
+                        <label className='mb-1 font-semibold'>Confirm Password</label>
+                        <input type="password" name="confirmPassword" onChange={inputChange}
+                            className='mb-4 h-10 p-1 px-2 rounded-md border-[1px] border-gray-300 outline-teal-500'
+                        />
                         
                         <button type='submit' disabled={loading} className='primary-button py-3 my-5 text-xl' >
                             {loading ? 'Signing up...' : 'Sign up'}

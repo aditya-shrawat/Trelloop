@@ -103,7 +103,7 @@ const MyBoards = () => {
             {
             (loading)?
                 ([...Array(2)].map((_, index) => (
-                    <div className=''>
+                    <div key={index}>
                     <div className='flex items-center'>
                         <Skeleton animation="wave" sx={{ height: 30, width:30 , borderRadius: 2 }} variant="rectangular" />
                         <Skeleton animation="wave" sx={{ height: 20, width:150 , borderRadius: 1, m:2 }} variant="rectangular" />

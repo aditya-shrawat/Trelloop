@@ -75,7 +75,7 @@ const Header =  () => {
         <div className="w-full h-14 px-4 sm:px-6 flex items-center justify-between ">
             <div className="w-full h-full flex items-center ">
                 <div className={`font-bold ${(isBoardPage)?`text-white`:`text-teal-600`} text-2xl mr-6 flex items-center`}>
-                    <img src="./logo2.png" alt="Trelloop Logo" className="h-7 mr-1" />
+                    <img src="/logo2.png" className="h-7 mr-1" />
                     Trelloop
                 </div>
                 <div className={`w-full h-auto ${(isBoardPage)?`text-white`:`text-gray-500`} hidden sm:block`}>

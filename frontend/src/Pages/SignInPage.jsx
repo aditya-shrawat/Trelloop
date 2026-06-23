@@ -118,8 +118,12 @@ const SignInPage = () => {
   // Loading State
   if (!isLoaded) {
     return (
-      <div className="max-w-[400px] mx-auto my-8 p-8 text-center">
-        <div>Loading...</div>
+      <div className="w-screen h-screen flex items-center justify-center">
+        <img
+          src="/logo2.png"
+          alt="Trelloop Logo"
+          className="h-14 w-14 animate-spin"
+        />
       </div>
     );
   }
@@ -127,8 +131,11 @@ const SignInPage = () => {
   return (
     <div className="min-h-screen overflow-y-auto w-full bg-white sm:bg-[#F0F4F8] flex items-center justify-center">
       <div className="md:w-[450px] max-w-[450px] w-full px-6 py-8 rounded-lg bg-white sm:shadow-xl flex flex-col items-center">
-        <div className="h-auto w-auto inline-block text-3xl font-bold text-teal-600 mb-2">
-          Trelloop
+        <div className="flex items-center justify-center mb-2">
+          <img src="/logo2.png" className="h-10 w-10 mr-2" />
+          <h1 className="text-3xl font-bold text-teal-600">
+            Trelloop
+          </h1>
         </div>
         <div className="w-full text-center text-gray-500 mb-8">
           Your personal task space, just a sign in away.
@@ -138,16 +145,18 @@ const SignInPage = () => {
           type="button"
           disabled={googleLoading || loading}
           onClick={signInWithGoogle}
-          className={`w-full px-3 py-3 text-white border-none rounded cursor-pointer mb-4 text-base font-medium transition-colors duration-200 ${
-            googleLoading
-              ? "bg-[#ccc] cursor-not-allowed"
-              : "bg-[#db4437] cursor-pointer"
-          }`}
+          className={`w-full px-4 py-3 rounded-lg mb-4 text-base font-medium flex items-center justify-center gap-3 border border-gray-300 shadow-sm transition-all duration-200
+            ${
+              googleLoading
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white text-gray-700 hover:bg-gray-50"
+            }`}
         >
-          {googleLoading ? "Signing in..." : "Continue with Google"}
+          <img src="https://www.google.com/favicon.ico" className="w-6 h-6" />
+          {googleLoading ? "Signing in..." : "Sign in with Google"}
         </button>
 
-        <div className="text-center my-6 relative">
+        <div className="text-center my-4 relative">
           <span className="text-gray-400 bg-white px-4 relative z-10">OR</span>
           <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300 m-0" />
         </div>
