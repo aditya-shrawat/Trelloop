@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useEffect } from 'react';
 import { useApi } from '../../../api/useApi';
+import { Link, useLocation } from 'react-router-dom';
 
 dayjs.extend(relativeTime);
 
@@ -63,6 +64,7 @@ export default BoardActivity
 
 
 const BoardActivityItem = ({activity})=>{
+    const location = useLocation();
     const createdAt = dayjs(activity.createdAt);
     const now = dayjs();
     const diffInHours = now.diff(createdAt, 'hour');
@@ -92,38 +94,38 @@ const BoardActivityItem = ({activity})=>{
             return <>renamed the list from "{data.list_oldName}" to "{data.list_newName}".</>;
 
             case "card_created":
-            return <>added the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> to the list "{data.list_name}".</>;
+            return <>added the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link> to the list "{data.list_name}".</>;
 
             case "card_deleted":
             return <>deleted the card <a className='common-a-tag-css'>{data.card_name}</a> from the board.</>;
 
             case "card_renamed":
-            return <>renamed the card from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a>.</>;
+            return <>renamed the card from "{data.card_oldName}" to <Link to={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_newName}</Link>.</>;
 
             case "card_newInfo":
-            return <>updated the card name from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a> and updated description.</>;
+            return <>updated the card name from "{data.card_oldName}" to <Link to={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }}  className="common-a-tag-css">{data.card_newName}</Link> and updated description.</>;
 
             case "card_newDesc":
-            return <>updated the description of the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
+            return <>updated the description of the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
 
             case "card_deadline_changed":
-            return <>updated the deadline of the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
+            return <>updated the deadline of the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
 
             case "card_marked":
-            return <>marked the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> as {(data.isCompleted)?"complete":"incomplete"}.</>
+            return <>marked the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link> as {(data.isCompleted)?"complete":"incomplete"}.</>
 
             case "card_attachment":
                 if(data.actionType==='added'){
-                    return <>attached <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> to the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
+                    return <>attached <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> to the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>; 
                 }
                 else if(data.actionType==='updated'){
-                    return <>updated attachment <a href={data.oldAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.oldAttachment}</a> to <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> on the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
+                    return <>updated attachment <a href={data.oldAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.oldAttachment}</a> to <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> on the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</Link>.</>; 
                 }
                 else if(data.actionType==='deleted'){
-                    return <>deleted attachment <a href={data.removedAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.removedAttachment}</a> from the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
+                    return <>deleted attachment <a href={data.removedAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.removedAttachment}</a> from the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>; 
                 }
                 else {
-                    return <>performed an attachment action on the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
+                    return <>performed an attachment action on the card <Link to={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</Link>.</>;
                 }
 
             default:

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -65,6 +65,7 @@ export default WorkspaceActivity
 
 
 const WorkspaceActivityItem = ({activity})=>{
+    const location = useLocation();
     const createdAt = dayjs(activity.createdAt);
     const now = dayjs();
     const diffInHours = now.diff(createdAt, 'hour');
@@ -75,72 +76,60 @@ const WorkspaceActivityItem = ({activity})=>{
         const { type, data,card,board } = activity;
 
         switch (type) {
-            case "workspace_renamed":
-            return <>renamed the workspace from "{data.workspace_oldName}" to "{data.workspace_newName}".</>;
-
-            case "workspace_newInfo":
-            return <>updated the workspace name from "{data.workspace_oldName}" to "{data.workspace_newName}" and updated description.</>;
-
-            case "workspace_newDesc":
-            return <>updated the workspace description.</>;
-
-            case "workspace_visibility_updated":
-            return <>changed the workspace visibility from "{(data.prevVisibility)?"Private":"Public"}" to "{(data.newVisibility)?"Private":"Public"}".</>;
-
             case "board_created": 
-            return <>created the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a> in this workspace.</>;
+            return <>created the board <Link to={`/board/${data.board_name?.replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</Link> in this workspace.</>;
 
             case "board_rename": 
-            return <>renamed the board from <a className="common-a-tag-css">{data.board_oldName}</a> to <a href={`/board/${(data.board_newName).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_newName}</a> in this workspace.</>;
+            return <>renamed the board from <a className="common-a-tag-css">{data.board_oldName}</a> to <Link to={`/board/${data.board_newName?.replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_newName}</Link> in this workspace.</>;
 
             case "board_deleted": 
             return <>deleted the board <a className="common-a-tag-css">{data.board_name}</a> from this workspace.</>;
 
             case "board_visibility_updated":
-            return <>changed the visibility of the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${board?.toString()}`} className="common-a-tag-css">{data.board_name}</a> from "{data.prevVisibility}" to "{data.newVisibility}".</>;
+            return <>changed the visibility of the board <Link to={`/board/${data.board_name?.replace(/\s+/g, '')}/${board?.toString()}`} className="common-a-tag-css">{data.board_name}</Link> from "{data.prevVisibility}" to "{data.newVisibility}".</>;
 
             case "list_created":
-            return <>added  the list "{data.list_name}" to the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a>.</>;
+            return <>added the list "{data.list_name}" to the board <Link to={`/board/${data.board_name?.replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</Link>.</>;
 
             case "list_deleted":
-            return <>deleted the list "{data.list_name}" from the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a>.</>;
+            return <>deleted the list "{data.list_name}" from the board <Link to={`/board/${data.board_name?.replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</Link>.</>;
 
             case "list_updated":
-            return <>renamed the list from "{data.list_oldName}" to "{data.list_newName}" on the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a>.</>;
+            return <>renamed the list from "{data.list_oldName}" to "{data.list_newName}" on the board <Link to={`/board/${data.board_name?.replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</Link>.</>;
 
             case "card_created":
-            return <>added the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> to the list "{data.list_name}".</>;
+            return <>added the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link> to the list "{data.list_name}".</>;
 
             case "card_deleted":
-            return <>deleted the card <a className='common-a-tag-css'>{data.card_name}</a> from the board <a href={`/board/${(data.board_name).replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</a>.</>;
+            return <>deleted the card <a className='common-a-tag-css'>{data.card_name}</a> from the board <Link to={`/board/${data.board_name?.replace(/\s+/g, '')}/${data.boardId}`} className="common-a-tag-css">{data.board_name}</Link>.</>;
 
             case "card_renamed":
-            return <>renamed the card from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a>.</>;
+            return <>renamed the card from "{data.card_oldName}" to <Link to={`/card/${data.card_newName?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_newName}</Link>.</>;
 
             case "card_newInfo":
-            return <>updated the card name from "{data.card_oldName}" to <a href={`/card/${(data.card_newName).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_newName}</a> and updated description.</>;
+            return <>updated the card name from "{data.card_oldName}" to <Link to={`/card/${data.card_newName?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_newName}</Link> and updated description.</>;
 
             case "card_newDesc":
-            return <>updated the description of the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
+            return <>updated the description of the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
 
             case "card_deadline_changed":
-            return <>updated the deadline of the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
-            
+            return <>updated the deadline of the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
+
             case "card_marked":
-            return <>marked the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a> as {(data.isCompleted)?"complete":"incomplete"}.</>
+            return <>marked the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link> as {data.isCompleted ? "complete" : "incomplete"}.</>;
 
             case "card_attachment":
                 if(data.actionType==='added'){
-                    return <>attached <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> to the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
+                    return <>attached <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> to the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
                 }
                 else if(data.actionType==='updated'){
-                    return <>updated attachment <a href={data.oldAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.oldAttachment}</a> to <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> on the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
+                    return <>updated attachment <a href={data.oldAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.oldAttachment}</a> to <a href={data.newAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.newAttachment}</a> on the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
                 }
                 else if(data.actionType==='deleted'){
-                    return <>deleted attachment <a href={data.removedAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.removedAttachment}</a> from the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>; 
+                    return <>deleted attachment <a href={data.removedAttachment} className="common-a-tag-css" target="_blank" rel="noopener noreferrer">{data.removedAttachment}</a> from the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
                 }
                 else {
-                    return <>performed an attachment action on the card <a href={`/card/${(data.card_name).replace(/\s+/g, '')}/${card?.toString()}`} className="common-a-tag-css">{data.card_name}</a>.</>;
+                    return <>performed an attachment action on the card <Link to={`/card/${data.card_name?.replace(/\s+/g, '')}/${card?.toString()}`} state={{ backgroundLocation: location }} className="common-a-tag-css">{data.card_name}</Link>.</>;
                 }
 
             default:

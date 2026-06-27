@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { GoCheckCircleFill } from "react-icons/go";
 import { FaRegClock } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useApi } from '../../api/useApi';
 
 const Card = ({card,UserRole})=>{
     const [isCompleted,setIsCompleted] = useState(null)
     const api = useApi();
+    const location = useLocation();
 
     useEffect(()=>{
         setIsCompleted(card.isCompleted)
@@ -26,7 +27,7 @@ const Card = ({card,UserRole})=>{
     }
     
     return (
-    <Link to={`/card/${(card.name).replace(/\s+/g, '')}/${card._id}`} className='py-1 block'>
+    <Link to={`/card/${(card.name).replace(/\s+/g, '')}/${card._id}`} state={{ backgroundLocation: location }} className='py-1 block'>
         <div className='group w-full hover:border-2 border-transparent hover:border-teal-500 bg-gray-50 cursor-pointer rounded-lg shadow-[0px_0px_5px_rgba(12,12,13,0.4)] overflow-hidden'>
             { (card && card.cover)&& <div className='w-full h-9' style={{ backgroundColor: card.cover }}></div>}
             <div className="w-full px-2 py-2 flex break-words overflow-auto text-gray-700 ">

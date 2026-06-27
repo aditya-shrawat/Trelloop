@@ -5,7 +5,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { useUser } from '../../Contexts/UserContext';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { CommentOptions, EditCommentContent } from '../CardFunctionalities/Card Activity/CommentItem';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { IoIosSend } from "react-icons/io";
 import { useRef } from 'react';
 import dayjs from 'dayjs';
@@ -83,6 +83,7 @@ const CommentItem = ({comment})=>{
     const [showCommentOptions,setShowCommentOptions] = useState(false);
     const [editComment,setEditComment] = useState(false);
     const [isReplying,setIsReplying] = useState(false);
+    const location = useLocation();
 
     const displayTime = dayjs(comment.createdAt).fromNow();
 
@@ -95,7 +96,7 @@ const CommentItem = ({comment})=>{
 
     return(
         <div className='p-1 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1' style={{background:comment.board.background}}>
-            <Link to={`/card/${(comment.card.name).replace(/\s+/g, '')}/${comment.card._id}`} 
+            <Link to={`/card/${(comment.card.name).replace(/\s+/g, '')}/${comment.card._id}`} state={{ backgroundLocation: location }} 
                 className='w-full block text-white px-2 pt-2 pb-3 cursor-pointer'>
                 <div className='w-auto flex'>
                     <div className='inline-block font-semibold'>{comment.card.name}</div>

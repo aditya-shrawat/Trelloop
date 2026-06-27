@@ -204,7 +204,7 @@ const NotificationItem = ({notif,setNotifications,api})=>{
         }
 
         if (['member_joined', 'invite_rejected', 'member_removed', 'member_left',
-             'board_request_accepted', 'board_request_rejected', 'board_invite_accepted', 'board_invite_rejected'].includes(notif.type)) {
+             'board_request_accepted', 'board_request_rejected', 'board_invite_accepted', 'board_invite_rejected', 'workspace_deleted'].includes(notif.type)) {
             return (
                 <div className='w-full h-auto p-3 bg-white/40 backdrop-blur-md rounded-md shadow-[0px_0px_4px_rgba(12,12,13,0.2)] '>
                     <div className="w-full flex ">

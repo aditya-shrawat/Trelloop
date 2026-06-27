@@ -6,7 +6,7 @@ import { TbStarFilled } from "react-icons/tb";
 import Header from '../Components/Header';
 import { FaBarsStaggered } from "react-icons/fa6";
 import BoardOptionMenu from '../Components/Board Components/BoardOptionMenu';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../Contexts/UserContext';
 import AddMemberToBoard from '../Components/Board Components/AddMemberToBoard';
 import socket from '../Socket/socket';
@@ -31,6 +31,7 @@ const Board = () => {
     const [isJoining,setIsJoining] = useState(false);
     const [isAddingNewMembers,setIsAddingNewMembers] = useState(false);
     const [boardBg,setBoardBg] = useState('#fff');
+    const navigate = useNavigate();
 
     const {user} = useUser();
     const api = useApi();
@@ -43,6 +44,7 @@ const Board = () => {
                 setBoardBg(response.data.board.background)
             } catch (error) {
                 console.log("Error while fetching board - ",error)
+                navigate('/error', { replace: true });
             }
     }
 

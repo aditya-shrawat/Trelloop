@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { FaCalendarAlt, FaClock, FaFilter, FaSearch, FaPlus, FaCheck } from "react-icons/fa"
 import { BsHourglassSplit } from "react-icons/bs";
 import dayjs from "dayjs";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useApi } from "../../../api/useApi";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -73,6 +73,7 @@ export default function TrackDeadlines() {
             completed: 0,
         })
     const api = useApi();
+    const location = useLocation();
 
     const getStatusCount = (cards)=>{
         const now = dayjs();
@@ -249,7 +250,7 @@ export default function TrackDeadlines() {
                                     <tr key={card._id}
                                         className={`hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 `}>
                                         <td className="py-4 px-6">
-                                            <Link to={`/card/${(card.name).replace(/\s+/g, '')}/${card._id}`} className="flex items-center">
+                                            <Link to={`/card/${(card.name).replace(/\s+/g, '')}/${card._id}`} state={{ backgroundLocation: location }} className="flex items-center">
                                                 <span className="font-medium text-gray-900 hover:text-blue-700 cursor-pointer transition-colors">
                                                     {card.name}
                                                 </span>

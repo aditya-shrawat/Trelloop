@@ -45,6 +45,7 @@ const Workspace = () => {
             setWorkspace(response.data.workspace);
         } catch (error) {
             console.log("Error while fetching workspace - ",error)
+            navigate('/error', { replace: true,});
         }
         finally{
             setLoading(false);
@@ -77,10 +78,21 @@ const Workspace = () => {
         }
 
         if ((workspace && isAdmin!==undefined && isMember!==undefined) && (contentType === "settings" && workspace?.isPrivate === false && !isAdmin && !isMember)){
-            navigate("*");
+            navigate('/error', { replace: true })
         }
     },[contentType, workspace, isAdmin, isMember])
 
+
+    if (loading || !workspace) {
+        return (
+        <main className="w-full h-full">
+            <div className="w-full text-center pt-24">
+            <CircularProgress size="30px" sx={{ color: '#059669' }} />
+            </div>
+        </main>
+        );
+    } 
+    
 
   return (
     <main className="w-full h-full ">
@@ -224,7 +236,7 @@ const Workspace = () => {
                         }
                     </div>
                 </div>
-                {(loading) ?
+                {(loading || !workspace) ?
                     <div className="w-full text-center pt-24">
                         <CircularProgress size="30px" sx={{ color: '#059669' }} />
                     </div>

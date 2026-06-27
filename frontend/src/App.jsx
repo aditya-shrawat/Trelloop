@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useRoutes } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 
 const LandingPage = lazy(() => import('./Pages/LandingPage'));
@@ -27,7 +27,7 @@ const ProtectedRoute = () => {
 
 
 // Router Configuration
-const router = createBrowserRouter([
+const routesConfig = [
   { path: '/', element: <Suspense fallback={<Loading />}><LandingPage /></Suspense> },
 
   { path: '/user/signin', element: <SignInPage /> },
@@ -52,8 +52,28 @@ const router = createBrowserRouter([
   },
 
   { path: '*', element: <ErrorPage /> }
-]);
+];
 
-const App = () => <RouterProvider router={router} />;
+const AppRoutes = ()=>{
+  const location = useLocation();
+  const backgroundLocation = location.state?.backgroundLocation;
+
+  const routes = useRoutes(routesConfig, backgroundLocation || location);
+
+  // Separate routes just for the card overlay
+  const modalRoutes = useRoutes([
+    { path: '/card/:name/:id', element: <Suspense fallback={<Loading />}><CardDetailsModel /></Suspense> },
+    { path: '*', element: null }
+  ]);
+
+  return (
+    <>
+      {routes}
+      {backgroundLocation && modalRoutes}
+    </>
+  )
+}
+
+const App = () => <AppRoutes />;
 
 export default App;

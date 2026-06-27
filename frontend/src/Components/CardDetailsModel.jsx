@@ -201,7 +201,7 @@ const CardDetailsModel = () => {
     }
 
   return (
-    <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-[rgba(0,0,0,0.75)] ">
+    <div className="w-screen h-screen overflow-x-hidden z-20 fixed top-0 left-0 bg-black/60 backdrop-blur-sm ">
         {
         (card === null) ?
         <div className='bg-white max-w-[95%] md:max-w-5xl w-full h-[50%] mx-auto my-10 md:my-20  rounded-2xl relative flex justify-center items-center'>
