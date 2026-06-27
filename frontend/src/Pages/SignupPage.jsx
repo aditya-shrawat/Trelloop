@@ -208,6 +208,7 @@ const SignupPage = () => {
                         <span className="text-gray-400 bg-white px-4 relative z-10">OR</span>
                         <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300 m-0" />
                     </div>
+                    <div id="clerk-captcha" style={{ marginBottom: "1rem" }}></div>
 
                     {
                         errors.length > 0 && (
@@ -292,7 +293,7 @@ const SignupPage = () => {
                     </form>
                 </div>)
             }
-            <div id="clerk-captcha" style={{ marginBottom: "1rem" }}></div>
+            {/* <div id="clerk-captcha" style={{ marginBottom: "1rem" }}></div> */}
         </div>
     </div>
   )

@@ -34,10 +34,11 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       const response = await api.get('/workspace/');
 
       setWorkspaces(response.data.workspaces);
-      setWorkspaceId(response.data.workspaces[0]._id)
-      setLoading(false)
+      setWorkspaceId(response.data.workspaces[0]?._id)
     } catch (error) {
       console.log("Error while fetching workspaces - ",error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -132,6 +133,10 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
             <div className="mb-1 h-8 py-1 px-2 text-gray-700 rounded-lg border-[1px] border-gray-300 outline-none">
               {workspaceName}
             </div> 
+            : workspaces.length === 0 ?
+            <div className="mb-1 py-1 px-2 text-sm text-amber-600 bg-amber-50 border-[1px] border-amber-300 rounded-md">
+              No workspaces found. Please create a workspace first.
+            </div>
             :
             <select name="workspaceName" 
             onChange={(e) => setWorkspaceId(e.target.value)}
@@ -149,9 +154,14 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
             {errorMsg}
           </div>
         }
-        <div onClick={createBoard}
+        <div onClick={workspaces.length === 0 && !workspaceName ? undefined : createBoard}
           className="mt-6">
-          <button className="primary-button w-full py-2 font-semibold">
+          <button disabled={workspaces.length === 0 && !workspaceName} className={`w-full py-2 font-semibold rounded-md transition-all duration-200
+            ${workspaces.length === 0 && !workspaceName
+              ? 'bg-gray-100 text-gray-400 border-[1px] border-gray-200 cursor-not-allowed'
+              : 'primary-button cursor-pointer'
+            }`}
+          >
             {(isCreating)?"Creating...":"Create board"}
           </button>
         </div>

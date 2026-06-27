@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useApi } from "../../api/useApi";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const MyWorkspaces = () => {
   const [workspaces, setWorkspaces] = useState([]);
@@ -40,7 +41,9 @@ const MyWorkspaces = () => {
         </div>
         <div className="w-full h-auto mt-2">
           {loadingWorkspaces ? (
-            <div>loadingWorkspaces</div>
+            <div className="w-full text-center py-4">
+              <CircularProgress size="30px" sx={{ color: '#059669' }} />
+            </div>
           ) : workspaces && workspaces.length !== 0 ? (
             workspaces.map((workspace) => (
               <Link

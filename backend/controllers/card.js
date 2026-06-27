@@ -427,11 +427,11 @@ export const deleteAttachment = async (req, res) => {
   }
 
 
-export const deleteCard = async (req,res)=>{
+export const deleteCard = async (req, res) => {
     try {
-        const {cardId} = req.params;
+        const { cardId } = req.params;
 
-        const card = req.card
+        const card = req.card;
         const list = req.list;
         await list.populate({
             path: 'board',
@@ -440,9 +440,9 @@ export const deleteCard = async (req,res)=>{
                 select: '_id name members createdBy'
             }
         });
-        const board = list.board
-        const workspace = board.workspace ;
-        const userId = req.user._id;
+        const board = list.board;
+        const workspace = board.workspace;
+        const userId = req.user._id.toString();
 
         const isBoardAdmin = board.admin?.toString() === userId;
         const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
@@ -451,9 +451,10 @@ export const deleteCard = async (req,res)=>{
             return res.status(403).json({ error: "You don't have permission to delete this card." });
         }
 
-        await Notification.deleteMany({ cardId: cardId, isRead: false });
-        const cardName = card.name;
-        await Card.findByIdAndDelete(cardId);
+        await Promise.all([
+            Notification.deleteMany({ cardId: cardId }),
+            Card.findByIdAndDelete(cardId),
+        ]);
 
         await Activity.create({
             workspace: workspace._id,
@@ -461,17 +462,17 @@ export const deleteCard = async (req,res)=>{
             user: userId,
             type: "card_deleted",
             data: {
-                card_name: cardName,
-                boardId: list.board._id,
-                board_name:list.board.name
+                card_name: card.name,
+                boardId: board._id,
+                board_name: board.name,
             },
             createdAt: new Date()
         });
 
-        return res.status(200).json({message:"Card deleted successfully."})
+        return res.status(200).json({ message: "Card deleted successfully." });
     } catch (error) {
-        console.log("Error while deleteing card - ",error)
-        return res.status(500).json({error:"Internal server error."})
+        console.log("Error while deleting card - ", error);
+        return res.status(500).json({ error: "Internal server error." });
     }
 }
 

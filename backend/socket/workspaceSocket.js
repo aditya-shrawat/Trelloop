@@ -22,7 +22,7 @@ export const workspaceSocketHandler = (io, socket)=>{
             const invitedNow = [];
 
             userIds.forEach((userId) => {
-                if(!workspace.members.includes(userId) && !workspace.pendingInvites.includes(userId) ){
+                if( !workspace.members.some(id => id.toString() === userId.toString()) && !workspace.pendingInvites.some(id => id.toString() === userId.toString()) ){
                     workspace.pendingInvites.push(userId);
                     invitedNow.push(userId);
                 }
@@ -83,7 +83,7 @@ export const workspaceSocketHandler = (io, socket)=>{
 
             const sendNotification = async (memberId,senderId,senderName)=>{
                 // skip notifying the joining user
-                if (memberId.toString() === senderId) return;
+                if (memberId.toString() === senderId.toString()) return;
 
                 await Notification.create({
                     userId:memberId,
@@ -111,7 +111,7 @@ export const workspaceSocketHandler = (io, socket)=>{
             await sendNotification(updatedWorkspace.createdBy,userId.toString(),userName)
             await Promise.all(
                 updatedWorkspace.members.map((memberId) => 
-                    sendNotification(memberId,userId,userName)
+                    sendNotification(memberId._id,userId,userName)
                 )
             );
 

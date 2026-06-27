@@ -165,7 +165,8 @@ export const getSharedBoards = async (req,res)=>{
 
         const sharedBoards = boards.filter(board => {
             const workspaceMembers = board.workspace?.members || [];
-            return !workspaceMembers.includes(userId) && board.workspace?.createdBy.toString() !== userId?.toString();
+            return !workspaceMembers.some(id => id.toString() === userId.toString()) && 
+                    board.workspace?.createdBy.toString() !== userId?.toString();
         });
 
         return res.status(200).json({message: "Shared boards fetched successfully.",sharedBoards});
@@ -185,13 +186,14 @@ export const allJoinedWorkspacesAndBoards = async(req,res)=>{
         ]
         }).select('_id name').lean().sort({createdAt:-1})
 
-        const workspacesWithBoards = await Promise.all(
-            workspaces.map(async (workspace) => {
-                const boards = await Board.find({ workspace:workspace._id }).select('_id name background').lean();
+        const workspaceIds = workspaces.map(w => w._id);
+        const allBoards = await Board.find({ workspace: { $in: workspaceIds } })
+            .select('_id name background workspace').lean();
 
-                return {...workspace,boards,};
-            })
-        );
+        const workspacesWithBoards = workspaces.map(workspace => ({
+            ...workspace,
+            boards: allBoards.filter(board => board.workspace.toString() === workspace._id.toString())
+        }));
 
         return res.status(200).json({message:'Workspaces with boards fetched successfully.',
         workspaces: workspacesWithBoards,
@@ -201,44 +203,43 @@ export const allJoinedWorkspacesAndBoards = async(req,res)=>{
     }
 }
 
-export const deleteBoard = async (req,res)=>{
+export const deleteBoard = async (req, res) => {
     try {
-        const {boardId} = req.params;
+        const { boardId } = req.params;
 
         if (!req.isBoardAdmin && !req.isWorkspaceAdmin) {
             return res.status(403).json({ error: "You don't have permission to delete this board." });
-        } 
+        }
 
-        const board = await Board.findById(boardId);
+        const board = await Board.findById(boardId).populate('workspace');
         const boardName = board.name;
-        await board.populate('workspace');
         const workspace = board.workspace;
 
-        const lists = await List.find({ board: boardId });
-        const listIds = lists.map(list => list._id);
+        const listIds = await List.distinct('_id', { board: boardId });
 
-        await Card.deleteMany({ list: { $in: listIds } });
-        await List.deleteMany({ board: boardId });
-        await StarredBoard.deleteMany({ board: boardId });
-        await Notification.deleteMany({ boardId: boardId, isRead: false });
+        await Promise.all([
+            Card.deleteMany({ list: { $in: listIds } }),
+            List.deleteMany({ board: boardId }),
+            StarredBoard.deleteMany({ board: boardId }),
+            Notification.deleteMany({ boardId: boardId }),
+            Board.findByIdAndDelete(boardId),
+        ]);
 
-        await Board.findByIdAndDelete(boardId);
-
-        const userId = req.user._id ;
         await Activity.create({
-            workspace:workspace._id,
-            user:userId,
-            type:'board_deleted',
-            data:{
-                board_name:boardName,
-                workspace_name:workspace.name,
+            workspace: workspace._id,
+            user: req.user._id,
+            type: 'board_deleted',
+            data: {
+                board_name: boardName,
+                workspace_name: workspace.name,
             },
             createdAt: new Date()
-        })
+        });
 
-        return res.status(200).json({message:`Board is deleted successfully.`})
+        return res.status(200).json({ message: `Board is deleted successfully.` });
     } catch (error) {
-        return res.status(500).json({error:"Internal server error."})
+        console.log("Error while deleting board - ", error);
+        return res.status(500).json({ error: "Internal server error." });
     }
 }
 
@@ -296,10 +297,10 @@ export const getBoardActivies= async (req,res)=>{
             return res.status(400).json({error:"Board not found."})
         }
 
-        const boardActivities = await Activity.find({board:board._id})
-        .select("board card user type data createdAt").populate("user",'_id firstName lastName username profileImage')
-
-        const activities = boardActivities.sort((a, b) => b.createdAt - a.createdAt);
+        const activities = await Activity.find({ board: board._id })
+            .select("board card user type data createdAt")
+            .populate("user", '_id firstName lastName username profileImage')
+            .sort({ createdAt: -1 });
 
         return res.status(200).json({message:"Board activities fetched succssfully.",activities})
     } catch (error) {
@@ -394,17 +395,16 @@ export const removeBoardMember = async (req,res)=>{
         }
 
         // remove from cards also
-        const lists = await List.find({ board: boardId }).select('_id');
-        const listIds = lists.map(list => list._id);
+        const listIds = await List.distinct('_id', { board: boardId });
         await Card.updateMany(
             { list: { $in: listIds } },
             { $pull: { members: userId } }
         );
 
-        board.members = board.members.filter(memberId => memberId.toString() !== userId);
+        board.members = board.members.filter(memberId => memberId.toString() !== userId.toString());
         await board.save();
 
-        await board.populate("members", "name _id");
+        await board.populate("members", "firstName lastName _id");
 
         return res.status(200).json({message:"User removed successfully.",members:board.members})
     } catch (error) {
@@ -430,17 +430,16 @@ export const leaveBoard = async (req,res)=>{
         }
 
         // remove from cards also
-        const lists = await List.find({ board: boardId }).select('_id');
-        const listIds = lists.map(list => list._id);
+        const listIds = await List.distinct('_id', { board: boardId });
         await Card.updateMany(
             { list: { $in: listIds } },
             { $pull: { members: userId } }
         );
 
-        board.members = board.members.filter((id) => id.toString() !== userId);
+        board.members = board.members.filter((id) => id.toString() !== userId.toString());
         await board.save();
 
-        await board.populate("members", "name _id");
+        await board.populate("members", "firstName lastName _id");
 
         return res.status(200).json({message:"User left board successfully.",members:board.members})
     } catch (error) {

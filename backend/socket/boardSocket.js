@@ -34,7 +34,7 @@ export const boardSocket = (io,socket) =>{
             io.to(`user_${boardAdmin}`).emit("new_notification",{
                 boardId,
                 type: 'request',
-                message: `${sender.name} requested to join the ${board.name} board.`
+                message: `${sender.firstName} ${sender.lastName} requested to join the ${board.name} board.`
             })
 
             await Notification.create({
@@ -246,7 +246,8 @@ export const boardSocket = (io,socket) =>{
                 });
             }
             
-            const senderName = sender.name;
+            const senderName = sender.firstName + " " + sender.lastName;
+            console.log("senderName - ",senderName)
             await sendNotification(userId,senderId,senderName)
             await Promise.all(
                 board.members?.map((memberId) => 
@@ -283,7 +284,7 @@ export const boardSocket = (io,socket) =>{
             board.pendingInvites = board.pendingInvites?.filter(id => id?.toString() !== senderId?.toString());
             await board.save();
 
-            const senderName = sender.name;
+            const senderName = sender.firstName + " " + sender.lastName;
 
             await Notification.create({
                 userId:userId,

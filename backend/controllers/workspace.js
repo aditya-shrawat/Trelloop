@@ -8,6 +8,7 @@ import Notification from '../models/notification.js';
 import User from '../models/user.js';
 import Activity from '../models/Activity.js';
 import { getSocketInstance } from '../utils/socketInstance.js';
+import Comment from '../models/Comment.js';
 
 export const createWorkspace = async (req,res)=>{
     try {
@@ -144,48 +145,42 @@ export const updateWorkspace = async (req,res)=>{
 
 export const deleteWorkspace = async (req, res) => {
     try {
-      const workspace = req.workspace;
+        const workspace = req.workspace;
 
-      if(workspace.createdBy?.toString() !== req.user.id)
-        return res.status(403).json({error:"Workspace admin can delete workspace."})
-  
-      const boards = await Board.find({ workspace: workspace._id });
-  
-      const boardIds = boards.map(board => board._id);
+        if (workspace.createdBy?.toString() !== req.user.id)
+            return res.status(403).json({ error: "Workspace admin can delete workspace." });
 
-      const listIds = await List.find({ board: { $in: boardIds } }).distinct('_id');
+        const boardIds = await Board.distinct('_id', { workspace: workspace._id });
+        const listIds = await List.distinct('_id', { board: { $in: boardIds } });
 
-      await Card.deleteMany({ list: { $in: listIds } });
+        await Promise.all([
+            Card.deleteMany({ list: { $in: listIds } }),
+            List.deleteMany({ board: { $in: boardIds } }),
+            StarredBoard.deleteMany({ board: { $in: boardIds } }),
+            Notification.deleteMany({ workspaceId: workspace._id }),
+            Notification.deleteMany({ boardId: { $in: boardIds } }),
+            Comment.deleteMany({ workspace: workspace._id }),
+            Activity.deleteMany({ workspace: workspace._id }),
+            Board.deleteMany({ workspace: workspace._id }),
+        ]);
 
-      await List.deleteMany({ board: { $in: boardIds } });
+        const memberNotifications = workspace.members.map(member => ({
+            userId: member._id,
+            senderId: req.user._id,
+            type: "workspace_deleted",
+            message: `deleted the workspace "${workspace.name}".`,
+        }));
 
-      await StarredBoard.deleteMany({ board: { $in: boardIds } });
-
-      await Board.deleteMany({ workspace: workspace._id });
-
-        const userId = req.user._id;
-
-        const notifyMembers = async (senderId,receiverId)=>{
-            await Notification.create({
-                userId:receiverId,
-                senderId:senderId,
-                type:"workspace_deleted",
-                workspaceId:workspace._id,
-                message:`deleted the workspace "${workspace.name}".`,
-            });
+        if (memberNotifications.length > 0) {
+            await Notification.insertMany(memberNotifications);
         }
 
-        await Promise.all(
-            workspace.members.map((member) =>
-                notifyMembers(userId, member._id)
-            )
-        );
-  
-      await workspace.deleteOne();
-  
-      return res.status(200).json({ message: "Workspace deleted successfully." });
+        await workspace.deleteOne();
+
+        return res.status(200).json({ message: "Workspace deleted successfully." });
     } catch (error) {
-      return res.status(500).json({ error: "Internal server error." });
+        console.log("Error while deleting workspace - ", error);
+        return res.status(500).json({ error: "Internal server error." });
     }
 }
 
