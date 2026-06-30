@@ -136,7 +136,7 @@ const Header =  () => {
                         )}
                     </div>
                     {
-                        (showNotifications) && <Notification setShowNotifications={setShowNotifications} />
+                        (showNotifications) && <Notification setShowNotifications={setShowNotifications} setUnreadCount={setUnreadCount} />
                     }
                 </div>
                 <div className="relative h-full flex items-center ml-4">

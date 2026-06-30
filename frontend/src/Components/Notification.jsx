@@ -5,7 +5,7 @@ import socket from '../Socket/socket';
 import { useApi } from '../../api/useApi';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const Notification = ({setShowNotifications}) => {
+const Notification = ({setShowNotifications, setUnreadCount}) => {
     const divRef = useRef(null);
     const [notifications,setNotifications] = useState([]);
     const [loadingNotifications,setLoadingNotifications] = useState(true)
@@ -56,7 +56,7 @@ const Notification = ({setShowNotifications}) => {
                         <div className="text-gray-400 text-center py-2">No notifications yet.</div>
                     :
                     notifications.map((notif)=>(
-                        <NotificationItem key={notif._id} notif={notif} setNotifications={setNotifications} api={api} />
+                        <NotificationItem key={notif._id} notif={notif} setNotifications={setNotifications} api={api} setUnreadCount={setUnreadCount} />
                     ))
                     }
                 </div>
@@ -67,8 +67,13 @@ const Notification = ({setShowNotifications}) => {
 
 export default Notification
 
-const NotificationItem = ({notif,setNotifications,api})=>{
+const NotificationItem = ({notif,setNotifications,api, setUnreadCount})=>{
     const [loadingAction, setLoadingAction] = useState(null); 
+
+    const markAsReadAndRemove = () => {
+        setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+    };
 
     const acceptingInvitation = async (type)=>{
         if(loadingAction || (type!=='Workspace' && type!=='Board')) return;
@@ -88,7 +93,7 @@ const NotificationItem = ({notif,setNotifications,api})=>{
             }
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
-            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+            markAsReadAndRemove();
         } catch (error) {
             console.log("Error while accpting invitation -",error)
         }
@@ -115,7 +120,7 @@ const NotificationItem = ({notif,setNotifications,api})=>{
             }
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
-            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+            markAsReadAndRemove();
         } catch (error) {
             console.log("Error while rejecting invitation -",error)
         }
@@ -130,7 +135,7 @@ const NotificationItem = ({notif,setNotifications,api})=>{
             setLoadingAction('closing');
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
-            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+            markAsReadAndRemove();
         } catch (error) {
             console.log("Error while closing notificaiton -",error)
         }
@@ -147,7 +152,7 @@ const NotificationItem = ({notif,setNotifications,api})=>{
             socket.emit("accept_board_request",{boardId:notif.boardId,senderId:notif.userId,userId:notif.senderId._id })
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
-            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+            markAsReadAndRemove();
         } catch (error) {
             console.log("Error while accpting request -",error)
         }
@@ -164,7 +169,7 @@ const NotificationItem = ({notif,setNotifications,api})=>{
             socket.emit("reject_board_request",{boardId:notif.boardId,senderId:notif.userId,userId:notif.senderId._id })
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
-            setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
+            markAsReadAndRemove();
         } catch (error) {
             console.log("Error while rejecting board request -",error)
         }
