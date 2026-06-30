@@ -165,7 +165,7 @@ export const deleteWorkspace = async (req, res) => {
         ]);
 
         const memberNotifications = workspace.members.map(member => ({
-            userId: member._id,
+            userId: member,
             senderId: req.user._id,
             type: "workspace_deleted",
             message: `deleted the workspace "${workspace.name}".`,
@@ -284,7 +284,7 @@ export const removeWorkspaceMember = async (req,res)=>{
         // notify other members
         await Promise.all(
             workspace.members.map((member) =>
-                notifyMembers(adminId, member._id, userName)
+                notifyMembers(adminId, member, userName)
             )
         );
 
@@ -311,7 +311,7 @@ export const leaveWorkspace = async (req,res)=>{
         }
 
         const workspace = req.workspace;
-        if (workspace.createdBy.toString() === userId) {
+        if (workspace.createdBy.toString() === userId.toString()) {
             return res.status(403).json({error:"Admin cannot leave the workspace." });
         }
 
@@ -337,7 +337,7 @@ export const leaveWorkspace = async (req,res)=>{
         // notify other members
         await Promise.all(
             workspace.members.map((member) =>
-                notifyMembers(userId, member._id)
+                notifyMembers(userId, member)
             )
         );
 

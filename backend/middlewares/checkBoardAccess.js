@@ -1,40 +1,48 @@
 import Board from "../models/board.js";
+import mongoose from "mongoose";
 
 
-const checkBoardAccess = async (req,res,next)=> {
+const checkBoardAccess = async (req, res, next) => {
   try {
-    const userId = req.user._id?.toString();
     const { boardId } = req.params;
+    if (!boardId || !mongoose.Types.ObjectId.isValid(boardId)) {
+      return res.status(400).json({ error: "Valid Board ID is required." });
+    }
 
     const board = await Board.findById(boardId);
-
     if (!board) {
-      return res.status(404).json({error:'Board not found.'});
+      return res.status(404).json({ error: "Board not found." });
     }
 
-    await board.populate("workspace")
-    const workspace = board.workspace ;
+    await board.populate("workspace");
+    const workspace = board.workspace;
 
+    const userId = req.user._id.toString();
     const isBoardMember = board.members.some(id => id.toString() === userId);
-    const isWorkspaceMember = workspace.members.some(id => id.toString() === userId);
     const isBoardAdmin = board.admin?.toString() === userId;
+    const isWorkspaceMember = workspace.members.some(id => id.toString() === userId);
     const isWorkspaceAdmin = workspace.createdBy?.toString() === userId;
 
-    if(board.visibility === 'Workspace' && (!isWorkspaceAdmin && !isWorkspaceMember && !isBoardAdmin && !isBoardMember)){
-      return res.status(403).json({error:"Access denied to this board."})
+    const hasElevatedRole = isBoardMember || isBoardAdmin || isWorkspaceAdmin;
+
+    let canView = false;
+    if (board.visibility === "Public") {
+      canView = true;
+    } else if (board.visibility === "Workspace") {
+      canView = hasElevatedRole || isWorkspaceMember;
+    } else if (board.visibility === "Private") {
+      canView = hasElevatedRole;
     }
 
-    if(board.visibility === 'Private' && (!isBoardAdmin && !isBoardMember && !isWorkspaceAdmin)){
-      return res.status(403).json({error:"Access denied to this board."})
+    if (!canView) {
+      return res.status(403).json({ error: "Access denied to this board." });
     }
 
     let canEdit = false;
-    if (board.visibility === "Workspace" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
-      canEdit = true;
-    } else if (board.visibility === "Private" && (isBoardMember || isWorkspaceAdmin || isBoardAdmin)) {
-      canEdit = true;
-    } else if (board.visibility === "Public" && (isBoardMember || isWorkspaceMember || isBoardAdmin || isWorkspaceAdmin)) {
-      canEdit = true;
+    if (board.visibility === "Private") {
+      canEdit = hasElevatedRole;
+    } else {
+      canEdit = hasElevatedRole || isWorkspaceMember;
     }
 
     req.canEdit = canEdit;
@@ -43,8 +51,8 @@ const checkBoardAccess = async (req,res,next)=> {
 
     next();
   } catch (error) {
-    console.log('Error in checkBoardAccess- ',error);
-    return res.status(500).json({error:'Internal server error.'});
+    console.log('Error in checkBoardAccess- ', error);
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 

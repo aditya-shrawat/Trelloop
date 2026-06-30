@@ -65,17 +65,26 @@ const BoardSlide = ({isAdmin,isMember}) => {
           <h3 className="font-semibold inline-block text-center">Create board</h3>
         </div>)}
         
-        {(loading)?
+        {(loading) ? (
           <>
             {[...Array(4)].map((_, index) => (
               <Skeleton key={index} animation="wave" sx={{ height: 110, borderRadius: 2 }} variant="rectangular" />
             ))}
           </>
-        :
-        boards?.map((board) => (
-          <BoardCard key={board._id} board={board} api={api}/>
-        ))
-        }
+        ) : boards?.length > 0 ? (
+          boards.map((board) => (
+            <BoardCard key={board._id} board={board} api={api} />
+          ))
+        ) : (
+          !isAdmin && !isMember && (
+            <div className="col-span-full text-center text-gray-400 py-10">
+              <p className="text-lg font-medium">No boards found!</p>
+              <p className="text-sm">
+                No boards have been created in this workspace yet.
+              </p>
+            </div>
+          )
+        )}
       </div>
       {
         (creatingBoard)&& <CreateBoard setCreatingBoard={setCreatingBoard} workspaceName={name} 

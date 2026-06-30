@@ -25,13 +25,28 @@ const ProtectedRoute = () => {
   return <Outlet />;
 };
 
+// Public-only Route Component 
+const PublicOnlyRoute = () => {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user, userLoading } = useUser();
+
+  if (!isLoaded || userLoading) return <Loading />;
+  if (isSignedIn && user) return <Navigate to="/home" replace />;
+
+  return <Outlet />;
+};
+
 
 // Router Configuration
 const routesConfig = [
-  { path: '/', element: <Suspense fallback={<Loading />}><LandingPage /></Suspense> },
-
-  { path: '/user/signin', element: <SignInPage /> },
-  { path: '/user/signup', element: <SignupPage /> },
+  { // Public-only routes
+    element: <PublicOnlyRoute />,
+    children: [
+      { path: '/', element: <LandingPage /> },
+      { path: '/user/signin', element: <SignInPage /> },
+      { path: '/user/signup', element: <SignupPage /> },
+    ]
+  },
 
   { // Protected Routes
     element: <ProtectedRoute />,

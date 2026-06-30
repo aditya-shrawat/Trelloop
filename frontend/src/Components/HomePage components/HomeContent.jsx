@@ -53,7 +53,7 @@ const HomeContent = () => {
             <div className='w-full h-auto space-y-6'>
                 {
                 receivedComments?.map((comment)=>(
-                    <CommentItem key={comment._id} comment={comment} />
+                    <HomeCommentItem key={comment._id} comment={comment} />
                 ))
                 }
             </div>
@@ -77,7 +77,7 @@ const HomeContent = () => {
 export default HomeContent
 
 
-const CommentItem = ({comment})=>{
+const HomeCommentItem = ({comment})=>{
     const [isYou,setIsYou] = useState(false);
     const {user} = useUser();
     const [showCommentOptions,setShowCommentOptions] = useState(false);

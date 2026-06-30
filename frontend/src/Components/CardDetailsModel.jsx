@@ -78,6 +78,11 @@ const CardDetailsModel = () => {
             setBoard(response.data.board);
         } catch (error) {
             console.log("Error while fetching card details - ",error)
+            // add toast notification
+            if (error.response?.status === 403) {
+                navigate("/error");
+                return;
+            }
         }
         finally{
             setLoadingCardInfo(false)
@@ -134,8 +139,10 @@ const CardDetailsModel = () => {
 
             card.name = response.data.card.name
             card.description = response.data.card.description
+            // add toast notification
         } catch (error) {
             console.log("Error while updating card info - ",error)
+            // add toast notification
         }
     }
 
@@ -155,8 +162,10 @@ const CardDetailsModel = () => {
             );
 
             setIsCompleted(response.data.isCompleted)
+            // add toast notification
         } catch (error) {
             console.log("Error while toggling card status - ",error)
+            // add toast notification
         }
     }
 
@@ -195,8 +204,10 @@ const CardDetailsModel = () => {
 
             console.log(response.data.message)
             setUserRole((prev)=>({...prev,isCardMember:true}));
+            // add toast notification
         } catch (error) {
             console.log("Error in joining card - ",error)
+            // add toast notification
         }
     }
 
@@ -363,14 +374,6 @@ const CardDetailsModel = () => {
                     </div>)
                 }
 
-                { (board && ((UserRole.isBoardMember || UserRole.isBoardAdmin ||UserRole.isWorkspaceAdmin ||UserRole.isWorkspaceMember) && !UserRole.isCardMember) ) && 
-                    <button onClick={joinCard} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
-                        flex items-center text-gray-700">
-                        <IoPersonAdd className="mr-3" />
-                        Join
-                    </button>
-                }
-
                 <div className='relative'>
                     <button onClick={()=>{setCardFunctionality("members")}} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
                         flex items-center text-gray-700">
@@ -432,6 +435,14 @@ const CardDetailsModel = () => {
                         <DeleteCard setCardFunctionality={setCardFunctionality} cardId={id} />
                         }
                     </div>
+                }
+
+                { (board && ((UserRole.isBoardMember || UserRole.isBoardAdmin ||UserRole.isWorkspaceAdmin ||UserRole.isWorkspaceMember) && !UserRole.isCardMember) ) && 
+                    <button onClick={joinCard} className="w-full bg-gray-50 border-[1px] border-gray-300 px-2 py-1 rounded-lg cursor-pointer hover:bg-gray-100
+                        flex items-center text-gray-700">
+                        <IoPersonAdd className="mr-3" />
+                        Join
+                    </button>
                 }
             </div>
                 

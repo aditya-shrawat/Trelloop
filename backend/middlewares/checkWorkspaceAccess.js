@@ -1,28 +1,27 @@
+import mongoose from "mongoose";
 import Workspace from "../models/workspace.js";
 
-
-const checkWorkspaceAccess = async (req,res,next)=> {
+const checkWorkspaceAccess = async (req, res, next) => {
   try {
-    const userId = req.user._id;
     const { id } = req.params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Valid Workspace ID is required." });
+    }
 
     const workspace = await Workspace.findById(id);
-
     if (!workspace) {
-      return res.status(404).json({error:'Workspace not found.'});
+      return res.status(404).json({ error: "Workspace not found." });
     }
 
-    const isMember = workspace.members.includes(userId?.toString());
-    const isCreator = workspace.createdBy.toString() === userId?.toString();
+    const userId = req.user._id.toString();
+    const isMember = workspace.members.some(memberId => memberId.toString() === userId);
+    const isCreator = workspace.createdBy?.toString() === userId;
 
-    if (workspace.isPrivate && !(isMember || isCreator)){
-      return res.status(403).json({error:'Access denied to private workspace.' });
+    if (workspace.isPrivate && !(isMember || isCreator)) {
+      return res.status(403).json({ error: "Access denied to private workspace." });
     }
 
-    let canEdit = false;
-    if (isCreator || isMember) {
-      canEdit = true;
-    }
+    const canEdit = isMember || isCreator;
 
     req.canEdit = canEdit;
     req.workspace = workspace;
@@ -30,8 +29,8 @@ const checkWorkspaceAccess = async (req,res,next)=> {
 
     next();
   } catch (error) {
-    console.log('Error in checkWorkspaceAccess- ',error);
-    return res.status(500).json({error:'Internal server error.'});
+    console.log('Error in checkWorkspaceAccess- ', error);
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 
