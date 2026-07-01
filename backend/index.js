@@ -4,7 +4,6 @@ dotenv.config();
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
 import WorkspaceRouter from './routes/workspace.js';
 import BoardRouter  from './routes/board.js'
 import CardRouter from './routes/card.js'
@@ -40,7 +39,6 @@ const io = new Server(server, {
 });
 const PORT = 4000
 
-app.use(cookieParser());
 
 app.use(cors({
     origin: frontend,
