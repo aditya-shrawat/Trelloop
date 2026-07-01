@@ -21,7 +21,6 @@ const BoardVisibilityPopup = ({board,setBoard,setVisibilityPopup})=>{
 
             setBoard(response.data.board)
         } catch (error) {
-            console.log("Error while changing board visibility - ",error)
             setErrorMsg("Something went wrong!")
         }
     }

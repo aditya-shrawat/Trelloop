@@ -13,6 +13,7 @@ import socket from '../Socket/socket';
 import useBoardSocket from '../Socket/useBoardSocket';
 import { useApi } from '../../api/useApi';
 import Skeleton from '@mui/material/Skeleton';
+import toast from 'react-hot-toast';
 
 const Board = () => {
     const { id, name } = useParams();
@@ -43,7 +44,6 @@ const Board = () => {
                 setBoard(response.data.board)
                 setBoardBg(response.data.board.background)
             } catch (error) {
-                console.log("Error while fetching board - ",error)
                 navigate('/error', { replace: true });
             }
     }
@@ -54,7 +54,7 @@ const Board = () => {
 
             setLists(response.data.lists)
         } catch (error) {
-            console.log("Error while fetching lists - ",error)
+            toast.error("Something went wrong.");
         }
         finally{
             setLoadingLists(false)
@@ -67,7 +67,7 @@ const Board = () => {
 
             setStarStatus(response.data.starStatus)
         } catch (error) {
-            console.log("Error while fetching star status - ",error)
+            toast.error("Something went wrong.");
         }
     }
 
@@ -90,7 +90,7 @@ const Board = () => {
 
             setStarStatus(response.data.starStatus)
         } catch (error) {
-            console.log("Error while toggling star status - ",error)
+            toast.error("Failed to update star status.");
         }
     }
 
@@ -127,9 +127,9 @@ const Board = () => {
                 {withCredentials: true}
             );
 
-            console.log(response.data.message)
+            toast.success("Joined board successfully.");
         } catch (error) {
-            console.log("Error in joing board memb - ",error)
+            toast.error("Failed to join board.");
         }
         finally{
             setIsJoining(false);
@@ -153,10 +153,10 @@ const Board = () => {
             })
 
             socket.once('board_request_sent',(data)=>{
-                console.log("request sent - ",data)
+                toast.success("Join request sent successfully.");
             })
         } catch (error) {
-            console.log("error while sending request", error);
+            toast.error("Failed to send join request.");
         }
     }
 
@@ -335,7 +335,7 @@ const AddNewList = ({boardId})=>{
                 {listName}
             );
         } catch (error) {
-            console.log("Error while creating list - ",error)
+            toast.error("Failed to create list.");
         }
         finally{
             setCreatingNewList(false);

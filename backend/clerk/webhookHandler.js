@@ -30,8 +30,6 @@ export const generateUniqueUsername = async (email) => {
 
 // webhook handlers -
 export const webhookHandler = async (req, res) => {
-  console.log("WEB HOOK RECEIVED");
-
   try {
     const svix_id = req.headers["svix-id"];
     const svix_timestamp = req.headers["svix-timestamp"];
@@ -41,7 +39,6 @@ export const webhookHandler = async (req, res) => {
     const payload = req.body.toString();
 
     if (!payload || typeof payload !== "string") {
-      console.error("Invalid payload type:", typeof payload);
       return res.status(400).send("Invalid payload");
     }
 
@@ -57,13 +54,11 @@ export const webhookHandler = async (req, res) => {
     try {
       evt = wh.verify(payload, headers);
     } catch (err) {
-      console.error("Webhook verification failed:", err);
+      console.error("Webhook verification failed");
       return res.status(400).send("Invalid signature");
     }
 
     const { data, type } = evt;
-    console.log("Webhook event type:", type);
-
     switch (type) {
       case "user.created":
         await handleUserCreated(data, res);
@@ -75,24 +70,20 @@ export const webhookHandler = async (req, res) => {
         await handleUserDeleted(data, res);
         break;
       default:
-        console.log(`Unhandled webhook event type: ${type}`);
         res.status(200).json({ message: "Event received but not processed" });
     }
   } catch (error) {
-    console.error("Webhook handler error:", error);
+    console.error("Webhook handler error:");
     return res.status(500).json({error: "Internal server error",details: error.message,});
   }
 };
 
 const handleUserCreated = async (data, res) => {
-  console.log("Webhook at user_created");
   try {
     const { id, first_name, last_name, email_addresses, image_url, } = data;
     const email = email_addresses?.[0]?.email_address;
 
     if (!id || !email) {
-      console.error("Invalid user data - missing id or email :", data);
-
       return res.status(400).json({ error: "Invalid user data - missing id or email" });
     }
 
@@ -101,7 +92,6 @@ const handleUserCreated = async (data, res) => {
     });
 
     if (existingUser) {
-      console.log("User already exists, updating :", existingUser._id);
       // Update existing user
       const updatedUser = await User.findByIdAndUpdate(
         existingUser._id,
@@ -132,7 +122,7 @@ const handleUserCreated = async (data, res) => {
 
     return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    console.error("Error user.created :", error);
+    console.error("Error user.created");
 
     if (error.code === 11000) {
       return res.status(409).json({ error: "User already exists", details: error.message});
@@ -143,7 +133,6 @@ const handleUserCreated = async (data, res) => {
 };
 
 const handleUserUpdated = async (data, res) => {
-  console.log("Webhook at user_updated");
   try {
     const { id, first_name, last_name, email_addresses } = data;
     const email = email_addresses?.[0]?.email_address;
@@ -164,19 +153,16 @@ const handleUserUpdated = async (data, res) => {
     );
 
     if (!updatedUser) {
-      console.log(`User not found for update: ${id}`);
       return res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
-    console.error("Error updating user:", error);
     res.status(500).json({ error: "Error updating user", details: error.message });
   }
 };
 
 const handleUserDeleted = async (data, res) => {
-  console.log("Webhook at user_deleted");
   try {
     const { id } = data;
 
@@ -187,14 +173,12 @@ const handleUserDeleted = async (data, res) => {
     const result = await User.findOneAndDelete({ clerkUserId: id });
 
     if (!result) {
-      console.log(`User not found for deletion: ${id}`);
       return res.status(404).json({ error: "User not found" });
     }
 
-    console.log(`User permanently deleted: ${result._id}`);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error deleting user:");
     res.status(500).json({ error: "Error deleting user", details: error.message });
   }
 };

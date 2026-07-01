@@ -14,6 +14,7 @@ import { registerUserSocket } from "../Socket/socketService";
 import socket from "../Socket/socket";
 import { useUser } from "../Contexts/UserContext";
 import Skeleton from '@mui/material/Skeleton';
+import toast from "react-hot-toast";
 
 const HomePage = () => {
   const [workspaces,setWorkspaces] = useState([]);
@@ -34,7 +35,7 @@ const HomePage = () => {
 
       setWorkspaces(response.data.workspaces);
     } catch (error) {
-      console.log("Error while fetching workspaces - ",error)
+      toast.error("Failed to fetch workspaces.");
     }
     finally{
       setLoadingWorkspaces(false)

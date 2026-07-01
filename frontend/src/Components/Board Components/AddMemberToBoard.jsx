@@ -7,6 +7,7 @@ import { useUser } from "../../Contexts/UserContext";
 import socket from "../../Socket/socket";
 import useBoardSocket from "../../Socket/useBoardSocket";
 import { useApi } from "../../../api/useApi";
+import toast from "react-hot-toast";
 
 
 const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
@@ -41,7 +42,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
 
         setWorkspaceMembers([response.data.admin, ...response.data.members]);
     } catch (error) {
-        console.log("Error in fetching workspace members - ",error)
+      toast.error("Failed to fetch workspace members.");
     }
   }
 
@@ -57,7 +58,7 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
 
         setBoardMembers([response.data.admin, ...response.data.members]);
     } catch (error) {
-        console.log("Error in fetching board members - ",error)
+        toast.error("Failed to fetch board members.");
     }
   }
 
@@ -81,7 +82,6 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
 
         setSearchedUsers(response.data.users);
     } catch (error) {
-        console.log("Error in searching users - ",error)
         setErrorMsg("Something went wrong, try again.")
     }
   };
@@ -143,9 +143,9 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
             {selectedUsers:selectedUsersIds}
         );
 
-        console.log(response.data.message);
+        toast.success("Members added successfully.");
     } catch (error) {
-        console.log("Error while adding new members - ",error)
+        toast.error("Failed to add members.");
     }
     finally{
         setSelectedUsersIds([])
@@ -159,7 +159,6 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
     e.preventDefault()
     if((selectedUsersIds.length===0 && selectedUsersInfo.length===0)) return;
 
-    console.log(user);
     try {
       socket.emit("send_board_invite", {
         boardId:board._id,
@@ -168,10 +167,10 @@ const AddMemberToBoard = ({setIsAddingNewMembers,board}) => {
       });
 
       socket.once("board_invite_sent", (data) => {
-        console.log("invitation data : ", data);
+        toast.success("Invite sent successfully.");
       });
     } catch (error) {
-      console.log("Error while sending invite - ",error)
+      toast.error("Failed to send invite.");
     }
     finally{
       setSelectedUsersIds([])

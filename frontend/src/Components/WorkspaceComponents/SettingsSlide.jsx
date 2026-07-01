@@ -4,6 +4,7 @@ import { RiLock2Line } from "react-icons/ri";
 import { MdPublic } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const initialWorkspacedata ={
     name:"",
@@ -52,7 +53,7 @@ const SettingsSlide = ({isAdmin,isMember,workspace,setWorkspace}) => {
             setEditWorkspace(false)
             setErrorMsg("")
         } catch (error) {
-            console.log("Error while updating workspace - ",error)
+            toast.error("Failed to update workspace.");
         }
     }
 
@@ -200,11 +201,10 @@ const DeleteComponent = ({workspaceId,setDeleteWorkspace})=>{
         try {
             const response = await api.delete(`/workspace/delete/${workspaceId}`);
 
-            console.log("Workspace deleted successfully.")
+            toast.success("Workspace deleted successfully.");
             setDeleteWorkspace(false)
             navigate(-2)
         } catch (error) {
-            console.log("Error while deleting workspace - ",error)
             setErrorMsg("Something went wrong!")
         }
     }
@@ -262,7 +262,6 @@ const ChangeVisibilityComponent = ({workspace,setWorkspace,setChangingVisibility
 
             setWorkspace(response.data.workspace)
         } catch (error) {
-            console.log("Error while changing workspace visibility - ",error)
             setErrorMsg("Something went wrong!")
         }
     }

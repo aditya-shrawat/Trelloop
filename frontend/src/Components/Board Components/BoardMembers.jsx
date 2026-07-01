@@ -6,6 +6,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { RxExit } from "react-icons/rx";
 import { useApi } from "../../../api/useApi";
+import toast from "react-hot-toast";
 
 const BoardMembers = ({boardId,setShowMembers}) => {
     const [members,setMembers] = useState([]);
@@ -22,7 +23,7 @@ const BoardMembers = ({boardId,setShowMembers}) => {
             setAdmin(response.data.admin)
             setCurrentUser(response.data.currentUser)
         } catch (error) {
-            console.log("Error while fetching board members ",error)
+            toast.error("Failed to fetch board members.");
         }
         finally{
             setLoadingMembers(false)
@@ -164,8 +165,7 @@ const RemoveMemberPopup = ({setRemovePopup,userId,boardId,setMembers})=>{
       setMembers(response.data.members)
       setRemovePopup(false)
     } catch (error) {
-      console.log("Error in removing member ",error)
-      setErrorMsg("Something went wrong.")
+      setErrorMsg("Failed to remove member.")
     }
     finally{
       setRemoving(false)
@@ -226,8 +226,7 @@ const LeaveBoardPopup = ({setLeavePopup,userId,boardId,setMembers})=>{
       setMembers(response.data.members)
       setLeavePopup(false)
     } catch (error) {
-      console.log("Error in Leaving board ",error)
-      setErrorMsg("Something went wrong.")
+      setErrorMsg("Failed to leave board.")
     }
     finally{
       setLeaving(false)

@@ -24,6 +24,7 @@ import CardCover from './CardFunctionalities/Cover/CardCover';
 import ActivityContainer from './CardFunctionalities/Card Activity/ActivityContainer';
 import { useApi } from '../../api/useApi';
 import CircularProgress from '@mui/material/CircularProgress';
+import toast from 'react-hot-toast';
 
 
 const CardDetailsModel = () => {
@@ -77,12 +78,11 @@ const CardDetailsModel = () => {
             setAttachments(response.data.card.attachments);
             setBoard(response.data.board);
         } catch (error) {
-            console.log("Error while fetching card details - ",error)
-            // add toast notification
             if (error.response?.status === 403) {
                 navigate("/error");
                 return;
             }
+            toast.error("Something went wrong.");
         }
         finally{
             setLoadingCardInfo(false)
@@ -139,10 +139,9 @@ const CardDetailsModel = () => {
 
             card.name = response.data.card.name
             card.description = response.data.card.description
-            // add toast notification
+            toast.success("Card updated successfully.");
         } catch (error) {
-            console.log("Error while updating card info - ",error)
-            // add toast notification
+            toast.error("Failed to update card.");
         }
     }
 
@@ -162,10 +161,9 @@ const CardDetailsModel = () => {
             );
 
             setIsCompleted(response.data.isCompleted)
-            // add toast notification
+            toast.success(`Card marked as ${response.data.isCompleted ? 'completed' : 'incomplete'}`);
         } catch (error) {
-            console.log("Error while toggling card status - ",error)
-            // add toast notification
+            toast.error("Failed to update card status.");
         }
     }
 
@@ -191,7 +189,7 @@ const CardDetailsModel = () => {
 
     const joinCard = async ()=>{
         if(UserRole.isCardMember){
-            console.log("You are already a member of card.")
+            toast.error("You are already a member of this card.");
             return;
         }
         if(!card) return;
@@ -202,12 +200,10 @@ const CardDetailsModel = () => {
             {withCredentials: true}
             );
 
-            console.log(response.data.message)
             setUserRole((prev)=>({...prev,isCardMember:true}));
-            // add toast notification
+            toast.success("You have joined the card successfully.");
         } catch (error) {
-            console.log("Error in joining card - ",error)
-            // add toast notification
+            toast.error("Failed to join the card.");
         }
     }
 

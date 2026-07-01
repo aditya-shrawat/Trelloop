@@ -7,6 +7,7 @@ import { FaPlus } from "react-icons/fa6";
 import { useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../../../api/useApi";
+import toast from "react-hot-toast";
 
 const ProfilePicNavBar = ({ currentUser, setOpenProfileNav }) => {
   const navRef = useRef(null);
@@ -122,7 +123,7 @@ const SignOutPopUp = ({setShowSignOutPopUp})=>{
         try {
             await signOut({ redirectUrl: "/" });
         } catch (error) {
-            console.log("Error while signing out - ", error);
+            toast.error("Failed to sign out.");
             setErrorMsg("Something went wrong!");
         }
     };

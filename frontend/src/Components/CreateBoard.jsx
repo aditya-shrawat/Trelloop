@@ -1,5 +1,6 @@
 import React, { use, useEffect, useRef, useState } from "react";
 import { useApi } from "../../api/useApi";
+import toast from "react-hot-toast";
 
 
 const colorOptions = ['#2980b9',  '#cd5a91', '#1abc9c', '#8e44ad', 'linear-gradient(to top, lightgrey 0%, lightgrey 1%, #e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%)', 
@@ -36,7 +37,7 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       setWorkspaces(response.data.workspaces);
       setWorkspaceId(response.data.workspaces[0]?._id)
     } catch (error) {
-      console.log("Error while fetching workspaces - ",error)
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false)
     }
@@ -71,10 +72,10 @@ const CreateBoard = ({ setCreatingBoard, workspaceName, workspaceID }) => {
       const response = await api.post(`/workspace/${workspaceId}/newBoard`,
         {boardName,workspaceId,background:selectedColor});
 
-      console.log(response.data.message);
       setCreatingBoard(false)
+      toast.success("Board created successfully.");
     } catch (error) {
-      console.log("Error while creating board - ",error)
+      toast.error("Failed to create board.");
     }
     finally{
       setIsCreating(false)

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useApi } from "../../api/useApi";
 import CircularProgress from "@mui/material/CircularProgress";
+import toast from "react-hot-toast";
 
 const MyWorkspaces = () => {
   const [workspaces, setWorkspaces] = useState([]);
@@ -17,7 +18,7 @@ const MyWorkspaces = () => {
 
       setWorkspaces(response.data.workspaces);
     } catch (error) {
-      console.log("Error while fetching workspaces - ", error);
+      toast.error("Something went wrong.");
     } finally {
       setLoadingWorkspaces(false);
     }

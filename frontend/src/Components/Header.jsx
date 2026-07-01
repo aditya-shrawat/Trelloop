@@ -14,6 +14,7 @@ import socket from "../Socket/socket.js";
 import { useApi } from "../../api/useApi.js";
 import ProfilePicNavBar from "./Profile navBar/ProfilePicNavBar.jsx";
 import CircularProgress from "@mui/material/CircularProgress";
+import toast from "react-hot-toast";
 
 const Header =  () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -62,7 +63,7 @@ const Header =  () => {
 
             setUnreadCount(response.data.notifCount);
         } catch (error) {
-            console.log("Error while counting unread notif. ",error)
+            // console.log("Error while counting unread notif. ",error)
         }
     }
 
@@ -165,7 +166,7 @@ const WorkspaceDropDown = ({ api }) => {
             const response = await api.get('/workspace/');
             setWorkspaces(response.data.workspaces);
         } catch (error) {
-            console.log("Error while fetching workspaces - ",error)
+            toast.error("Something went wrong.");
         }
         finally{
             setLoading(false)
@@ -218,7 +219,7 @@ const StarredDropDown = ({ api })=>{
 
             setStarredBoards(response.data.starredBoards)
         } catch (error) {
-            console.log("Error while fetching starred boards - ",error)
+            toast.error("Something went wrong.");
         }
         finally{
             setLoadingStarredBoards(false)

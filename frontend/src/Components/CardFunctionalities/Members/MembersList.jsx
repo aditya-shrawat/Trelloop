@@ -3,6 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useUser } from '../../../Contexts/UserContext';
 import { RxExit } from "react-icons/rx";
 import { useApi } from '../../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const MembersList = ({onClose,members,cardId,UserRole,setCard}) => {
     const divref = useRef();
@@ -58,13 +59,13 @@ const MembersItem = ({member,isAdmin,isSelf,cardId,setCard})=>{
             const response = await api.patch(`/card/${cardId}/remove-member`,
                 {userId:member._id});
 
-            console.log(response.data.message)
+            toast.success("Member removed successfully.");
             setCard(prevCard => ({
                 ...prevCard,
                 members: prevCard.members?.filter(m => (m._id).toString() !== (member._id).toString())
             }));
         } catch (error) {
-            console.log("Error while removeing card member - ",error)
+            toast.error("Failed to remove member from card.");
         }
     }
 
@@ -74,13 +75,13 @@ const MembersItem = ({member,isAdmin,isSelf,cardId,setCard})=>{
                 {userId:member._id}
             );
 
-            console.log(response.data.message)
+            toast.success("You have left the card.");
             setCard(prevCard => ({
                 ...prevCard,
                 members: prevCard.members?.filter(m => (m._id).toString() !== (member._id).toString())
             }));
         } catch (error) {
-            console.log("Error while leaving card - ",error)
+            toast.error("Failed to leave the card.");
         }
     }
 

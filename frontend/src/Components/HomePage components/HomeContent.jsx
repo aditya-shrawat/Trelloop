@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useApi } from '../../../api/useApi';
 import Skeleton from '@mui/material/Skeleton';
+import toast from 'react-hot-toast';
 
 dayjs.extend(relativeTime);
 
@@ -27,7 +28,7 @@ const HomeContent = () => {
 
             setReceivedComments(response.data.allComments);
         } catch (error) {
-            console.log("Error while fetching main feed - ",error)
+            toast.error("Failed to fetch home feed.");
         }
         finally{
             setLoadingMainFeed(false)
@@ -213,10 +214,10 @@ const ReplyComment = ({cardId,commentId,onClose,currentUser})=>{
             const response = await api.post(`/card/${cardId}/comment/${commentId}/reply`,
                 {replyContent});
 
-            console.log(response.data.message);
+            toast.success("Reply added successfully.");
             onClose()
         } catch (error) {
-            console.log("Error while replying comment ",error)
+            toast.error("Failed to add reply.");
         }
     }
 

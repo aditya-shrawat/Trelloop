@@ -56,7 +56,7 @@ export const createBoard = async (req,res)=>{
 
         return res.status(200).json({message:"Board created successfully.",board})
     } catch (error) {
-        console.log("Error while creating board - ",error);
+        console.log("Error while creating board");
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -69,7 +69,6 @@ export const fetcheBoards = async (req,res)=>{
 
         return res.status(200).json({message:"Boards fetched successfully.",boards});
     } catch (error) {
-        console.log("Error while fetching boards - ",error);
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -86,7 +85,6 @@ export const getBoardData = async (req,res)=>{
 
         return res.status(200).json({message:"Board data fetched successfully.",board})
     } catch (error) {
-        console.log("Error in fetching board data - ",error);
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -238,7 +236,7 @@ export const deleteBoard = async (req, res) => {
 
         return res.status(200).json({ message: `Board is deleted successfully.` });
     } catch (error) {
-        console.log("Error while deleting board - ", error);
+        console.log("Error while deleting board");
         return res.status(500).json({ error: "Internal server error." });
     }
 }
@@ -304,7 +302,7 @@ export const getBoardActivies= async (req,res)=>{
 
         return res.status(200).json({message:"Board activities fetched succssfully.",activities})
     } catch (error) {
-        console.log("Error in fetching board activities - ",error)
+        console.log("Error in fetching board activities ")
         return res.status(500).json({error:"Internal server error."})
     }
 }
@@ -329,7 +327,7 @@ export const joinMemberInBoard = async (req,res)=>{
 
         return res.status(200).json({message:"User is added successfully."});
     } catch (error) {
-        console.log("Error in joining board - ",error)
+        console.log("Error in joining board")
         return res.status(500).json({error:"Internal server error."})
     }
 }

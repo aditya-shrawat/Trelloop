@@ -32,13 +32,10 @@ const checkCardAccess = async (req, res, next) => {
 
     let canView = false;
     if (board.visibility === "Public") {
-      console.log("public")
       canView = true;
     } else if (board.visibility === "Workspace") {
-      console.log("workspace")
       canView = hasElevatedRole || isWorkspaceMember;
     } else if (board.visibility === "Private") {
-      console.log("Private")
       canView = hasElevatedRole;
     }
 

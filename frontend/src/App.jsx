@@ -13,6 +13,7 @@ const CardDetailsModel = lazy(() => import('./Components/CardDetailsModel'));
 const Board = lazy(() => import('./Pages/Board'));
 import Loading from './Pages/Loading'
 import { useUser } from './Contexts/UserContext';
+import { Toaster } from 'react-hot-toast';
 
 // Protected Route Component
 const ProtectedRoute = () => {
@@ -83,6 +84,7 @@ const AppRoutes = ()=>{
 
   return (
     <>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       {routes}
       {backgroundLocation && modalRoutes}
     </>

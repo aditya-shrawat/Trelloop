@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import HomeContent from "./HomeContent";
 import { useApi } from "../../../api/useApi";
 import Skeleton from '@mui/material/Skeleton';
+import toast from "react-hot-toast";
 
 const HomeMainContainer = () => {
   const [starredBoards, setStarredBoards] = useState([]);
@@ -17,7 +18,7 @@ const HomeMainContainer = () => {
 
       setStarredBoards(response.data.starredBoards);
     } catch (error) {
-      console.log("Error while fetching starred boards - ", error);
+      toast.error("Failed to fetch starred boards.");
     } finally {
       setLoadingStarredBoards(false);
     }
@@ -29,7 +30,7 @@ const HomeMainContainer = () => {
 
       setSharedBoards(response.data.sharedBoards)
     } catch (error) {
-      console.log("Error while fetching joined boards ",error)
+      toast.error("Failed to fetch shared boards.");
     }
   }
 

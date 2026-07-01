@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { IoIosArrowBack } from "react-icons/io";
 import { useApi } from '../../../api/useApi';
+import toast from 'react-hot-toast';
 
 
 const colorOptions = ['#2980b9',  '#cd5a91', '#1abc9c', '#8e44ad', 'linear-gradient(to top, lightgrey 0%, lightgrey 1%, #e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%)', 
@@ -19,11 +20,10 @@ const ChangeBoardBg = ({boardId,currentBg,setBoardBg,setIsChangingBg}) => {
                 {newBackground:color}
             );
 
-            console.log(response.data.message)
             setSelectedColor(color)
             setBoardBg(color)
         } catch (error) {
-            console.log("error while changing board bg ",error)
+            toast.error("Failed to change board background.");
         }
     };
 

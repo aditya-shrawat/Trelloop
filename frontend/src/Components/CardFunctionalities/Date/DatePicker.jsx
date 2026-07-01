@@ -32,7 +32,6 @@ const DatePicker = ({onClose,cardId,setCard}) => {
             setCard((prev)=>({...prev,deadline:newDeadline}));
             onClose()
         } catch (error) {
-            console.log("Error while changing deadline - ",error)
             setErrorMsg("Something went wrong. Try later!");
         }
     }

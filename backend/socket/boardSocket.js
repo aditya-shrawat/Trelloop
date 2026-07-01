@@ -247,7 +247,6 @@ export const boardSocket = (io,socket) =>{
             }
             
             const senderName = sender.firstName + " " + sender.lastName;
-            console.log("senderName - ",senderName)
             await sendNotification(userId,senderId,senderName)
             await Promise.all(
                 board.members?.map((memberId) => 

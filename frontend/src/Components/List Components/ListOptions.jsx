@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useApi } from '../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
     const divref = useRef();
@@ -52,7 +53,7 @@ const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
             );
             setShowListOptions(false)
         } catch (error) {
-            console.log("Error while updating list - ",error)
+            toast.error("Failed to update list.");
         }
     }
 
@@ -68,7 +69,7 @@ const ListOptions = ({list,setLists,boardId,UserRole,setShowListOptions})=>{
             );
             setShowListOptions(false)
         } catch (error) {
-           console.log("Error while deleting list - ",error) 
+            toast.error("Failed to delete list.");
         }
     }
 

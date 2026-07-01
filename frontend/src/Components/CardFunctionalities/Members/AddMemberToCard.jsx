@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useApi } from '../../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
     const divref = useRef();
@@ -25,7 +26,7 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
 
             setBoardMembers([...response.data.members,response.data.admin])
         } catch (error) {
-            console.log("Error while fetching baord members - ",error)
+            toast.error("Something went wrong.");
         }
     }
 
@@ -68,11 +69,10 @@ const AddMemberToCard = ({onClose,cardId,cardMembers,boardId}) => {
             const response = await api.patch(`/card/${cardId}/add-members`,
                 {selectedMembersIds});
 
-            console.log(response.data.message)
-            // update card members , socket
+            toast.success("Members added successfully.");
             onClose()
         } catch (error) {
-            console.log("Error while adding card members- ",error)
+            toast.error("Failed to add members to card.");
         }
     }
 

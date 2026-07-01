@@ -13,6 +13,7 @@ import BoardVisibilityPopup from './BoardVisibilityPopup';
 import { FiEdit } from "react-icons/fi";
 import ChangeBoardBg from './ChangeBoardBg';
 import { useApi } from '../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const BoardOptionMenu = ({board,setBoard,starStatus,setBoardBg,toggleStarStatus,setShowBoardOptions,UserRole})=>{
     const navRef = useRef(null);
@@ -134,12 +135,12 @@ const DeleteBoardPopup = ({boardId,setDeletePopup})=>{
 
         try {
             const response = await api.delete(`/board/${boardId}/delete`);
-            console.log("board deleted successfully.")
+            toast.success("Board deleted successfully.");
             setDeletePopup(false)
             navigate(-1)
         } catch (error) {
-            console.log("Error while deleting board - ",error)
-            setErrorMsg("Something went wrong!")
+            toast.error("Failed to delete board.");
+            setErrorMsg("Failed to delete board.")
         }
     }
 
@@ -206,8 +207,7 @@ const RenamePopup = ({boardId,boardName,setShowRenamePopup,setBoard})=>{
             setBoard((prev) => ({ ...prev, name:newName }));
             setShowRenamePopup(false)
         } catch (error) {
-            console.log("Error while renaming board - ",error)
-            setErrorMsg("Something went wrong!")
+            setErrorMsg("Failed to rename board.")
         }
     }
 

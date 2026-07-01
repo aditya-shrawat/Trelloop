@@ -4,6 +4,7 @@ import { GoCheckCircleFill } from "react-icons/go";
 import { FaRegClock } from "react-icons/fa6";
 import { Link, useLocation } from 'react-router-dom';
 import { useApi } from '../../api/useApi';
+import toast from 'react-hot-toast';
 
 const Card = ({card,UserRole})=>{
     const [isCompleted,setIsCompleted] = useState(null)
@@ -21,8 +22,9 @@ const Card = ({card,UserRole})=>{
             );
 
             setIsCompleted(response.data.isCompleted)
+            toast.success(`Card marked as ${response.data.isCompleted ? 'completed' : 'incomplete'}.`);
         } catch (error) {
-            console.log("Error while toggling card status - ",error)
+            toast.error("Failed to update card status.");
         }
     }
     

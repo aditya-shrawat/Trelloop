@@ -24,7 +24,7 @@ export const useApi = () => {
           }
           return config;
         } catch (error) {
-          console.error('Failed to get token:', error);
+          // console.error('Failed to get token:', error);
           return Promise.reject(error);
         }
       },
@@ -38,7 +38,7 @@ export const useApi = () => {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          console.error('Unauthorized access - token may be expired');
+          // console.error('Unauthorized access - token may be expired');
           redirectToSignIn({signInUrl: '/user/signin'});
         }
         return Promise.reject(error);

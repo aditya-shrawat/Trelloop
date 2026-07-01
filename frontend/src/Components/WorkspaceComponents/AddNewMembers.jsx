@@ -6,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import socket from "../../Socket/socket";
 import useWorkspaceSocket from "../../Socket/useWorkspaceSocket"
 import { useApi } from "../../../api/useApi";
+import toast from "react-hot-toast";
 
 
 const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
@@ -41,7 +42,7 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
         setAdmin(response.data.admin)
         setWorkspaceMembers([response.data.admin, ...response.data.members]);
     } catch (error) {
-        console.log("Error in fetching workspace members - ",error)
+        toast.error("Something went wrong.");
     }
   }
 
@@ -67,7 +68,6 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
 
         setSearchedUsers(response.data.users);
     } catch (error) {
-        console.log("Error in searching users - ",error)
         setErrorMsg("Something went wrong, try again.")
     }
   };
@@ -118,10 +118,10 @@ const AddNewMembers = ({setIsAddingNewMembers,workspace}) => {
       });
 
       socket.once("workspace_invite_sent", (data) => {
-        console.log("invitation data : ", data);
+        toast.success("Invitations sent successfully.");
       });
     } catch (error) {
-        console.log("Error while sending invitation - ",error)
+        toast.error("Failed to send invitations.");
     }
     finally{
         setSelectedUsersIds([])

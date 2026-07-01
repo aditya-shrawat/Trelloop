@@ -11,6 +11,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import Skeleton from '@mui/material/Skeleton';
+import toast from 'react-hot-toast';
 
 const MyBoards = () => {
     const [workspaces,setWorkspaces] = useState([]);
@@ -25,7 +26,7 @@ const MyBoards = () => {
 
             setWorkspaces(response.data.workspaces)
         } catch (error) {
-            console.log("Error ",error)
+            toast.error("Something went wrong.");
         }
         finally{
             setLoading(false)
@@ -38,7 +39,7 @@ const MyBoards = () => {
 
             setStarredBoards(response.data.starredBoards)
         } catch (error) {
-            console.log("Error while fetching starred boards ",error)
+            toast.error("Failed to fetch starred boards.");
         }
     }
 
@@ -48,7 +49,7 @@ const MyBoards = () => {
 
             setSharedBoards(response.data.sharedBoards)
         } catch (error) {
-            console.log("Error while fetching joined boards ",error)
+            toast.error("Failed to fetch shared boards.");
         }
     }
 

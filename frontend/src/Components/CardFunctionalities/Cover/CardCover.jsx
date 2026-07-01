@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
 import { useApi } from '../../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const colorOptions = ['#9f8fef', '#ffa8d9', '#77b6fb', '#ffe566', '#32cd9e', '#fea362', '#b5f9a3', '#f87168', '#e2a0ff', '#adb5bd'];
 
@@ -29,11 +30,10 @@ const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
                 {newCover:color}
             );
 
-            console.log(response.data.message)
             setCardCover(color);
             setSelectedColor(color)
         } catch (error) {
-            console.error("Failed to update cover color", error);
+            toast.error("Failed to update card cover.");
         }
     };
 
@@ -43,11 +43,10 @@ const CardCover = ({onClose,cardId,setCardCover,currentColor}) => {
                 {}
             );
 
-            console.log(response.data.message)
             setCardCover(null);
             setSelectedColor(null)
         } catch (error) {
-            console.log("failed to remove card cover ",error)
+            toast.error("Failed to remove card cover.");
         }
     }
 

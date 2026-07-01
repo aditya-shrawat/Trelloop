@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSignUp } from "@clerk/clerk-react";
+import toast from 'react-hot-toast';
 
 const initialSignupData={
     firstName:"",
@@ -89,7 +90,7 @@ const SignupPage = () => {
             await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
             setVerifying(true);
         } catch (error) {
-            console.log("Error in handling singup - ",error)
+            toast.error("Sign up failed.");
             setErrors([{ message: getErrorMessage(error) }]);
         }
         finally {
@@ -109,7 +110,7 @@ const SignupPage = () => {
                 redirectUrlComplete: "/home",
             });
         } catch (err) {
-            console.error("Google sign up error:", err);
+            toast.error("Google sign up failed.");
             
             if (err.message?.includes("You're already signed in") || err.code === 'session_exists') {
                 // User is already signed in
@@ -149,7 +150,6 @@ const SignupPage = () => {
             });
             await completeVerificationFlow(completeSignUp);
         } catch (err) {
-            console.error("Verification error:", err);
             setErrors([
                 { message: "Invalid verification code. Please try again." },
             ]);

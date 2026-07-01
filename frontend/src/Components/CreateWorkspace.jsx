@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useApi } from '../../api/useApi';
+import toast from 'react-hot-toast';
 
 
 const initialWorkspaceData ={
@@ -44,10 +45,10 @@ const CreateWorkspace = ({setCreatingworkspace}) => {
     try {
       const response = await api.post('/workspace/new',
         {name:workspaceData.name,description:workspaceData.description});
-      console.log("Workspace created!!")
       setCreatingworkspace(false)
+      toast.success("Workspace created successfully.");
     } catch (error) {
-      console.log("Error while creating workspace - ",error)
+      toast.error("Failed to create workspace.");
     }
     finally{
       setIsCreating(false)

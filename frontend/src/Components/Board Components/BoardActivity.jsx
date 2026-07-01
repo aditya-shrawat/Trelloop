@@ -6,6 +6,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useEffect } from 'react';
 import { useApi } from '../../../api/useApi';
 import { Link, useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 dayjs.extend(relativeTime);
 
@@ -20,7 +21,7 @@ const BoardActivity = ({boardId,setShowActivity})=>{
 
             setActivities(response.data.activities)
         } catch (error) {
-            console.log("Error while fetching board activities - ",error)
+            toast.error("Failed to fetch board activities.");
         }
         finally{
             setLoadingActivities(false)

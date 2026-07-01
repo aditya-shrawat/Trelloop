@@ -8,6 +8,7 @@ import { useApi } from '../../../api/useApi';
 import socket from '../../Socket/socket';
 import useWorkspaceSocket from '../../Socket/useWorkspaceSocket';
 import CircularProgress from '@mui/material/CircularProgress';
+import toast from 'react-hot-toast';
 
 const MembersSlide = () => {
   const {name,id} = useParams();
@@ -25,7 +26,7 @@ const MembersSlide = () => {
       setAdmin(response.data.admin)
       setCurrentUser(response.data.currentUser)
     } catch (error) {
-      console.log("Error while fetching workspace members ",error)
+      toast.error("Failed to fetch workspace members.");
     }
     finally{
       setLoadingMembers(false)
@@ -195,7 +196,7 @@ const RemoveMemberPopup = ({setRemovePopup,userId,workspaceId,setMembers})=>{
       setMembers(response.data.members)
       setRemovePopup(false)
     } catch (error) {
-      console.log("Error in removing member ",error)
+      toast.error("Failed to remove member.");
       setErrorMsg("Something went wrong.")
     }
     finally{
@@ -257,7 +258,7 @@ const LeaveWorkspacePopup = ({setLeavePopup,userId,workspaceId,setMembers})=>{
       setMembers(response.data.members)
       setLeavePopup(false)
     } catch (error) {
-      console.log("Error in Leaving workspace ",error)
+      toast.error("Failed to leave workspace.");
       setErrorMsg("Something went wrong.")
     }
     finally{

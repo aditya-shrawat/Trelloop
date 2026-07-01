@@ -9,6 +9,7 @@ import { useUser } from '../../../Contexts/UserContext';
 import { useParams } from 'react-router-dom';
 import { useRef } from 'react';
 import { useApi } from '../../../../api/useApi';
+import toast from 'react-hot-toast';
 dayjs.extend(relativeTime);
 
 export const CommentItem = ({comment}) => {
@@ -103,10 +104,11 @@ const ReplyContainer = ({commentId,onClose,api})=>{
                 {replyContent}
             );
 
-            console.log(response.data.message);
+            toast.success("Reply submitted successfully.");
+            setReplyContent("")
             onClose()
         } catch (error) {
-            console.log("Error while replying comment ",error)
+            toast.error("Failed to submit reply.");
         }
     }
 
@@ -152,13 +154,12 @@ export const CommentOptions = ({commentId,setEditComment,closeOptions})=>{
     const deleteComment = async (e)=>{
         e.preventDefault();
         try {
-            console.log(commentId)
             const response = await api.delete(`/api/comment/${commentId}/delete`);
 
-            console.log(response.data.message)
+            toast.success("Comment deleted successfully.");
             closeOptions()
         } catch (error) {
-            console.log("Error while deleteing comment ",error)
+            toast.error("Failed to delete comment.");
         }
     }
 
@@ -216,16 +217,14 @@ export const EditCommentContent = ({closeEditing,commentId,currentContent})=>{
         e.preventDefault();
         if(!newContent && newContent.trim()==="") return;
         try {
-            console.log(commentId)
-            console.log(newContent)
             const response = await api.post(`/api/comment/${commentId}/edit-content`,
                 {newContent}
             );
 
-            console.log(response.data.message)
+            toast.success("Comment updated successfully.");
             closeEditing()
         } catch (error) {
-            console.log("Error while updating comment ",error)
+            toast.error("Failed to update comment.");
         }
     }
 

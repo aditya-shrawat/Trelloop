@@ -7,6 +7,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import CircularProgress from '@mui/material/CircularProgress';
+import toast from 'react-hot-toast';
 
 dayjs.extend(relativeTime);
 
@@ -23,7 +24,7 @@ const WorkspaceActivity = () => {
             setActivities(response.data.activities)
             setLoadingActivities(false)
         } catch (error) {
-            console.log("Error while fetching workspace activities - ",error)
+            toast.error("Failed to fetch workspace activities.");
         }
     }
 

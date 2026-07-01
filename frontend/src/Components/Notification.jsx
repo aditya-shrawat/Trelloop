@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import socket from '../Socket/socket';
 import { useApi } from '../../api/useApi';
 import CircularProgress from '@mui/material/CircularProgress';
+import toast from 'react-hot-toast';
 
 const Notification = ({setShowNotifications, setUnreadCount}) => {
     const divRef = useRef(null);
@@ -26,7 +27,7 @@ const Notification = ({setShowNotifications, setUnreadCount}) => {
             const response = await api.get('/notification');
             setNotifications(response.data.notifications)
         } catch (error) {
-            console.log("Error while fetching notification - ",error)
+            toast.error("Failed to load notifications.");
         }
         finally{
             setLoadingNotifications(false)
@@ -81,21 +82,19 @@ const NotificationItem = ({notif,setNotifications,api, setUnreadCount})=>{
             setLoadingAction('accepting');
             
             if(type === 'Workspace'){
-                console.log("Workspace invite accept")
                 socket.emit("accept_workspace_invite",{workspaceId:notif.workspaceId, userId:notif.userId })
                 socket.once("workspace_invite_accepted",(data)=>{
-                    console.log("Workspace invite accepted")
+                    toast.success("Workspace invite accepted.");
                 })
             }
             else if(type === 'Board'){
-                console.log("board invite accept")
                 socket.emit("accept_board_invite",{boardId:notif.boardId,userId:notif.senderId,senderId:notif.userId })
             }
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
             markAsReadAndRemove();
         } catch (error) {
-            console.log("Error while accpting invitation -",error)
+            toast.error("Failed to accept invitation.");
         }
         finally {
             setLoadingAction(null);
@@ -108,21 +107,19 @@ const NotificationItem = ({notif,setNotifications,api, setUnreadCount})=>{
             setLoadingAction('rejecting');
 
             if(type === 'Workspace'){
-                console.log("workspace invite reject.")
                 socket.emit("reject_workspace_invite",{workspaceId:notif.workspaceId, userId:notif.userId })
                 socket.once("workspace_invite_rejected",(data)=>{
-                    console.log("Workspace invite rejected")
+                    toast.success("Workspace invite rejected.");
                 })
             }
             else if(type === 'Board'){
-                console.log("board invite reject.")
                 socket.emit("reject_board_invite",{boardId:notif.boardId,userId:notif.senderId,senderId:notif.userId })
             }
 
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
             markAsReadAndRemove();
         } catch (error) {
-            console.log("Error while rejecting invitation -",error)
+            toast.error("Failed to reject invitation.");
         }
         finally {
             setLoadingAction(null);
@@ -137,7 +134,7 @@ const NotificationItem = ({notif,setNotifications,api, setUnreadCount})=>{
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
             markAsReadAndRemove();
         } catch (error) {
-            console.log("Error while closing notificaiton -",error)
+            toast.error("Failed to close notification.");
         }
         finally{
             setLoadingAction(null);
@@ -154,7 +151,7 @@ const NotificationItem = ({notif,setNotifications,api, setUnreadCount})=>{
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
             markAsReadAndRemove();
         } catch (error) {
-            console.log("Error while accpting request -",error)
+            toast.error("Failed to accept board request.");
         }
         finally {
             setLoadingAction(null);
@@ -171,7 +168,7 @@ const NotificationItem = ({notif,setNotifications,api, setUnreadCount})=>{
             await api.post(`/notification/${notif._id}/read`,{isRead:true});
             markAsReadAndRemove();
         } catch (error) {
-            console.log("Error while rejecting board request -",error)
+            toast.error("Failed to reject board request.");
         }
         finally {
             setLoadingAction(null);

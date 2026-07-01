@@ -7,6 +7,7 @@ import { IoIosSend } from "react-icons/io";
 import socket from '../../../Socket/socket'
 import { CommentItem } from './CommentItem'
 import { useApi } from '../../../../api/useApi'
+import toast from 'react-hot-toast'
 
 const ActivityContainer = ({UserRole,currentUser}) => {
     const {id} = useParams();
@@ -21,7 +22,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
 
             setCardActivities(response.data.allActivities)
         } catch (error) {
-            console.log("Error while fetching card activities - ",error)
+            toast.error("Failed to fetch card activities.");
         }
         finally{
             setLoadingCardActivities(false)
@@ -54,7 +55,7 @@ const ActivityContainer = ({UserRole,currentUser}) => {
             });
             setCommentContent("")
         } catch (error) {
-            console.log("Error in comment handler- ",error)
+            toast.error("Failed to submit comment.");
         }
     }
 

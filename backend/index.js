@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
   handleCommentSocket(io,socket)
 
   socket.on('disconnect', ()=>{
-    console.log(`Socket disconnected: ${socket.id}`);
+    console.log(`Socket disconnected`);
   });
 });
 startReminderScheduler(io);

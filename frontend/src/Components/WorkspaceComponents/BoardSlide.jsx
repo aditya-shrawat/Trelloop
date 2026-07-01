@@ -7,6 +7,7 @@ import { useApi } from '../../../api/useApi';
 import useWorkspaceSocket from '../../Socket/useWorkspaceSocket';
 import socket from '../../Socket/socket';
 import Skeleton from '@mui/material/Skeleton';
+import toast from 'react-hot-toast';
 
 const BoardSlide = ({isAdmin,isMember}) => {
     const [creatingBoard,setCreatingBoard] = useState(false);
@@ -21,7 +22,7 @@ const BoardSlide = ({isAdmin,isMember}) => {
 
         setBoards(response.data.boards)
       } catch (error) {
-        console.log("Error while fetching boards - ",error)
+        toast.error("Failed to fetch boards.");
       }
       finally{
         setLoading(false)
@@ -104,7 +105,7 @@ const BoardCard = ({board,api})=>{
 
       setStarStatus(response.data.starStatus)
     } catch (error) {
-      console.log("Error while fetching star status - ",error)
+      toast.error("Something went wrong.");
     }
   }
 
@@ -122,7 +123,7 @@ const BoardCard = ({board,api})=>{
 
       setStarStatus(response.data.starStatus)
     } catch (error) {
-      console.log("Error while toggling star status - ",error)
+      toast.error("Something went wrong.");
     }
   }
 

@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { Link, useLocation } from "react-router-dom";
 import { useApi } from "../../../api/useApi";
 import CircularProgress from "@mui/material/CircularProgress";
+import toast from "react-hot-toast";
 
 
 const getStatusBadge = (isCompleted, deadline) => {
@@ -111,7 +112,7 @@ export default function TrackDeadlines() {
             setDeadlineData(response.data.cardsDeadlinesDetails)
             getStatusCount(response.data.cardsDeadlinesDetails)
         } catch (error) {
-            console.log("Error while fetching deadlines - ",error)
+            toast.error("Failed to fetch deadlines.");
         }
         finally{
             setLoading(false)

@@ -5,6 +5,7 @@ import { BsThreeDots } from "react-icons/bs";
 import ListOptions from "./List Components/ListOptions";
 import { useApi } from "../../api/useApi";
 import socket from "../Socket/socket";
+import toast from "react-hot-toast";
 
 const List = ({list,boardId,setLists,UserRole}) => {
     const [cards,setCards] = useState([]);
@@ -18,7 +19,7 @@ const List = ({list,boardId,setLists,UserRole}) => {
 
             setCards(response.data.cards)
         } catch (error) {
-            console.log("Error while fetching cards  - ",error)
+            toast.error("Something went wrong.");
         }
         finally{
             setLoading(false)
@@ -131,7 +132,7 @@ const AddNewCard = ({listId,boardId,setCards})=>{
 
             setCards(prevLists => [...prevLists, response.data.card])
         } catch (error) {
-            console.log("Error while creating card - ",error)
+            toast.error("Failed to create card.");
         }
         finally{
             setCreatingNewCard(false);

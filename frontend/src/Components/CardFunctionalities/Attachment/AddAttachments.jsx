@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useApi } from "../../../../api/useApi";
+import toast from "react-hot-toast";
 
 
 
@@ -43,7 +44,7 @@ const AddAttachments = ({setCardFunctionality,setAttachments,cardId})=>{
             setAttachments((prevAttachments) => [...prevAttachments, inputLink]);
             setCardFunctionality(null)
         } catch (error) {
-            console.log("Error while attachment - ",error)
+            toast.error("Failed to add attachment.");
         }
     }
 

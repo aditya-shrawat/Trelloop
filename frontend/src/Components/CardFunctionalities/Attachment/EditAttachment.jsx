@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useApi } from '../../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
     const divref = useRef();
@@ -51,7 +52,7 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
             setAttachments(response.data.cardAttachments);
             setEditAttachment(false)
         } catch (error) {
-            console.log("Error while editing attachment - ",error)
+            toast.error("Failed to update attachment.");
         }
     }
 
@@ -67,7 +68,7 @@ const EditAttachment = ({setEditAttachment,link,setAttachments,index})=>{
             setAttachments(response.data.cardAttachments);
             setEditAttachment(false)
         } catch (error) {
-           console.log("Error while deleting attachment - ",error) 
+           toast.error("Failed to delete attachment.");
         }
     }
 

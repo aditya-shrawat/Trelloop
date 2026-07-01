@@ -1,5 +1,6 @@
 import { useSignIn } from "@clerk/clerk-react";
 import React, { useCallback, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const initialSigninData = {
@@ -74,7 +75,7 @@ const SignInPage = () => {
           ]);
         }
       } catch (error) {
-        console.log("Error in handling signin - ", error);
+        toast.error("Sign in failed.");
         setErrors([{ message: getErrorMessage(error) }]);
       } finally {
         setLoading(false);
@@ -96,7 +97,7 @@ const SignInPage = () => {
         redirectUrlComplete: "/home",
       });
     } catch (err) {
-      console.error("Google sign in error:", err);
+      toast.error("Google sign in failed.");
       if (
         err.message?.includes("You're already signed in") ||
         err.code === "session_exists"

@@ -44,7 +44,6 @@ const Workspace = () => {
 
             setWorkspace(response.data.workspace);
         } catch (error) {
-            console.log("Error while fetching workspace - ",error)
             navigate('/error', { replace: true,});
         }
         finally{

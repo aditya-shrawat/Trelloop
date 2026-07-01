@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../../../api/useApi';
+import toast from 'react-hot-toast';
 
 const DeleteCard = ({setCardFunctionality,cardId})=>{
     const navigate = useNavigate()
@@ -29,12 +30,12 @@ const DeleteCard = ({setCardFunctionality,cardId})=>{
         try {
             const response = await api.delete(`/card/${cardId}/delete`);
 
-            console.log("card deleted")
+            toast.success("Card deleted successfully.");
             setCardFunctionality(null)
             navigate(-1)
         } catch (error) {
-            console.log("Error while deleting card - ",error)
-            setErrorMsg("Something went wrong!")
+            toast.error("Failed to delete card.");
+            setErrorMsg("Failed to delete card. Try again later.")
         }
     }
 
